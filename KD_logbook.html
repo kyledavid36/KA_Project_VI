@@ -3,19 +3,66 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Unordered Lists</title>
+        <title>KA_Project_VI - Home</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f6f8;
+                color: #333;
+                text-align: left;
+                margin: 0;
+                padding: 2rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+                color: #2c3e50;
+            }
+
+            ul {
+                list-style: none;
+                padding: 0;
+            }
+
+            li {
+                margin: 10px 0;
+            }
+
+            a {
+                text-decoration: none;
+                color: #007BFF;
+                font-size: 1.2rem;
+            }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+            .map-container {
+                margin-top: 30px;
+            }
+
+            .footer {
+                margin-top: 40px;
+                font-size: 0.9rem;
+                color: #777;
+            }
+        </style>
     </head>
     <body>
-        <h1>Weekly Log Book -- Kyle Dick</h1>
+        <h1>Weekly Log Book </h1>
+        <h1>Kyle Dick</h1>
+        <h1 id="top"><img src="Images/Headshot.jpeg" alt="Kyle and Levi"
+        title="Kyle and Levi" width="200"/>
         <h2>Week 2</h2>
-        
+
         <ul>
             <li>Date: 05/15/2025</li>
             <li>Session Type: Debrief Meeting #1</li>
             <li>Prepare By: [KD]</li>
         </ul>
 
-        <hr> <!-- Horizontal line instead of dashes -->
+        <hr>
         <h3>1. Test Plan</h3>
         <ul>
             <li>- CAN Message ID: 0x101 (From Arduino)</li>
@@ -65,5 +112,51 @@
         </ul>
         <hr>
 
+        <h2>Week 3</h2>
+
+        <ul>
+            <li>Date: 05/15/2025</li>
+            <li>Session Type: Weekly Progress</li>
+            <li>Prepared By: [KD]</li>
+        </ul>
+
+        <hr>
+        <h3>1. MEETINGS & DISCUSSIONS</h3>
+        <ul>
+            <li>- Discussed project initiation strategy with Blaise and Amy.</li>
+            <li>- Reviewed Project Plan with Alan.</li>
+            <li>- Assigned responsibilities:</li>
+            <ul>
+                <li>- Alan: Complete the Test Plan.</li>
+                <li>- Kyle: Complete the status report.</li>
+                <li>- Kyle & Alan: Collaborate on programming main.cpp and updating STM32 filter IDs.</li>
+            </ul>
+        </ul>
+        <hr>
+
+        <h3>2. SOFTWARE DEVELOPMENT</h3>
+        <ul>
+            <li>- Migrated ElevatorDemoLoop from Raspberry Pi to VS Code.</li>
+            <li>- Simplified main.cpp to include only pcanRx and pcanTx loop logic.</li>
+            <li>- Task assignments for deliverables:</li>
+            <ul>
+                <li>- Alan: Questions Q15–Q18.</li>
+                <li>- Kyle: Questions Q19–Q21.</li>
+            </ul>
+        </ul>
+        <hr>
+
+        <h3>3. NEXT STEPS</h3>
+        <ul>
+            <li>- Finalize Test Plan and status report.</li>
+            <li>- Continue developing the elevator control loop in main.cpp.</li>
+            <li>- Verify CAN filtering implementation on STM32.</li>
+            <li>- Create GitHub Projects to keep track of tasks.</li>
+        </ul>
+        <hr>
+
+        <ul>
+             <li><a href="index.html"> 🏠 Home Page 🏠</a></li>  
+        </ul>
     </body>
 </html>

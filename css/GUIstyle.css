@@ -1,0 +1,81 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.floor-display {
+  margin-bottom: 20px;
+}
+
+#current-floor {
+  width: 60px;
+  padding: 8px;
+  font-size: 1.5rem;
+  text-align: center;
+  border: 2px solid #4CAF50;
+  border-radius: 8px;
+  background-color: #eaffea;
+}
+
+
+.elevator-container {
+  text-align: center;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.hex-button {
+  position: relative;
+  background-color: #4CAF50;
+  color: white;
+  font-size: 1.2rem;
+  border: none;
+  cursor: pointer;
+  width: 100px;
+  height: 55px;
+  margin: 10px;
+  clip-path: polygon(
+    50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%
+  );
+  transition: background-color 0.3s;
+}
+
+.hex-button:hover {
+  background-color: #45a049;
+}
+
+.floor-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button-row {
+  display: flex;
+  margin: 5px 0;
+}
+
+.button-row.spaced {
+  gap: 20px;
+}
+
+.button-row.center {
+  justify-content: center;
+}
+
+.youtube-section {
+  margin-top: 2rem;
+}
+
+.youtube-section h2 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
