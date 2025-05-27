@@ -3,26 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <title>Request Access - Project VI</title>
+    <link rel="stylesheet" href="css/site_style.css">
+    <link rel="stylesheet" href="css/request_form_style.css">
 </head>
 <body>
-    <h2>📄 Request Access to Project VI</h2>
-    <form action="request_access.php" method="POST">
-        <label for="fullName">Full Name:</label><br>
-        <input type="text" id="fullName" name="fullName" required><br><br>
+    <div class="container">
+        <h2>📄 Request Access to Project VI</h2>
+        <form action="request_access.php" method="POST">
+            <fieldset>
+                <legend>Access Request Form</legend>
 
-        <label for="email">Email Address:</label><br>
-        <input type="email" id="email" name="email" required><br><br>
+                <div class="form-group">
+                    <label for="fullName">Full Name:</label>
+                    <input type="text" id="fullName" name="fullName" required>
+                </div>
 
-        <label for="username">Desired Username:</label><br>
-        <input type="text" id="username" name="username" required><br><br>
+                <div class="form-group">
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
 
-        <label for="password">Desired Password:</label><br>
-        <input type="password" id="password" name="password" required><br><br>
+                <div class="form-group">
+                    <label for="username">Desired Username:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
 
-        <label for="reason">Why do you need access?</label><br>
-        <textarea id="reason" name="reason" rows="4" cols="40"></textarea><br><br>
+                <div class="form-group">
+                    <label for="password">Desired Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
 
-        <input type="submit" value="Submit Request">
-    </form>
+                <div class="form-group">
+                    <label for="reason">Why do you need access?</label>
+                    <textarea id="reason" name="reason" rows="4" cols="40"></textarea>
+                </div>
+
+                <button type="submit">Submit Request</button>
+            </fieldset>
+        </form>
+    </div>
 </body>
 </html>
+
