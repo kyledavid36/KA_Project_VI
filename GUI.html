@@ -8,79 +8,72 @@
 </head>
 <body>
 
-  <div class="elevator-container">
-  </br>
+  <div id="voice-overlay">🎤 Listening...</div>
+
+  <main class="elevator-container">
     <h1>Elevator GUI</h1>
 
-    <div class="floor-display">
-        <label for="current-floor">Current Floor:</label><br />
-        <input type="text" id="current-floor" readonly />
-    </div>
+    <section class="floor-display">
+      <label for="current-floor">Current Floor:</label><br />
+      <input type="text" id="current-floor" readonly />
+    </section>
 
+    <section class="floor-buttons">
+      <div class="button-row right">
+        <button class="hex-button">3</button>
+      </div>
+      <div class="button-row center">
+        <button class="hex-button">2</button>
+      </div>
+      <div class="button-row spaced">
+        <button class="hex-button">1</button>
+      </div>
+      <div class="button-row spaced">
+        <button class="hex-button">🎵</button>
+        <button class="hex-button" id="mic-button">🎤</button>
+      </div>
+    </section>
 
-    <div class="floor-buttons">
-       <div class = "button-row right">
-            <button class="hex-button">3</button>
-       </div>
-        <div class="button-row center">
-            <button class="hex-button">2</button>
-        </div>
-        <div class="button-row spaced">
-            <button class="hex-button">1</button>
-        </div>
-        <div class="button-row spaced">
-            <button class="hex-button">🎵</button>
-            <button class="hex-button" id="mic-button">🎤</button>
+    <section class="features">
+      <!-- Placeholder for future features: Music, voice control, dev tools, etc. -->
+    </section>
 
-        </div>
-    </div>
-
-
-    <div class="features">
-        <!-- Music, voice, dev settings, YouTube -->
-    </div>
-
-    <div class="youtube-section">
-        <iframe
+    <section class="youtube-section">
+      <iframe
         width="300"
         height="169"
         src="https://www.youtube.com/embed/dQw4w9WgXcQ"
         title="YouTube video player"
         frameborder="0"
         allowfullscreen
-        ></iframe>
-    </div>
- <!-- Add this before the closing </body> tag -->
-<audio id="ding-sound" src="ding.wav" preload="auto"></audio>
+      ></iframe>
+    </section>
+  </main>
 
-<script>
-  // Get the display box and buttons
-  const floorDisplay = document.getElementById('current-floor');
-  const floorButtons = document.querySelectorAll('.hex-button');
-  const dingSound = document.getElementById('ding-sound');
-  const micButton = document.getElementById('mic-button');
+  <audio id="ding-sound" src="ding.wav" preload="auto"></audio>
+
+  <script>
+    const floorDisplay = document.getElementById('current-floor');
+    const floorButtons = document.querySelectorAll('.hex-button');
+    const dingSound = document.getElementById('ding-sound');
+    const micButton = document.getElementById('mic-button');
 
     micButton.addEventListener('click', () => {
-    alert("🎤 Voice control not implemented yet. Please use buttons!");
+      alert("🎤 Voice control not implemented yet. Please use buttons!");
     });
 
+    floorButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const value = button.textContent.trim();
 
-        // Add click event to each floor button
-        floorButtons.forEach(button => {
-        button.addEventListener('click', () => {
-        const value = button.textContent;
-
-        // Only update if it's a number (1, 2, 3)
         if (!isNaN(value)) {
-            floorDisplay.value = value;
-            dingSound.currentTime = 0; // rewind to start
-            dingSound.play();
-            }
-        });
+          floorDisplay.value = value;
+          dingSound.currentTime = 0;
+          dingSound.play();
+        }
+      });
     });
-</script>
-
-
+  </script>
 
 </body>
 </html>

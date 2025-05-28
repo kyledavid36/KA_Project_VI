@@ -53,4 +53,40 @@ button[type="submit"] {
 
 button[type="submit"]:hover {
     background-color: #0056b3;
+
+}
+
+button[type="submit"]:active {
+    background-color: #003d80; /* While clicking */
+}
+
+a.button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color:#003d80;
+    color: white; 
+    text-decoration: none;
+    border-radius: 5px;
+    font-family: sans-serif;
+    transition: background-color 0.3s ease;
+
+       /* Center text */
+    text-align: center;
+    line-height: normal;
+    vertical-align: middle;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: background-color 0.3s ease;
+}
+
+a.button:hover {
+    background-color: #0056b3;
+}
+
+a.button:active {
+    background-color: #004085;
+    transform: scale(0.98);
 }
