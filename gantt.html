@@ -1,18 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Styled Gantt Chart</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      table-layout: fixed;
     }
 
     caption {
@@ -20,17 +18,6 @@
       font-size: 1.5em;
       font-weight: bold;
       margin-bottom: 10px;
-    }
-
-    th, td {
-      border: 1px solid #000;
-      text-align: center;
-      height: 30px;
-      padding: 0;
-    }
-
-    th {
-      background-color: #f2f2f2;
     }
 
     .bar {
@@ -63,79 +50,82 @@
     .legend {
       margin-top: 20px;
     }
+
+    /* Optional: Keep cell height uniform */
+    td, th {
+      height: 30px;
+    }
   </style>
 </head>
 <body>
-
-  <table>
-    <caption>Gantt Chart</caption>
-    <thead>
-      <tr>
-        <th>Task</th>
-        <th>W1</th><th>W2</th><th>W3</th><th>W4</th><th>W5</th><th>W6</th>
-        <th>W7</th><th>W8</th><th>W9</th><th>W10</th><th>W11</th>
-        <th>W12</th><th>W13</th><th>W14</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="task-label">Task 1</td>
-        <td></td><td></td>
-        <td colspan="6" class="bar mg">MG</td>
-        <td></td><td></td><td></td><td></td><td></td><td></td>
-      </tr>
-
-      <tr>
-        <td class="task-label">Task 2</td>
-        <td class="bar js">JS</td>
-        <td colspan="12" class="bar orange-bar"></td>
-        <td></td>
-      </tr>
-
-      <tr>
-        <td class="task-label">Task 3</td>
-        <td></td>
-        <td colspan="3" class="bar at">AT</td>
-        <td></td><td></td><td></td><td></td>
-        <td></td><td></td><td></td><td></td><td></td>
-      </tr>
-
-      <tr>
-        <td class="task-label">Task 4</td>
-        <td></td>
-        <td colspan="3" class="bar js">JS</td>
-        <td></td><td></td>
-        <td colspan="2" class="bar at">AT</td>
-        <td></td><td></td><td></td><td></td><td></td>
-      </tr>
-
-      <tr>
-        <td class="task-label">Task 5</td>
-        <td></td><td></td><td></td><td></td><td></td>
-        <td colspan="2" class="bar mg">MG</td>
-        <td></td><td></td><td></td><td></td><td></td><td></td>
-      </tr>
-
-      <tr>
-        <td class="task-label">Task 6</td>
-        <td></td><td></td><td></td><td></td><td></td>
-        <td></td><td></td><td></td><td></td><td></td>
-        <td></td><td></td><td></td>
-      </tr>
-
-      <tr>
-        <td class="task-label">Task 7</td>
-        <td></td><td></td><td></td><td></td><td></td>
-        <td></td><td></td><td></td><td></td>
-        <td colspan="2" class="bar js">JS</td>
-        <td></td><td></td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="legend">
-    <p><strong>MG</strong> = Michael Galle, <strong>JS</strong> = Jim Smith, <strong>AT</strong> = Ali Tehrani</p>
+<div class="container">
+  <div class="table-responsive">
+    <table class="table table-bordered text-center align-middle">
+      <caption>Gantt Chart</caption>
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Task</th>
+          <th scope="col">W1</th><th>W2</th><th>W3</th><th>W4</th><th>W5</th><th>W6</th>
+          <th>W7</th><th>W8</th><th>W9</th><th>W10</th><th>W11</th>
+          <th>W12</th><th>W13</th><th>W14</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="task-label">Task 1</td>
+          <td></td><td></td>
+          <td colspan="6" class="bar mg">MG</td>
+          <td></td><td></td><td></td><td></td><td></td><td></td>
+        </tr>
+        <tr>
+          <td class="task-label">Task 2</td>
+          <td class="bar js">JS</td>
+          <td colspan="12" class="bar orange-bar"></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="task-label">Task 3</td>
+          <td></td>
+          <td colspan="3" class="bar at">AT</td>
+          <td></td><td></td><td></td><td></td>
+          <td></td><td></td><td></td><td></td><td></td>
+        </tr>
+        <tr>
+          <td class="task-label">Task 4</td>
+          <td></td>
+          <td colspan="3" class="bar js">JS</td>
+          <td></td><td></td>
+          <td colspan="2" class="bar at">AT</td>
+          <td></td><td></td><td></td><td></td><td></td>
+        </tr>
+        <tr>
+          <td class="task-label">Task 5</td>
+          <td></td><td></td><td></td><td></td><td></td>
+          <td colspan="2" class="bar mg">MG</td>
+          <td></td><td></td><td></td><td></td><td></td><td></td>
+        </tr>
+        <tr>
+          <td class="task-label">Task 6</td>
+          <td></td><td></td><td></td><td></td><td></td>
+          <td></td><td></td><td></td><td></td><td></td>
+          <td></td><td></td><td></td>
+        </tr>
+        <tr>
+          <td class="task-label">Task 7</td>
+          <td></td><td></td><td></td><td></td><td></td>
+          <td></td><td></td><td></td><td></td>
+          <td colspan="2" class="bar js">JS</td>
+          <td></td><td></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
+  <div class="legend mt-4">
+    <p><strong>MG</strong> = Michael Galle, <strong>JS</strong> = Jim Smith, <strong>AT</strong> = Ali Tehrani</p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,171 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KD Logbook</title>
-    <link rel="stylesheet" href="css/site_style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KD Logbook</title>
+  <link rel="stylesheet" href="css/site_style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
+  <div class="container py-4">
+    <!-- Page Title -->
+    <header class="text-center mb-5">
+      <h1 class="display-5">Weekly Log Book</h1>
+      <h2 class="h4 text-muted">Kyle Dick</h2>
+      <img src="Images/Headshot.jpeg" alt="Kyle and Levi" title="Kyle and Levi" class="img-thumbnail mt-3" style="max-width: 200px;">
+    </header>
 
-    <h1>Weekly Log Book</h1>
-    <h1>Kyle Dick</h1>
+    <!-- Week 2 -->
+    <section class="mb-5">
+      <h3>📅 Week 2</h3>
+      <ul class="list-unstyled">
+        <li><strong>Date:</strong> 05/15/2025</li>
+        <li><strong>Session Type:</strong> Debrief Meeting #1</li>
+        <li><strong>Prepared By:</strong> KD</li>
+      </ul>
 
-    <div id="top">
-        <img src="Images/Headshot.jpeg" alt="Kyle and Levi" title="Kyle and Levi" width="200" />
-    </div>
+      <hr>
 
-    <h2>Week 2</h2>
-    <ul>
-        <li>Date: 05/15/2025</li>
-        <li>Session Type: Debrief Meeting #1</li>
-        <li>Prepared By: [KD]</li>
-    </ul>
-
-    <hr />
-    <h3>1. Test Plan</h3>
-    <ul>
+      <h4>1. Test Plan</h4>
+      <ul>
         <li>CAN Message ID: 0x101 (From Arduino)</li>
         <li>Floor Testing Targets 05, 06, 07</li>
-    </ul>
+      </ul>
 
-    <hr />
-    <h3>2. GUI Design Discussion</h3>
-    <ul>
+      <h4>2. GUI Design Discussion</h4>
+      <ul>
         <li>Basic Control: Up/Down buttons to select floor</li>
         <li>Option: Separate GUI interface per floor</li>
         <li>Extra Feature Proposal: Emergency Stop (E-STOP)</li>
         <li>Responsive Design Required:
-            <ul>
-                <li>Buttons must be large and clearly visible</li>
-            </ul>
+          <ul><li>Buttons must be large and clearly visible</li></ul>
         </li>
         <li>MUST Include:
-            <ul>
-                <li>Floor announcements (audio output)</li>
-            </ul>
+          <ul><li>Floor announcements (audio output)</li></ul>
         </li>
         <li>Optional: Elevator music</li>
-    </ul>
+      </ul>
 
-    <hr />
-    <h3>3. Hardware / Software Integration</h3>
-    <ul>
+      <h4>3. Hardware / Software Integration</h4>
+      <ul>
         <li>Lockout of local push-buttons on Nucleo board</li>
         <li>Fire alarm integration</li>
         <li>Custom PCB planned</li>
         <li>Design to prioritize user experience</li>
-    </ul>
+      </ul>
 
-    <hr />
-    <h3>4. Extra Features (Proposed)</h3>
-    <ul>
+      <h4>4. Extra Features (Proposed)</h4>
+      <ul>
         <li>Voice Dictation (floor selection)</li>
         <li>Floor announcement plays by default</li>
         <li>Elevator music plays optionally (not automatic)</li>
         <li>Randomized 5-second YouTube video (each run)</li>
-    </ul>
+      </ul>
 
-    <hr />
-    <h3>5. Practice & Documentation</h3>
-    <ul>
+      <h4>5. Practice & Documentation</h4>
+      <ul>
         <li>Emphasize practicing software use and development</li>
         <li>Each team member must maintain a separate logbook</li>
-    </ul>
+      </ul>
+    </section>
 
-    <hr />
-    <h2>Week 3</h2>
-    <ul>
-        <li>Date: 05/15/2025</li>
-        <li>Session Type: Weekly Progress</li>
-        <li>Prepared By: [KD]</li>
-    </ul>
+    <!-- Week 3 -->
+    <section class="mb-5">
+      <h3>📅 Week 3</h3>
+      <ul class="list-unstyled">
+        <li><strong>Date:</strong> 05/15/2025</li>
+        <li><strong>Session Type:</strong> Weekly Progress</li>
+        <li><strong>Prepared By:</strong> KD</li>
+      </ul>
 
-    <hr />
-    <h3>1. Meetings & Discussions</h3>
-    <ul>
+      <hr>
+
+      <h4>1. Meetings & Discussions</h4>
+      <ul>
         <li>Discussed project initiation strategy with Blaise and Amy</li>
         <li>Reviewed Project Plan with Alan</li>
         <li>Assigned responsibilities:
-            <ul>
-                <li>Alan: Complete the Test Plan</li>
-                <li>Kyle: Complete the status report</li>
-                <li>Kyle & Alan: Collaborate on programming main.cpp and updating STM32 filter IDs</li>
-            </ul>
+          <ul>
+            <li>Alan: Complete the Test Plan</li>
+            <li>Kyle: Complete the status report</li>
+            <li>Kyle & Alan: Collaborate on programming <code>main.cpp</code> and updating STM32 filter IDs</li>
+          </ul>
         </li>
-    </ul>
+      </ul>
 
-    <hr />
-    <h3>2. Software Development</h3>
-    <ul>
+      <h4>2. Software Development</h4>
+      <ul>
         <li>Migrated ElevatorDemoLoop from Raspberry Pi to VS Code</li>
-        <li>Simplified main.cpp to include only pcanRx and pcanTx loop logic</li>
+        <li>Simplified <code>main.cpp</code> to include only pcanRx and pcanTx loop logic</li>
         <li>Task assignments for deliverables:
-            <ul>
-                <li>Alan: Questions Q15–Q18</li>
-                <li>Kyle: Questions Q19–Q21</li>
-            </ul>
+          <ul>
+            <li>Alan: Questions Q15–Q18</li>
+            <li>Kyle: Questions Q19–Q21</li>
+          </ul>
         </li>
-    </ul>
+      </ul>
 
-    <hr />
-    <h3>3. Next Steps</h3>
-    <ul>
+      <h4>3. Next Steps</h4>
+      <ul>
         <li>Finalize Test Plan and status report</li>
-        <li>Continue developing the elevator control loop in main.cpp</li>
+        <li>Continue developing the elevator control loop in <code>main.cpp</code></li>
         <li>Verify CAN filtering implementation on STM32</li>
         <li>Create GitHub Projects to keep track of tasks</li>
-    </ul>
+      </ul>
+    </section>
 
-    <hr />
-    <h1 class="logbook-title">Week 4</h1>
-    <ul class="logbook-info">
+    <!-- Week 4 -->
+    <section class="mb-5">
+      <h3>📅 Week 4</h3>
+      <ul class="list-unstyled">
         <li><strong>Date:</strong> 2025-05-28</li>
         <li><strong>Session Type:</strong> Development & Testing</li>
         <li><strong>Prepared By:</strong> KD</li>
-    </ul>
+      </ul>
 
-    <hr />
-    <h2 class="logbook-subtitle">1. Software Development</h2>
-    <ul class="logbook-list">
+      <hr>
+
+      <h4>1. Software Development</h4>
+      <ul>
         <li>Modified Raspberry Pi <code>main.cpp</code> to continuously listen for floor requests from STM microcontrollers</li>
         <li>Transmit floor requests from RPi to main controller (MC) via Arduino</li>
         <li>Created <code>main2.cpp</code> function <code>sc_ec_control()</code> using CAN Rx/Tx protocols</li>
-    </ul>
+      </ul>
 
-    <h2 class="logbook-subtitle">2. STM Configuration</h2>
-    <ul class="logbook-list">
+      <h4>2. STM Configuration</h4>
+      <ul>
         <li>Updated filter IDs in STM CubeIDE and flashed each STM with its unique ID</li>
         <li>Verified STM IDs using receiving feature in main menu</li>
-    </ul>
+      </ul>
 
-    <hr />
-    <h2 class="logbook-subtitle">3. Hardware Integration & Testing</h2>
-    <ul class="logbook-list">
+      <h4>3. Hardware Integration & Testing</h4>
+      <ul>
         <li>Monitored CAN bus via DB9 connector with soldered wires on pins 7 and 2</li>
         <li>Soldered wires on DB9 connector for reliable CAN line access</li>
         <li>Modified Arduino code to halt communication with MC to prevent floor changes during button press tests</li>
-    </ul>
+      </ul>
 
-    <hr />
-    <h2 class="logbook-subtitle">4. Troubleshooting & Collaboration</h2>
-    <ul class="logbook-list">
+      <h4>4. Troubleshooting & Collaboration</h4>
+      <ul>
         <li>Worked with Stewart and Coulter to resolve issues related to this week’s deliverables</li>
-    </ul>
+      </ul>
 
-    <hr />
-    <h2 class="logbook-subtitle">5. Testing & Documentation</h2>
-    <ul class="logbook-list">
+      <h4>5. Testing & Documentation</h4>
+      <ul>
         <li>Tested new elevator control code integrated with hardware</li>
         <li>Updated Test Plan to reflect recent software changes and test results</li>
         <li>Recorded video demonstrations for Debrief 2 presentation</li>
-    </ul>
+      </ul>
+    </section>
 
+    <!-- Home Page Link -->
+    <div class="text-center">
+      <a class="btn btn-primary" href="index.html">🏠 Home Page</a>
+    </div>
+  </div>
 
-
-    <ul>
-        <li><a href="index.html">🏠 Home Page 🏠</a></li>
-    </ul>
-
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
