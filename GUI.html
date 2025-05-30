@@ -85,9 +85,10 @@
   </div>
 
   <!-- Audio Elements -->
-  <audio id="ding-sound" src="ding.wav" preload="auto"></audio>
-  <audio id="door-open" src="ElevatorOpeningFinal.wav" preload="auto"></audio>
-  <audio id="door-click" src="ElevatorButtonFinal.wav" preload="auto"></audio>
+  <audio id="ding-sound" src="ding.mp3" preload="auto"></audio>
+  <audio id="door-open" src="ElevatorOpeningFinal.mp3" preload="auto"></audio>
+  <audio id="door-click" src="ElevatorButtonFinal.mp3" preload="auto"></audio>
+  <audio id="door-close" src="ElevatorOpeningFinal.mp3" preload="auto"></audio>
 
 <script>
   const floorDisplay = document.getElementById('current-floor');
@@ -108,35 +109,62 @@
     });
   });
 
-  // Floor button logic (with ding sound)
-  floorButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const value = button.textContent.trim();
-      if (!isNaN(value)) {
-        floorDisplay.value = value;
+floorButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const value = button.textContent.trim();
+    if (!isNaN(value)) {
+      floorDisplay.value = value;
+
+      // Play button click sound immediately
+      if (clickSound) {
+        clickSound.currentTime = 0;
+        clickSound.play();
+      }
+
+      // Delay ding sound by 3 seconds (3000 ms)
+      setTimeout(() => {
         if (dingSound) {
           dingSound.currentTime = 0;
           dingSound.play();
         }
-      }
-    });
+      }, 3000);
+    }
   });
+});
 
-  // Door control
-  document.getElementById('open-door').addEventListener('click', () => {
+
+ document.getElementById('open-door').addEventListener('click', () => {
+  // Play button click sound
+  if (clickSound) {
+    clickSound.currentTime = 0;
+    clickSound.play();
+  }
+
+  // Delay door open sound by 3 seconds
+  setTimeout(() => {
     if (openSound) {
       openSound.currentTime = 0;
       openSound.play();
     }
-  });
+  }, 1000);
+});
 
-  document.getElementById('close-door').addEventListener('click', () => {
-    // No unique sound needed here, just clickSound plays
-  });
+document.getElementById('close-door').addEventListener('click', () => {
+  // Play button click sound
+  if (clickSound) {
+    clickSound.currentTime = 0;
+    clickSound.play();
+  }
 
-  micButton.addEventListener('click', () => {
-    alert("🎤 Voice control not implemented yet.");
-  });
+  // Delay door close sound by 3 seconds
+  setTimeout(() => {
+    if (closeSound) {
+      closeSound.currentTime = 0;
+      closeSound.play();
+    }
+  }, 1000);
+});
+
 </script>
 
 </body>
