@@ -30,7 +30,7 @@ body {
   border-radius: 1rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-
+/*
 .hex-button {
   position: relative;
   background-color: #4CAF50;
@@ -50,12 +50,34 @@ body {
 .hex-button:hover {
   background-color: #45a049;
 }
+*/
 
-.floor-buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* Match floor buttons with current floor display */
+.floor-button {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto 10px;
 }
+
+/* Make control buttons uniform size */
+.control-button {
+  min-width: 120px;
+  height: 40px;
+  font-size: 16px;
+}
+
+/* Align icons to same size as control buttons */
+.icon-button {
+  min-width: 120px;
+  height: 40px;
+  font-size: 20px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin: 5px;
+}
+
 
 .button-row {
   display: flex;
