@@ -50,7 +50,7 @@
 <body>
   <div class="container">
     <main>
-      <h1>Elevator GUI</h1>
+     <!-- <h1>Elevator GUI</h1> -->
 
       <div class="mb-3">
         <label for="current-floor" class="form-label">Current Floor:</label><br />
@@ -86,41 +86,58 @@
 
   <!-- Audio Elements -->
   <audio id="ding-sound" src="ding.wav" preload="auto"></audio>
-  <audio id="door-open" src="door_open.wav" preload="auto"></audio>
-  <audio id="door-close" src="door_close.wav" preload="auto"></audio>
+  <audio id="door-open" src="ElevatorOpeningFinal.wav" preload="auto"></audio>
+  <audio id="door-click" src="ElevatorButtonFinal.wav" preload="auto"></audio>
 
-  <script>
-    const floorDisplay = document.getElementById('current-floor');
-    const floorButtons = document.querySelectorAll('.floor-button');
-    const dingSound = document.getElementById('ding-sound');
-    const openSound = document.getElementById('door-open');
-    const closeSound = document.getElementById('door-close');
-    const micButton = document.getElementById('mic-button');
+<script>
+  const floorDisplay = document.getElementById('current-floor');
+  const floorButtons = document.querySelectorAll('.floor-button');
+  const dingSound = document.getElementById('ding-sound');
+  const openSound = document.getElementById('door-open');
+  const clickSound = document.getElementById('door-click');
+  const micButton = document.getElementById('mic-button');
 
-    floorButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        const value = button.textContent.trim();
-        if (!isNaN(value)) {
-          floorDisplay.value = value;
+  // Play click sound for ANY button click
+  const allButtons = document.querySelectorAll('button');
+  allButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      if (clickSound) {
+        clickSound.currentTime = 0;
+        clickSound.play();
+      }
+    });
+  });
+
+  // Floor button logic (with ding sound)
+  floorButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const value = button.textContent.trim();
+      if (!isNaN(value)) {
+        floorDisplay.value = value;
+        if (dingSound) {
           dingSound.currentTime = 0;
           dingSound.play();
         }
-      });
+      }
     });
+  });
 
-    document.getElementById('open-door').addEventListener('click', () => {
+  // Door control
+  document.getElementById('open-door').addEventListener('click', () => {
+    if (openSound) {
       openSound.currentTime = 0;
       openSound.play();
-    });
+    }
+  });
 
-    document.getElementById('close-door').addEventListener('click', () => {
-      closeSound.currentTime = 0;
-      closeSound.play();
-    });
+  document.getElementById('close-door').addEventListener('click', () => {
+    // No unique sound needed here, just clickSound plays
+  });
 
-    micButton.addEventListener('click', () => {
-      alert("🎤 Voice control not implemented yet.");
-    });
-  </script>
+  micButton.addEventListener('click', () => {
+    alert("🎤 Voice control not implemented yet.");
+  });
+</script>
+
 </body>
 </html>
