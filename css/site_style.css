@@ -218,3 +218,10 @@ text-decoration: none;
 font-weight: bold;
 font-size: 1.1em;
 }
+
+/* Consistent sizing for team headshots */
+.team-headshot {
+  width: 200px;    /* consistent width */
+  height: 200px;   /* consistent height */
+  object-fit: cover; /* ensures images fill the box without distortion */
+}
