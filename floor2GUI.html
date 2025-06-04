@@ -13,8 +13,6 @@
       color: #f0e6d2;
     }
 
-
-
     h1 {
       text-align: center;
       margin-top: 50px;
@@ -41,6 +39,11 @@
     .floor-button:hover {
       transform: scale(1.1);
       box-shadow: 0 0 25px #f0c97d, inset 0 0 15px #000;
+    }
+
+    .floor-button.active {
+      box-shadow: 0 0 30px #ffd700, inset 0 0 20px #fff700;
+      transform: scale(1.1);
     }
 
     main {
@@ -72,24 +75,30 @@
   </div>
 
   <!-- Audio -->
-  <audio id="click-sound" src="ElevatorButtonFinal.mp3" preload="auto"></audio>
+  <audio id="open-sound" src="ElevatorOpeningFinal.mp3" preload="auto"></audio>
 
   <script>
-    const clickSound = document.getElementById('click-sound');
+    const openSound = document.getElementById('open-sound');
     const buttons = [document.getElementById('call-up'), document.getElementById('call-down')];
 
     buttons.forEach(button => {
-      button.addEventListener('click', () => {
-        if (clickSound) {
-          clickSound.currentTime = 0;
-          clickSound.play();
+       button.addEventListener('click', () => {
+        button.disabled = true;
+        button.classList.add('active');
+
+        if (openSound) {
+          openSound.currentTime = 0;
+          openSound.play();
         }
 
         setTimeout(() => {
-          window.location.href = 'SteamGUI.html';
-        }, 3000);
+          button.classList.remove('active');
+          window.location.href = 'SteamGUI.html?floor=2'; // <-- pass floor=2
+        }, 5000);
       });
+
     });
+
   </script>
 </body>
 </html>
