@@ -12,6 +12,12 @@
         $password = $_POST['password'];
         $reason = $_POST['reason'];
 
+        // Server-side check
+        if (strlen($reason) > 180) {
+            echo "<h2>Error: Reason cannot exceed 180 characters.</h2>";
+            exit;
+        }
+
         echo "<h2>Access Request Received</h2>";
         echo "Name: " . htmlspecialchars($name) . "<br>";
         echo "Email: " . htmlspecialchars($email) . "<br>";
@@ -21,4 +27,3 @@
     ?>
 </body>
 </html>
-
