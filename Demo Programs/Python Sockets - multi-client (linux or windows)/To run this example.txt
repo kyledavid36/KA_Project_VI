@@ -1,0 +1,17 @@
+Options: 
+
+1. Client and server on same machine: Open two instances of the terminal (in Ubuntu or VSCode)
+2. Client and server on seprate machines: Open server and client separately 
+
+To run the programs
+
+1. Make sure that when you installed Python that 'python' was added to the system Path (Environment Variables in Windows - see image in this folder)
+2. Make sure to install the Python vscode extension
+3. Navigate to folder 
+4. Run the server and then the client  
+      python server.py  (in one terminal)       (Note: Change the IP address above to that of the server (found via ipconfig/ifconfig or ip addr))
+      python client.py (in another terminal)    (Note: Change the IP address above to that of the server (found via ipconfig/ifconfig or ip addr))
+
+5. Enter a message to send
+
+6. press q to quit
