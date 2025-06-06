@@ -1,0 +1,6 @@
+Visual Studio
+
+- Create a solution for client.cpp and another for server.cpp
+- open two instances of visual studio and load each project 
+- run the server first then run the client
+
