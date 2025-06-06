@@ -1,4 +1,4 @@
-/* ====== GLOBAL BASE STYLING FOR PROJECT VI FILES IN GROUP 4 */
+/* ====== GLOBAL BASE STYLING FOR PROJECT VI FILES IN GROUP 4 ====== */
 
 /* ===== Global Reset ===== */
 * {
@@ -40,6 +40,7 @@ h2 {
     color: #333;
     text-align: center;
 }
+
 h3 {
     font-size: 1.5rem;
     margin-top: 2rem;
@@ -47,10 +48,10 @@ h3 {
     color: #333;
     text-align: left;
 }
-.tabbed-heading {
-    margin-left: 80 px;
-}
 
+.tabbed-heading {
+    margin-left: 80px;
+}
 
 /* ===== Text ===== */
 p {
@@ -59,12 +60,14 @@ p {
     text-align: justify;
     text-indent: 15px;
 }
-.p2{
-    ont-size: 1rem;
+
+.p2 {
+    font-size: 1rem;
     margin-bottom: 1rem;
     text-align: center;
     text-indent: 15px;
 }
+
 ul, ol {
     margin-left: 2rem;
     margin-bottom: 1.5rem;
@@ -126,7 +129,7 @@ th {
 
 /* ===== Footer ===== */
 footer, .footer {
-    text-align: center;
+    text-align: center !important;
     font-size: 0.9rem;
     color: #777;
     margin-top: 40px;
@@ -136,7 +139,7 @@ footer, .footer {
 
 /* ===== Utility Classes ===== */
 .text-center {
-    text-align: center;
+    text-align: center !important;
 }
 
 .bold {
@@ -205,33 +208,33 @@ hr {
     margin: 1.5rem 0;
 }
 
+/* Centered navigation links */
 nav.center-links {
-display: flex;
-flex-direction: column;
-align-items: center;
-gap: 0.75em;
-margin-top: 1.5em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75em;
+    margin-top: 1.5em;
 }
 
 nav.center-links a {
-text-decoration: none;
-font-weight: bold;
-font-size: 1.1em;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1em;
 }
-
 
 /* Consistent sizing and cropping for team images */
 .team-image-container {
-  width: 200px;           /* Fixed width */
-  height: 200px;          /* Fixed height */
-  overflow: hidden;       /* Hide overflow for cropping */
-  border-radius: 8px;     /* Optional: rounded corners */
-  margin: 0 auto;         /* Center horizontally */
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 8px;
+    margin: 0 auto;
 }
 
 .team-image-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;      /* Crop to fill container */
-  display: block;         /* Remove default inline spacing */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
