@@ -18,7 +18,7 @@
   <main class="container my-5">
     <h2 class="mb-4">📄 Request Access to Project VI</h2>
 
-    <form action="request_access.php" method="POST" class="needs-validation" novalidate>
+    <form action="php/request_access.php" method="POST" class="needs-validation" novalidate>
       <fieldset class="border p-4 rounded-3">
         <legend class="float-none w-auto px-2">Access Request Form</legend>
 
@@ -49,7 +49,9 @@
         <div class="mb-4">
           <label for="reason" class="form-label">Why do you need access?</label>
           <textarea id="reason" name="reason" rows="4" class="form-control"></textarea>
-          <small id="charCount" class="text-muted">180 characters remaining</small>
+	  <small id="charCount" class="text-muted">Characters remaining: 180</small><br />
+    	  <small id="lastkey" class="form-text text-secondary"></small>
+
         </div>
 
         <button type="submit" class="btn btn-primary">Submit Request</button>
