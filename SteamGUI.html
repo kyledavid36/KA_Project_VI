@@ -132,7 +132,6 @@
         text-align: center;
         margin-top: 40px;
       }
-
     </style>
   </head>
   <body>
@@ -143,35 +142,30 @@
           <input type="text" id="current-floor" readonly value="3" />
         </div>
 
-        <!-- Floor buttons -->
         <div>
           <button class="floor-button">3</button>
           <button class="floor-button">2</button>
           <button class="floor-button">1</button>
         </div>
 
-        <!-- Control buttons -->
         <div class="my-3">
           <button class="control-button" id="open-door">≪≫</button>
           <button class="control-button locked" id="close-door">≫≪</button>
         </div>
 
-        <!-- Music & mic buttons -->
         <div class="my-3">
           <button class="control-button" id="music-button">🎵</button>
           <button class="control-button" id="mic-button">🎤</button>
         </div>
-
       </main>
     </div>
 
-    <!-- Audio -->
     <audio id="ding-sound" src="audio/ding.mp3" preload="auto"></audio>
     <audio id="door-open" src="audio/ElevatorOpeningFinal.mp3" preload="auto"></audio>
     <audio id="door-click" src="audio/ElevatorButtonFinal.mp3" preload="auto"></audio>
     <audio id="door-close" src="audio/ElevatorOpeningFinal.mp3" preload="auto"></audio>
     <audio id="floor-button" src="audio/screeching.mp3" preload="auto"></audio>
-    
+
     <script>
       const floorDisplay = document.getElementById('current-floor');
       const openButton = document.getElementById('open-door');
@@ -182,7 +176,6 @@
       const openSound = document.getElementById('door-open');
       const clickSound = document.getElementById('door-click');
       const closeSound = document.getElementById('door-close');
-      
 
       // Light up and play click sound on every button press
       allButtons.forEach(button => {
@@ -251,6 +244,17 @@
         floorButtons.forEach(btn => (btn.disabled = true));
         // Close Door button starts locked (red)
         closeButton.classList.add('locked');
+
+        // Get the current floor from the URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialFloor = urlParams.get('floor');
+
+        if (initialFloor) {
+          floorDisplay.value = initialFloor;
+        } else {
+          // Fallback if no floor parameter is provided (e.g., if accessed directly)
+          floorDisplay.value = '3'; // Default to floor 3 if no parameter is present
+        }
       });
     </script>
   </body>
