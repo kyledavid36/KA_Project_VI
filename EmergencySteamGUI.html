@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Elevator GUI</title>
+    <!-- Using Tailwind CSS for a more modern layout and easier responsiveness -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet" />
+    <style>
+        /* Base styles from your original design */
+        body {
+            background-color: #3d3d3d; /* Fallback color */
+            background-image: url('https://www.transparenttextures.com/patterns/brushed-metal.png');
+            font-family: 'Cinzel', serif;
+            color: #f0e6d2;
+        }
+
+        .control-panel {
+            background: radial-gradient(circle, #5a4a3b, #3e312a);
+            border: 8px solid #4b3621;
+            border-radius: 20px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(0, 0, 0, 0.5);
+            padding: 2rem;
+        }
+
+        .base-button {
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            background: radial-gradient(circle at 30% 30%, #c4a35a, #7a5c1d);
+            color: #fff;
+            border: 4px solid #4b3621;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.5), inset 0 0 8px #000;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .base-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 15px rgba(240, 201, 125, 0.4), inset 0 0 10px #000;
+        }
+        
+        .base-button:active, .lit-up {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(240, 201, 125, 0.5), inset 0 0 20px #fff !important;
+        }
+
+        .floor-button {
+            width: 120px;
+            font-size: 24px;
+            padding: 15px;
+            border-radius: 12px;
+        }
+        
+        .control-button {
+            width: 80px;
+            height: 80px;
+            font-size: 20px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .locked {
+            border-color: red !important;
+            box-shadow: 0 0 15px 5px red, inset 0 0 10px #660000 !important;
+        }
+
+        #current-floor {
+            background-color: black;
+            color: #ff4141;
+            border: 4px solid #2c2c2c;
+            border-radius: 10px;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 32px;
+            width: 100px;
+            text-align: center;
+            text-shadow: 0 0 10px #ff0000;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* Emergency Call Button Specific Styles */
+        #emergency-call-button {
+            background: radial-gradient(circle, #b71c1c, #7f0000);
+            border-color: #660000;
+        }
+
+        #emergency-call-button.recording {
+            background: radial-gradient(circle, #ff4d4d, #b71c1c);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 15px 5px #ff4d4d, inset 0 0 10px #b71c1c; }
+            50% { box-shadow: 0 0 25px 10px #ff8a8a, inset 0 0 15px #b71c1c; }
+            100% { box-shadow: 0 0 15px 5px #ff4d4d, inset 0 0 10px #b71c1c; }
+        }
+
+        #status-message {
+            min-height: 24px; /* Reserve space to prevent layout shift */
+            transition: color 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="container max-w-sm mx-auto">
+        <div class="control-panel">
+            <h1 class="text-4xl text-center mb-6 text-shadow">Elevator Control</h1>
+            
+            <div class="flex justify-center mb-6">
+                <input type="text" id="current-floor" readonly value="3" />
+            </div>
+
+            <div class="flex flex-col items-center space-y-4 mb-6">
+                <button class="base-button floor-button">3</button>
+                <button class="base-button floor-button">2</button>
+                <button class="base-button floor-button">1</button>
+            </div>
+
+            <div class="text-center mb-6">
+                <button class="base-button control-button" id="open-door">≪≫</button>
+                <button class="base-button control-button locked" id="close-door">≫≪</button>
+            </div>
+            
+            <div class="text-center border-t-2 border-dashed border-gray-600 pt-6 mt-6">
+                <p class="mb-2 font-bold text-amber-200">Emergency Systems</p>
+                <button class="base-button control-button" id="emergency-call-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-telephone-fill" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.28 1.464l-2.094 2.094a.25.25 0 0 0 .088.403l3.68 3.68a.25.25 0 0 0 .403.088l2.094-2.094c.49-.165 1.041-.049 1.464.28l2.296 2.296c.253.253.345.654.217.976l-.646.646a.5.5 0 0 1-.708.057l-3.329-3.329a.5.5 0 0 1-.057-.708l.646-.646a.5.5 0 0 1 .976.217l-.646.646a1.745 1.745 0 0 1-2.474 0L5.033 7.488a1.745 1.745 0 0 1 0-2.474L6.68.342a1.745 1.745 0 0 1 .163-2.61z"/>
+                    </svg>
+                </button>
+                 <p id="status-message" class="mt-4 text-amber-300"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- These audio elements are left for structure, but local file paths are not accessible. -->
+    <audio id="ding-sound" preload="auto"></audio>
+    <audio id="door-open" preload="auto"></audio>
+    <audio id="door-click" preload="auto"></audio>
+    <audio id="door-close" preload="auto"></audio>
+    <audio id="floor-button" preload="auto"></audio>
+
+    <script>
+        const floorDisplay = document.getElementById('current-floor');
+        const openButton = document.getElementById('open-door');
+        const closeButton = document.getElementById('close-door');
+        const allButtons = document.querySelectorAll('.base-button');
+        const floorButtons = document.querySelectorAll('.floor-button');
+        
+        // --- Original Button Logic ---
+        allButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                button.classList.add('lit-up');
+                setTimeout(() => {
+                    button.classList.remove('lit-up');
+                }, 300);
+            });
+        });
+
+        floorButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                floorDisplay.value = button.innerText;
+            });
+        });
+        
+        // --- Emergency Call Feature ---
+        const emergencyCallButton = document.getElementById('emergency-call-button');
+        const statusMessage = document.getElementById('status-message');
+        
+        let webSocket;
+        let mediaRecorder;
+        let isCalling = false;
+        
+        // --- IMPORTANT ---
+        // Replace 'YOUR_SERVER_IP_ADDRESS' with the local IP of the computer running server.js
+        const WEBSOCKET_URL = 'ws://192.168.1.63:8080';
+
+
+        emergencyCallButton.addEventListener('click', () => {
+            if (isCalling) {
+                stopCall();
+            } else {
+                startCall();
+            }
+        });
+
+        async function startCall() {
+            statusMessage.textContent = 'Connecting...';
+            statusMessage.style.color = '#f0c97d';
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                webSocket = new WebSocket(WEBSOCKET_URL);
+
+                webSocket.onopen = () => {
+                    statusMessage.textContent = 'Connected. Recording...';
+                    statusMessage.style.color = '#76ff03';
+                    isCalling = true;
+                    emergencyCallButton.classList.add('recording');
+
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.addEventListener('dataavailable', event => {
+                        if (event.data.size > 0 && webSocket.readyState === WebSocket.OPEN) {
+                            webSocket.send(event.data);
+                        }
+                    });
+                    
+                    mediaRecorder.start(1000); // Send data every 1 second
+                };
+
+                webSocket.onclose = () => {
+                    statusMessage.textContent = 'Connection closed.';
+                    statusMessage.style.color = '#ff4d4d';
+                    if (isCalling) {
+                       stopCall(false);
+                    }
+                };
+                
+                webSocket.onerror = (error) => {
+                    console.error('WebSocket Error:', error);
+                    statusMessage.textContent = 'Connection error. Is server running?';
+                    statusMessage.style.color = '#ff4d4d';
+                    if(isCalling) {
+                        stopCall(false);
+                    }
+                };
+
+            } catch (err) {
+                console.error('Error accessing microphone:', err);
+                statusMessage.textContent = 'Could not access microphone.';
+                statusMessage.style.color = '#ff4d4d';
+            }
+        }
+        
+        function stopCall(closeSocket = true) {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+            }
+            if (mediaRecorder) {
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+            if (webSocket && closeSocket && webSocket.readyState === WebSocket.OPEN) {
+                webSocket.close();
+            }
+            
+            isCalling = false;
+            emergencyCallButton.classList.remove('recording');
+            statusMessage.textContent = 'Call Terminated.';
+            statusMessage.style.color = '#f0c97d';
+        }
+
+    </script>
+</body>
+</html>

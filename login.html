@@ -22,13 +22,13 @@
     <main class="container">
       <h2>🔐 Login to Project VI</h2>
 
-      <form action="login.php" method="POST"> <!--Make the blue box smaller-->
+      <form action="php/login.php" method="POST">
         <label for="username">Username:</label><br />
         <input type="text" id="username" name="username" required /><br /><br />
 
         <label for="password">Password:</label><br />
         <input type="password" id="password" name="password" required /><br /><br />
-
+        <div id="feedback" style="min-height: 1.5rem;"></div>
         <input type="submit" value="Login" /><br /><br />
       </form>
 
