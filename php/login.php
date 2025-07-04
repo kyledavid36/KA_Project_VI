@@ -1,5 +1,5 @@
 <?php
-$pdo = new PDO('mysql:host=127.0.0.1;dbname=elevator', 'ese', 'ese');
+$pdo = new PDO('mysql:host=127.0.0.1;dbname=elevator', 'Alanhpm', 'Alanhpm1382');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $username = $_POST['username'];
