@@ -1,10 +1,10 @@
 /*
- * server_alsa.c
+ * alsaServer.c
  *
  * This program listens for a connection from the client, receives raw
  * audio data, and plays it through the speakers using ALSA.
  *
- * COMPILE WITH: gcc server_alsa.c -o server_alsa -lasound
+ * COMPILE WITH: gcc src/alsaServer.c -o bin/server_alsa -lasound
  */
 
 #include <stdio.h>
@@ -35,7 +35,6 @@ int main(void) {
     char *buffer;
     int err;
 
-    // --- Setup Network Socket ---
     server_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (server_sock < 0) {
         perror("Socket creation failed");
@@ -65,7 +64,6 @@ int main(void) {
     }
     printf("Client connected.\n");
 
-    // --- Setup ALSA for Playback ---
     if (setup_alsa_playback(&playback_handle) != 0) {
         fprintf(stderr, "ALSA playback setup failed.\n");
         close(client_sock);
@@ -74,12 +72,15 @@ int main(void) {
     }
     printf("ALSA playback device opened successfully.\n");
 
-    // --- Main Playback Loop ---
-    buffer = malloc(CHUNK_SIZE * snd_pcm_format_width(FORMAT) / 8 * CHANNELS);
+    // --- FIXED Main Playback Loop ---
+    // Calculate the buffer size once and use it everywhere.
+    size_t buffer_size = CHUNK_SIZE * snd_pcm_format_width(FORMAT) / 8 * CHANNELS;
+    buffer = malloc(buffer_size);
     printf("Receiving and playing audio...\n");
     
     ssize_t bytes_read;
-    while ((bytes_read = read(client_sock, buffer, sizeof(buffer))) > 0) {
+    // The read call now uses the correct buffer_size.
+    while ((bytes_read = read(client_sock, buffer, buffer_size)) > 0) {
         // Write the received audio chunk to the speakers
         err = snd_pcm_writei(playback_handle, buffer, bytes_read / (snd_pcm_format_width(FORMAT) / 8 * CHANNELS));
         if (err == -EPIPE) {
@@ -96,7 +97,6 @@ int main(void) {
         perror("Read from socket failed");
     }
 
-    // --- Cleanup ---
     printf("Closing connections.\n");
     free(buffer);
     snd_pcm_drain(playback_handle);
@@ -107,11 +107,6 @@ int main(void) {
     return 0;
 }
 
-/**
- * @brief Initializes the ALSA playback device (speakers).
- * @param handle A pointer to the ALSA handle that will be initialized.
- * @return 0 on success, -1 on failure.
- */
 int setup_alsa_playback(snd_pcm_t **handle) {
     int err;
     snd_pcm_hw_params_t *params;
