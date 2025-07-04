@@ -171,6 +171,7 @@
         let webSocket;
         let mediaRecorder;
         let isCalling = false;
+        let hasStopped = false;
         
         // --- IMPORTANT ---
         // Replace 'YOUR_SERVER_IP_ADDRESS' with the local IP of the computer running server.js
@@ -200,6 +201,7 @@
                 // navigator.mediaDevices.getSupportedMimeTypes(); can list supported types
 
                 webSocket = new WebSocket(WEBSOCKET_URL);
+                webSocket.binaryType = 'arraybuffer';
 
                 webSocket.onopen = () => {
                     console.log('WebSocket opened!');
@@ -224,7 +226,8 @@
                     mediaRecorder.addEventListener('stop', () => console.log('MediaRecorder stopped.'));
                     mediaRecorder.addEventListener('error', e => console.error('MediaRecorder error:', e));
 
-                    mediaRecorder.start(); // Start recording without a specific time limit for data chunking
+                    mediaRecorder.start(1000); // Start recording without a specific time limit for data chunking
+                    console.log('mediaRecorder.start called with 1000ms timeslice.');
 
                 };
 
@@ -257,30 +260,39 @@
         }
         
         function stopCall(closeSocket = true) {
+            if (hasStopped) {
+                console.log('stopCall() called again, but already stopped. Ignoring.');
+                return;
+            }
+            hasStopped = true;
+
             console.log('stopCall triggered. closeSocket:', closeSocket);
+
             if (mediaRecorder && mediaRecorder.state === 'recording') {
                 mediaRecorder.stop();
                 console.log('MediaRecorder instructed to stop.');
             }
+
             if (mediaRecorder && mediaRecorder.stream) {
                 mediaRecorder.stream.getTracks().forEach(track => {
                     console.log('Stopping track:', track.kind);
                     track.stop();
                 });
             }
+
             if (webSocket && closeSocket && webSocket.readyState === WebSocket.OPEN) {
                 console.log('Closing WebSocket connection.');
                 webSocket.close();
-            } else if (webSocket && !webSocket.readyState === WebSocket.OPEN) {
-                console.log('WebSocket not open, cannot close. State:', webSocket.readyState);
             }
-            
+
             isCalling = false;
             emergencyCallButton.classList.remove('recording');
             statusMessage.textContent = 'Call Terminated.';
             statusMessage.style.color = '#f0c97d';
-            emergencyCallButton.disabled = false; // Ensure button is enabled
+            emergencyCallButton.disabled = false;
         }
+    }
+
 
     </script>
 </body>
