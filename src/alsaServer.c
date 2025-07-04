@@ -17,7 +17,7 @@
 
 // --- CONFIGURATION (must match client) ---
 #define SERVER_PORT 5000
-#define CHUNK_SIZE 1024
+#define CHUNK_SIZE 256
 #define SAMPLE_RATE 44100
 #define CHANNELS 1
 #define FORMAT SND_PCM_FORMAT_S16_LE
@@ -32,7 +32,7 @@ int main(void) {
     socklen_t client_len;
 
     snd_pcm_t *playback_handle;
-    char *buffer;
+    short *buffer;
     int err;
 
     server_sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -75,7 +75,7 @@ int main(void) {
     // --- FIXED Main Playback Loop ---
     // Calculate the buffer size once and use it everywhere.
     size_t buffer_size = CHUNK_SIZE * snd_pcm_format_width(FORMAT) / 8 * CHANNELS;
-    buffer = malloc(buffer_size);
+    buffer = (short*)malloc(buffer_size);
     printf("Receiving and playing audio...\n");
     
     ssize_t bytes_read;
