@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/usr/include/**"
+                "/usr/include/x86_64-linux-gnu/sphinxbase",
+                "/usr/include/pocketsphinx"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

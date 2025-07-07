@@ -210,8 +210,6 @@
       const floor3Sound = document.getElementById('floor3-sound');
 
       // --- Elevator Logic ---
-
-      // Generic "lit-up" effect for all buttons.
       allButtons.forEach(button => {
         if (button.id === 'emergency-call-button' || button.id === 'mic-button') return;
         button.addEventListener('click', () => {
@@ -221,29 +219,18 @@
         });
       });
 
-      // When a floor button is clicked, play sound sequence, update display, and log to DB
       floorButtons.forEach(button => {
         button.addEventListener('click', () => {
           const floorNumber = button.innerText;
           floorDisplay.value = floorNumber;
-
-          // Log to database via PHP
           fetch('php/updateFloor.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: 'floor=' + encodeURIComponent(floorNumber)
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              console.log("✅ Floor updated in DB: " + data.floor);
-            } else {
-              console.error("❌ Floor update failed: " + (data.message || 'No error message'));
-            }
-          })
-          .catch(error => console.error("❌ Error sending request:", error));
-          
-          // Sound sequence with your timing
+          }).then(response => response.json()).then(data => {
+            if (data.success) console.log("✅ Floor updated in DB: " + data.floor);
+            else console.error("❌ Floor update failed: " + (data.message || 'No error message'));
+          }).catch(error => console.error("❌ Error sending request:", error));
           setTimeout(() => { if (screechSound) { screechSound.currentTime = 0; screechSound.play(); } }, 200);
           setTimeout(() => { if (dingSound) { dingSound.currentTime = 0; dingSound.play(); } }, 4800);
           setTimeout(() => {
@@ -254,7 +241,6 @@
         });
       });
 
-      // Open Door button sound sequence and navigation
       openButton.addEventListener('click', () => {
         setTimeout(() => { if (openSound) openSound.play(); }, 1500);
         setTimeout(() => {
@@ -265,7 +251,6 @@
         }, 5250);
       });
 
-      // Close Door button sound sequence and "unlock"
       closeButton.addEventListener('click', () => {
         setTimeout(() => { if (closeSound) closeSound.play(); }, 500);
         floorButtons.forEach(btn => (btn.disabled = false));
