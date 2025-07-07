@@ -32,6 +32,6 @@ try {
 
 
   <!-- GUI Interface Frame -->
-  <iframe src="../SteamGUI.html" style="width:100%; height:100vh; border:none;"></iframe>
+  <iframe src="../GUI/alsaSteamGUI.html" style="width:100%; height:100vh; border:none;"></iframe>
 </body>
 </html>

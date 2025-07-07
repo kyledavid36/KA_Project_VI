@@ -107,11 +107,23 @@
       #emergency-call-button.calling {
           animation: pulse 1.5s infinite;
       }
+      
+      #mic-button.listening {
+          border-color: #00ff00 !important;
+          box-shadow: 0 0 15px 5px #00ff00, inset 0 0 10px #006600 !important;
+          animation: pulse-green 1.5s infinite;
+      }
 
       @keyframes pulse {
           0% { box-shadow: 0 0 15px 5px #ff4d4d, inset 0 0 10px #b71c1c; }
           50% { box-shadow: 0 0 25px 10px #ff8a8a, inset 0 0 15px #b71c1c; }
           100% { box-shadow: 0 0 15px 5px #ff4d4d, inset 0 0 10px #b71c1c; }
+      }
+      
+      @keyframes pulse-green {
+          0% { box-shadow: 0 0 15px 5px #00ff00, inset 0 0 10px #006600; }
+          50% { box-shadow: 0 0 25px 10px #8aff8a, inset 0 0 15px #006600; }
+          100% { box-shadow: 0 0 15px 5px #00ff00, inset 0 0 10px #006600; }
       }
 
       #status-message {
@@ -153,6 +165,8 @@
         </div>
 
         <div class="my-3 border-t-2 border-dashed border-secondary pt-3">
+            <button class="control-button" id="log-button">📜</button>
+            <button class="control-button" id="mic-button">🎤</button>
             <button class="control-button" id="emergency-call-button">
                 <img src="Images/basicphone.png" class="emergency-icon" alt="Emergency Call" />
             </button>
@@ -177,6 +191,8 @@
       const floorDisplay = document.getElementById('current-floor');
       const openButton = document.getElementById('open-door');
       const closeButton = document.getElementById('close-door');
+      const logButton = document.getElementById('log-button');
+      const micButton = document.getElementById('mic-button');
       const allButtons = document.querySelectorAll('button');
       const floorButtons = document.querySelectorAll('.floor-button');
       const emergencyCallButton = document.getElementById('emergency-call-button');
@@ -197,45 +213,50 @@
 
       // Generic "lit-up" effect for all buttons.
       allButtons.forEach(button => {
-        if (button.id === 'emergency-call-button') return;
+        if (button.id === 'emergency-call-button' || button.id === 'mic-button') return;
         button.addEventListener('click', () => {
+          if (clickSound) { clickSound.currentTime = 0; clickSound.play(); }
           button.classList.add('lit-up');
-          setTimeout(() => {
-            button.classList.remove('lit-up');
-          }, 500);
+          setTimeout(() => { button.classList.remove('lit-up'); }, 500);
         });
       });
 
-      // When a floor button is clicked, play sound sequence and update display
+      // When a floor button is clicked, play sound sequence, update display, and log to DB
       floorButtons.forEach(button => {
         button.addEventListener('click', () => {
-          if (clickSound) {
-            clickSound.currentTime = 0;
-            clickSound.play();
-          }
           const floorNumber = button.innerText;
           floorDisplay.value = floorNumber;
-          
-          setTimeout(() => { if (screechSound) { screechSound.currentTime = 0; screechSound.play(); } }, 200);
-          
-          setTimeout(() => { 
-              if (dingSound) { dingSound.currentTime = 0; dingSound.play(); } 
-          }, 4800);
 
-          // Play the specific floor announcement sound after the ding
+          // Log to database via PHP
+          fetch('php/updateFloor.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'floor=' + encodeURIComponent(floorNumber)
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              console.log("✅ Floor updated in DB: " + data.floor);
+            } else {
+              console.error("❌ Floor update failed: " + (data.message || 'No error message'));
+            }
+          })
+          .catch(error => console.error("❌ Error sending request:", error));
+          
+          // Sound sequence with your timing
+          setTimeout(() => { if (screechSound) { screechSound.currentTime = 0; screechSound.play(); } }, 200);
+          setTimeout(() => { if (dingSound) { dingSound.currentTime = 0; dingSound.play(); } }, 4800);
           setTimeout(() => {
               if (floorNumber === '1' && floor1Sound) { floor1Sound.currentTime = 0; floor1Sound.play(); }
               else if (floorNumber === '2' && floor2Sound) { floor2Sound.currentTime = 0; floor2Sound.play(); }
               else if (floorNumber === '3' && floor3Sound) { floor3Sound.currentTime = 0; floor3Sound.play(); }
-          }, 5200); // Delay after the ding
+          }, 5200);
         });
       });
 
       // Open Door button sound sequence and navigation
       openButton.addEventListener('click', () => {
-        if (clickSound) clickSound.play();
         setTimeout(() => { if (openSound) openSound.play(); }, 1500);
-
         setTimeout(() => {
           const currentFloor = floorDisplay.value.trim();
           if (currentFloor === '1') window.location.href = 'floor1GUI.html';
@@ -246,33 +267,50 @@
 
       // Close Door button sound sequence and "unlock"
       closeButton.addEventListener('click', () => {
-        if (clickSound) clickSound.play();
         setTimeout(() => { if (closeSound) closeSound.play(); }, 500);
-
         floorButtons.forEach(btn => (btn.disabled = false));
         closeButton.classList.remove('locked');
       });
 
-      // --- Emergency Call Trigger Logic ---
+      // --- Special Function Buttons ---
+      logButton.addEventListener('click', () => {
+        if (clickSound) clickSound.play();
+        window.location.href = 'changelog.html';
+      });
+
+      micButton.addEventListener('click', () => {
+        if (clickSound) clickSound.play();
+        const TRIGGER_URL = 'http://localhost:8081/start_sabbath'; // Use a new port
+        statusMessage.textContent = 'Activating Sabbath Mode...';
+        statusMessage.style.color = '#f0c97d';
+        micButton.classList.add('listening');
+        micButton.disabled = true;
+        fetch(TRIGGER_URL, { mode: 'no-cors' })
+            .then(() => {
+                statusMessage.textContent = 'Sabbath Mode Active: Listening...';
+                statusMessage.style.color = '#76ff03';
+            })
+            .catch(error => {
+                console.log('Fetch triggered the Sabbath client. The error is expected:', error);
+                statusMessage.textContent = 'Sabbath Mode Active: Listening...';
+                statusMessage.style.color = '#76ff03';
+            });
+      });
+
       emergencyCallButton.addEventListener('click', () => {
         if (emergencySound) {
             emergencySound.currentTime = 0;
             emergencySound.play();
         }
-
-        const TRIGGER_URL = 'http://localhost:8080/start';
+        const TRIGGER_URL = 'http://localhost:8080/start_emergency';
         statusMessage.textContent = 'Call Initiated...';
         statusMessage.style.color = '#f0c97d';
         emergencyCallButton.classList.add('calling');
         emergencyCallButton.disabled = true;
-
         fetch(TRIGGER_URL, { mode: 'no-cors' })
-          .catch(error => {
-            console.log('Fetch triggered the C application. The error is expected:', error);
-          });
+          .catch(error => console.log('Fetch triggered the Emergency client. The error is expected:', error));
       });
       
-      // Listen for when the emergency audio has finished playing to update the text
       if (emergencySound) {
           emergencySound.addEventListener('ended', () => {
               statusMessage.textContent = 'Connection Established';
@@ -284,10 +322,8 @@
       document.addEventListener('DOMContentLoaded', () => {
         floorButtons.forEach(btn => (btn.disabled = true));
         closeButton.classList.add('locked');
-
         const urlParams = new URLSearchParams(window.location.search);
         const initialFloor = urlParams.get('floor');
-
         if (initialFloor) {
           floorDisplay.value = initialFloor;
         } else {
