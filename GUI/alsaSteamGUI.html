@@ -33,9 +33,7 @@
       }
 
       body {
-        /* Replaced local image with a web-accessible one */
-        background: url('https://www.transparenttextures.com/patterns/brushed-metal.png') no-repeat center center fixed;
-        background-color: #3d3d3d;
+        background: url('Images/metal.jpg') no-repeat center center fixed;
         background-size: cover;
         font-family: 'Cinzel', serif;
         color: #f0e6d2;
@@ -92,20 +90,18 @@
         transition: all 0.3s ease;
       }
       
-      /* Emergency Call Button Specific Styles */
       #emergency-call-button {
           background: radial-gradient(circle, #b71c1c, #7f0000);
           border-color: #660000;
-          /* Padding is adjusted to fit the image */
           padding: 0; 
       }
 
       .emergency-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        object-fit: cover; /* Ensures the image covers the area without distortion */
-        border: 2px solid #4b3621; /* Optional: adds a border matching the theme */
+        width: 50px;
+        height: 50px;
+        border-radius: 75%;
+        object-fit: cover;
+        border: 2px solid #4b3621;
       }
 
       #emergency-call-button.calling {
@@ -157,15 +153,24 @@
         </div>
 
         <div class="my-3 border-t-2 border-dashed border-secondary pt-3">
-            <p class="mb-2 font-bold">Emergency Systems</p>
             <button class="control-button" id="emergency-call-button">
-                <!-- The SVG is replaced with this image tag -->
                 <img src="Images/basicphone.png" class="emergency-icon" alt="Emergency Call" />
             </button>
             <p id="status-message" class="mt-2"></p>
         </div>
       </main>
     </div>
+
+    <!-- All audio elements are now included -->
+    <audio id="ding-sound" src="audio/ding.mp3" preload="auto"></audio>
+    <audio id="door-open" src="audio/ElevatorOpeningFinal.mp3" preload="auto"></audio>
+    <audio id="door-click" src="audio/ElevatorButtonFinal.mp3" preload="auto"></audio>
+    <audio id="door-close" src="audio/ElevatorOpeningFinal.mp3" preload="auto"></audio>
+    <audio id="screech-sound" src="audio/screeching.mp3" preload="auto"></audio>
+    <audio id="emergency-sound" src="audio/emergencyAudio.mp3" preload="auto"></audio>
+    <audio id="floor1-sound" src="audio/Floor 1.mp3" preload="auto"></audio>
+    <audio id="floor2-sound" src="audio/Floor 2.mp3" preload="auto"></audio>
+    <audio id="floor3-sound" src="audio/Floor 3.mp3" preload="auto"></audio>
 
     <script>
       // --- Element Selectors ---
@@ -176,14 +181,24 @@
       const floorButtons = document.querySelectorAll('.floor-button');
       const emergencyCallButton = document.getElementById('emergency-call-button');
       const statusMessage = document.getElementById('status-message');
+      
+      // Audio element selectors
+      const dingSound = document.getElementById('ding-sound');
+      const openSound = document.getElementById('door-open');
+      const clickSound = document.getElementById('door-click');
+      const closeSound = document.getElementById('door-close');
+      const screechSound = document.getElementById('screech-sound');
+      const emergencySound = document.getElementById('emergency-sound');
+      const floor1Sound = document.getElementById('floor1-sound');
+      const floor2Sound = document.getElementById('floor2-sound');
+      const floor3Sound = document.getElementById('floor3-sound');
 
-      // --- Original Elevator Logic ---
+      // --- Elevator Logic ---
+
+      // Generic "lit-up" effect for all buttons.
       allButtons.forEach(button => {
-        // Exclude the emergency button from the standard "lit-up" logic
         if (button.id === 'emergency-call-button') return;
-
         button.addEventListener('click', () => {
-          // clickSound.play(); // Audio disabled
           button.classList.add('lit-up');
           setTimeout(() => {
             button.classList.remove('lit-up');
@@ -191,55 +206,93 @@
         });
       });
 
+      // When a floor button is clicked, play sound sequence and update display
       floorButtons.forEach(button => {
         button.addEventListener('click', () => {
-          floorDisplay.value = button.innerText;
-          // dingSound.play(); // Audio disabled
+          if (clickSound) {
+            clickSound.currentTime = 0;
+            clickSound.play();
+          }
+          const floorNumber = button.innerText;
+          floorDisplay.value = floorNumber;
+          
+          setTimeout(() => { if (screechSound) { screechSound.currentTime = 0; screechSound.play(); } }, 200);
+          
+          setTimeout(() => { 
+              if (dingSound) { dingSound.currentTime = 0; dingSound.play(); } 
+          }, 4800);
+
+          // Play the specific floor announcement sound after the ding
+          setTimeout(() => {
+              if (floorNumber === '1' && floor1Sound) { floor1Sound.currentTime = 0; floor1Sound.play(); }
+              else if (floorNumber === '2' && floor2Sound) { floor2Sound.currentTime = 0; floor2Sound.play(); }
+              else if (floorNumber === '3' && floor3Sound) { floor3Sound.currentTime = 0; floor3Sound.play(); }
+          }, 5200); // Delay after the ding
         });
       });
 
+      // Open Door button sound sequence and navigation
       openButton.addEventListener('click', () => {
-        // openSound.play(); // Audio disabled
-        // The original navigation logic is preserved
+        if (clickSound) clickSound.play();
+        setTimeout(() => { if (openSound) openSound.play(); }, 1500);
+
         setTimeout(() => {
           const currentFloor = floorDisplay.value.trim();
           if (currentFloor === '1') window.location.href = 'floor1GUI.html';
           else if (currentFloor === '2') window.location.href = 'floor2GUI.html';
           else if (currentFloor === '3') window.location.href = 'floor3GUI.html';
-        }, 1000); // Shortened delay
+        }, 5250);
       });
 
+      // Close Door button sound sequence and "unlock"
       closeButton.addEventListener('click', () => {
-        // closeSound.play(); // Audio disabled
+        if (clickSound) clickSound.play();
+        setTimeout(() => { if (closeSound) closeSound.play(); }, 500);
+
         floorButtons.forEach(btn => (btn.disabled = false));
         closeButton.classList.remove('locked');
       });
 
-      document.addEventListener('DOMContentLoaded', () => {
-        floorButtons.forEach(btn => (btn.disabled = true));
-        closeButton.classList.add('locked');
-      });
-
       // --- Emergency Call Trigger Logic ---
       emergencyCallButton.addEventListener('click', () => {
-        const TRIGGER_URL = 'http://localhost:8080/start';
+        if (emergencySound) {
+            emergencySound.currentTime = 0;
+            emergencySound.play();
+        }
 
-        statusMessage.textContent = 'Signaling emergency call...';
+        const TRIGGER_URL = 'http://localhost:8080/start';
+        statusMessage.textContent = 'Call Initiated...';
         statusMessage.style.color = '#f0c97d';
         emergencyCallButton.classList.add('calling');
         emergencyCallButton.disabled = true;
 
         fetch(TRIGGER_URL, { mode: 'no-cors' })
-          .then(() => {
-            statusMessage.textContent = 'Call initiated. C app is now streaming.';
-            statusMessage.style.color = '#76ff03';
-          })
           .catch(error => {
-            // This error is expected because the C program is not a real web server.
             console.log('Fetch triggered the C application. The error is expected:', error);
-            statusMessage.textContent = 'Call initiated. C app is now streaming.';
-            statusMessage.style.color = '#76ff03';
           });
+      });
+      
+      // Listen for when the emergency audio has finished playing to update the text
+      if (emergencySound) {
+          emergencySound.addEventListener('ended', () => {
+              statusMessage.textContent = 'Connection Established';
+              statusMessage.style.color = '#76ff03';
+          });
+      }
+
+      // --- Page Load Logic ---
+      document.addEventListener('DOMContentLoaded', () => {
+        floorButtons.forEach(btn => (btn.disabled = true));
+        closeButton.classList.add('locked');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialFloor = urlParams.get('floor');
+
+        if (initialFloor) {
+          floorDisplay.value = initialFloor;
+        } else {
+          floorDisplay.value = '3';
+        }
       });
     </script>
 </body>
