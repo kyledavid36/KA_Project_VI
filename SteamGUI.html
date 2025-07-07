@@ -154,11 +154,14 @@
         </div>
 
         <div class="my-3">
-          <button class="control-button" id="music-button">🎵</button>
+          <button class="control-button" id="log-button">📜</button>
           <button class="control-button" id="mic-button">🎤</button>
         </div>
+
       </main>
     </div>
+
+
 
     <audio id="ding-sound" src="audio/ding.mp3" preload="auto"></audio>
     <audio id="door-open" src="audio/ElevatorOpeningFinal.mp3" preload="auto"></audio>
@@ -166,7 +169,10 @@
     <audio id="door-close" src="audio/ElevatorOpeningFinal.mp3" preload="auto"></audio>
     <audio id="floor-button" src="audio/screeching.mp3" preload="auto"></audio>
 
+
+
     <script>
+    document.addEventListener('DOMContentLoaded', () => {
       const floorDisplay = document.getElementById('current-floor');
       const openButton = document.getElementById('open-door');
       const closeButton = document.getElementById('close-door');
@@ -177,33 +183,59 @@
       const clickSound = document.getElementById('door-click');
       const closeSound = document.getElementById('door-close');
 
-      // Light up and play click sound on every button press
+      // Sound and lighting feedback for all buttons
       allButtons.forEach(button => {
         button.addEventListener('click', () => {
           if (clickSound) {
             clickSound.currentTime = 0;
             clickSound.play();
           }
-
           button.classList.add('lit-up');
           setTimeout(() => {
             button.classList.remove('lit-up');
-          }, 500); // shortened from 5000ms to 500ms
+          }, 500);
         });
       });
 
-      // When a floor button is clicked, update the display and play ding sound
+      // Floor button functionality + database update
       floorButtons.forEach(button => {
         button.addEventListener('click', () => {
-          floorDisplay.value = button.innerText;
+          const selectedFloor = button.innerText.trim();
+          floorDisplay.value = selectedFloor;
+
           if (dingSound) {
             dingSound.currentTime = 0;
             dingSound.play();
           }
+
+          console.log("🟡 Button clicked, sending floor: " + selectedFloor);
+
+          // Send request to backend
+          fetch('php/updateFloor.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'floor=' + encodeURIComponent(selectedFloor)
+          })
+          .then(response => {
+            console.log("🟢 Received response");
+            return response.json();
+          })
+          .then(data => {
+            if (data.success) {
+              console.log("✅ Floor updated in DB: " + data.floor);
+            } else {
+              console.error("❌ Floor update failed: " + (data.message || 'No error message'));
+            }
+          })
+          .catch(error => {
+            console.error("❌ Error sending request:", error);
+          });
         });
       });
 
-      // Open Door: play sound immediately, then after 5 seconds redirect to the current floor's HTML
+      // Open door logic + redirect after delay
       openButton.addEventListener('click', () => {
         if (openSound) {
           openSound.currentTime = 0;
@@ -212,7 +244,6 @@
 
         setTimeout(() => {
           const currentFloor = floorDisplay.value.trim();
-
           if (currentFloor === '1') {
             window.location.href = 'floor1GUI.html';
           } else if (currentFloor === '2') {
@@ -220,42 +251,38 @@
           } else if (currentFloor === '3') {
             window.location.href = 'floor3GUI.html';
           }
-        }, 5000); // 5-second delay
+        }, 5000);
       });
 
+      // Close door logic
       closeButton.addEventListener('click', () => {
         if (closeSound) {
           closeSound.currentTime = 0;
           closeSound.play();
         }
 
-        floorButtons.forEach(btn => (btn.disabled = false));
+        floorButtons.forEach(btn => btn.disabled = false);
         closeButton.classList.remove('locked');
-
-        // Force style reset if needed
         closeButton.style.borderColor = '';
         closeButton.style.boxShadow = '';
-
         console.log('Close Door pressed - red highlight removed');
       });
 
-      document.addEventListener('DOMContentLoaded', () => {
-        // Disable floor buttons on load
-        floorButtons.forEach(btn => (btn.disabled = true));
-        // Close Door button starts locked (red)
-        closeButton.classList.add('locked');
+      // Initial setup: disable buttons, set locked door, display floor from URL if available
+      floorButtons.forEach(btn => btn.disabled = true);
+      closeButton.classList.add('locked');
 
-        // Get the current floor from the URL parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        const initialFloor = urlParams.get('floor');
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialFloor = urlParams.get('floor');
+      floorDisplay.value = initialFloor || '3'; // default fallback
+    });
 
-        if (initialFloor) {
-          floorDisplay.value = initialFloor;
-        } else {
-          // Fallback if no floor parameter is provided (e.g., if accessed directly)
-          floorDisplay.value = '3'; // Default to floor 3 if no parameter is present
-        }
+          // Handle Log Button → Navigate to changelog page
+      const logButton = document.getElementById('log-button');
+      logButton.addEventListener('click', () => {
+        window.location.href = 'changelog.html';
       });
     </script>
+
   </body>
 </html>
