@@ -14,30 +14,31 @@
   <style>
     /* Basic styling for the commit history section */
     .commit-item {
-      border: 1px solid #e0e0e0;
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      background-color: #f9f9f9;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid #e0e0e0;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background-color: #24292e; /* Changed background color */
+    color: white; /* Ensure text is readable on the dark background */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     .commit-item p {
-      margin: 5px 0;
-      line-height: 1.5;
+    margin: 5px 0;
+    line-height: 1.5;
     }
     .commit-item strong {
-      color: #333;
+    color: #ddd; /* Adjust strong text color for better contrast */
     }
     .commit-item a {
-      color: #0366d6;
-      text-decoration: none;
+    color: #58a6ff; /* Adjust link color for better contrast */
+    text-decoration: none;
     }
     .commit-item a:hover {
-      text-decoration: underline;
+    text-decoration: underline;
     }
     #commit-history-section h2 {
-        margin-top: 3rem;
-        margin-bottom: 1.5rem;
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
     }
   </style>
 </head>
@@ -92,59 +93,67 @@
     <p>&copy; 2025 Alan Hosseinpour. All rights reserved.</p>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-            crossorigin="anonymous"></script>
-
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const username = 'kyledavid36'; // Your GitHub username
-      const repo = 'KA_Project_VI'; // Your GitHub repository name
-      const apiUrl = `https://api.github.com/repos/${username}/${repo}/commits`;
-      const commitHistoryDiv = document.getElementById('commit-history');
+  document.addEventListener('DOMContentLoaded', function () {
+    const username = 'kyledavid36'; // Your GitHub username
+    const repo = 'KA_Project_VI'; // Your GitHub repository name
+    const branchName = 'W10'; // The specific branch you want to see
+    const commitHistoryDiv = document.getElementById('commit-history');
 
-      fetch(apiUrl)
-          .then(response => {
-              if (!response.ok) {
-                  // If the response is not OK (e.g., 403 Forbidden for rate limit, 404 Not Found)
-                  throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
-              }
-              return response.json();
-          })
-          .then(data => {
-              if (data.length === 0) {
-                  commitHistoryDiv.innerHTML = '<p>No commits found for this repository.</p>';
-                  return;
-              }
-              commitHistoryDiv.innerHTML = ''; // Clear "Loading" message
+    // Dynamically set the date range for the last 30 days
+    const untilDate = new Date(); // today
+    const sinceDate = new Date(); // will be modified to 30 days ago
+    sinceDate.setDate(untilDate.getDate() - 30);
 
-              // Display only the latest 5 commits for brevity
-              const commitsToDisplay = data.slice(0, 5);
+    // Convert dates to the ISO format required by the GitHub API (e.g., "2025-07-10T16:33:39.000Z")
+    const untilDateString = untilDate.toISOString();
+    const sinceDateString = sinceDate.toISOString();
 
-              commitsToDisplay.forEach(commit => {
-                  const commitDiv = document.createElement('div');
-                  commitDiv.classList.add('commit-item');
+    // Update the API URL to include the branch (sha) and dynamic date parameters
+    const apiUrl = `https://api.github.com/repos/${username}/${repo}/commits?sha=${branchName}&since=${sinceDateString}&until=${untilDateString}`;
 
-                  const sha = commit.sha.substring(0, 7); // Shorten SHA for display
-                  const author = commit.commit.author ? commit.commit.author.name : 'Unknown Author';
-                  const date = commit.commit.author ? new Date(commit.commit.author.date).toLocaleString() : 'Unknown Date';
-                  const message = commit.commit.message.split('\n')[0]; // Take only the first line of the commit message
-                  const commitUrl = commit.html_url; // Link to the commit on GitHub
+    fetch(apiUrl)
+      .then(response => {
+        if (!response.ok) {
+          // Provide a more specific error for a branch not found
+          if (response.status === 404 || response.status === 422) {
+             throw new Error(`Could not find branch '${branchName}' or it has no commits in the last month.`);
+          }
+          throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.length === 0) {
+          commitHistoryDiv.innerHTML = `<p>No recent commits found in the '${branchName}' branch for the last month.</p>`;
+          return;
+        }
+        commitHistoryDiv.innerHTML = ''; // Clear "Loading" message
 
-                  commitDiv.innerHTML = `
-                      <p><strong>Commit:</strong> <a href="${commitUrl}" target="_blank">${sha}</a></p>
-                      <p><strong>Author:</strong> ${author}</p>
-                      <p><strong>Date:</strong> ${date}</p>
-                      <p><strong>Message:</strong> ${message}</p>
-                  `;
-                  commitHistoryDiv.appendChild(commitDiv);
-              });
-          })
-          .catch(error => {
-              console.error('Error fetching commit history:', error);
-              commitHistoryDiv.innerHTML = `<p>Error loading commit history: ${error.message}. Please try again later or check the console.</p>`;
-          });
-    });
-  </script>
+        data.forEach(commit => {
+          const commitDiv = document.createElement('div');
+          commitDiv.classList.add('commit-item');
+
+          const sha = commit.sha.substring(0, 7);
+          const author = commit.commit.author ? commit.commit.author.name : 'Unknown Author';
+          const date = commit.commit.author ? new Date(commit.commit.author.date).toLocaleString() : 'Unknown Date';
+          const message = commit.commit.message.split('\n')[0];
+          const commitUrl = commit.html_url;
+
+          commitDiv.innerHTML = `
+            <p><strong>Commit:</strong> <a href="${commitUrl}" target="_blank">${sha}</a></p>
+            <p><strong>Author:</strong> ${author}</p>
+            <p><strong>Date:</strong> ${date}</p>
+            <p><strong>Message:</strong> ${message}</p>
+          `;
+          commitHistoryDiv.appendChild(commitDiv);
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching commit history:', error);
+        commitHistoryDiv.innerHTML = `<p>Error loading commit history: ${error.message}</p>`;
+      });
+  });
+</script>
 </body>
 </html>
