@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Elevator GUI</title>
-    <!-- Using Bootstrap as requested in the design -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -17,11 +16,11 @@
       /* Your provided CSS for the Steampunk theme */
       .control-button.locked {
         border-color: red !important;
-        box-shadow: 0 0 15px 5px red, inset 0 0 10px #660000 !important;
+        /* box-shadow removed */
       }
 
       .lit-up {
-        box-shadow: 0 0 25px 10px #f0c97d, inset 0 0 20px #fff !important;
+        /* box-shadow removed */
         transform: scale(1.1) !important;
         transition: all 0.3s ease;
       }
@@ -29,7 +28,7 @@
       .floor-button:hover:not(.lit-up),
       .control-button:hover:not(.lit-up) {
         transform: scale(1.05);
-        box-shadow: 0 0 20px #f0c97d, inset 0 0 10px #000;
+        /* box-shadow removed */
       }
 
       body {
@@ -37,6 +36,54 @@
         background-size: cover;
         font-family: 'Cinzel', serif;
         color: #f0e6d2;
+      }
+
+      /* ** CSS FOR LAYOUT ** */
+      .main-container {
+        display: flex;
+        flex-wrap: wrap; 
+        justify-content: center;
+        align-items: flex-start;
+        gap: 50px; 
+      }
+      
+      .left-panel, .right-panel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .right-panel {
+          border: 4px double rgba(0,0,0,0.0);
+          border-radius: 15px;
+          padding: 20px;
+          background-color: rgba(0,0,0,0.0);
+      }
+      
+      .control-grid {
+          display: grid;
+          grid-template-columns: repeat(2, auto);
+          gap: 15px;
+      }
+      
+      #function-display {
+        background-color: black;
+        color: #f0c97d;
+        border: 2px solid #4b3621;
+        border-radius: 10px;
+        padding: 10px;
+        min-height: 48px;
+        width: 100%; 
+        margin-bottom: 20px;
+        text-align: center;
+        font-size: 16px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
       }
 
       #current-floor {
@@ -62,25 +109,25 @@
         color: #fff;
         border: 4px solid #4b3621;
         border-radius: 12px;
-        box-shadow: 0 0 10px #8b6f47, inset 0 0 5px #000;
+        box-shadow: none; /* Shadow removed */
         display: block;
         cursor: pointer;
         transition: all 0.3s ease;
       }
 
       .control-button {
-        font-size: 20px;
+        font-size: 28px; /* Adjusted for emoji */
         white-space: nowrap;
         line-height: 1;
         text-align: center;
         vertical-align: middle;
-        margin: 10px;
+        margin: 0; 
         padding: 15px;
         background: radial-gradient(circle at 30% 30%, #c4a35a, #7a5c1d);
         color: #fff;
         border: 4px solid #4b3621;
         border-radius: 50%;
-        box-shadow: 0 0 10px #8b6f47, inset 0 0 5px #000;
+        box-shadow: none; /* Shadow removed */
         width: 80px;
         height: 80px;
         cursor: pointer;
@@ -93,47 +140,26 @@
       #emergency-call-button {
           background: radial-gradient(circle, #b71c1c, #7f0000);
           border-color: #660000;
-          padding: 0; 
-      }
-
-      .emergency-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 75%;
-        object-fit: cover;
-        border: 2px solid #4b3621;
-      }
-
-      #emergency-call-button.calling {
-          animation: pulse 1.5s infinite;
       }
       
-      #mic-button.listening {
-          border-color: #00ff00 !important;
-          box-shadow: 0 0 15px 5px #00ff00, inset 0 0 10px #006600 !important;
-          animation: pulse-green 1.5s infinite;
-      }
+      /* .emergency-icon class no longer needed and has been removed */
 
-      @keyframes pulse {
-          0% { box-shadow: 0 0 15px 5px #ff4d4d, inset 0 0 10px #b71c1c; }
-          50% { box-shadow: 0 0 25px 10px #ff8a8a, inset 0 0 15px #b71c1c; }
-          100% { box-shadow: 0 0 15px 5px #ff4d4d, inset 0 0 10px #b71c1c; }
+      #emergency-call-button.calling,
+      #mic-button.listening {
+          animation: pulse-green 1.5s infinite;
       }
       
       @keyframes pulse-green {
-          0% { box-shadow: 0 0 15px 5px #00ff00, inset 0 0 10px #006600; }
-          50% { box-shadow: 0 0 25px 10px #8aff8a, inset 0 0 15px #006600; }
-          100% { box-shadow: 0 0 15px 5px #00ff00, inset 0 0 10px #006600; }
-      }
-
-      #status-message {
-          min-height: 24px;
-          transition: color 0.3s ease;
+          /* Animation now only affects border color, not shadow */
+          0% { border-color: #00ff00; }
+          50% { border-color: #8aff8a; }
+          100% { border-color: #00ff00; }
       }
 
       h1 {
         text-align: center;
         margin-top: 30px;
+        margin-bottom: 30px;
         font-size: 48px;
         text-shadow: 2px 2px #000;
       }
@@ -148,34 +174,38 @@
     <div class="container">
       <main>
         <h1>Elevator Control</h1>
-        <div class="mb-3">
-          <label for="current-floor" class="form-label"></label><br />
-          <input type="text" id="current-floor" readonly value="3" />
+        
+        <div class="main-container">
+            
+            <div class="left-panel">
+                <div class="mb-3">
+                    <label for="current-floor" class="form-label"></label><br />
+                    <input type="text" id="current-floor" readonly value="3" />
+                </div>
+                <div>
+                    <button class="floor-button">3</button>
+                    <button class="floor-button">2</button>
+                    <button class="floor-button">1</button>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div id="function-display"></div>
+                <div class="control-grid">
+                    <button class="control-button" id="open-door">≪≫</button>
+                    <button class="control-button locked" id="close-door">≫≪</button>
+                    <button class="control-button" id="maintenance-button" title="Maintenance">⚙️</button>
+                    <button class="control-button" id="log-button" title="Log">📜</button>
+                    <button class="control-button" id="mic-button" title="Sabbath">🎤</button>
+                    <button class="control-button" id="emergency-call-button" title="Emergency">📞</button>
+                </div>
+            </div>
+
         </div>
 
-        <div>
-          <button class="floor-button">3</button>
-          <button class="floor-button">2</button>
-          <button class="floor-button">1</button>
-        </div>
-
-        <div class="my-3">
-          <button class="control-button" id="open-door">≪≫</button>
-          <button class="control-button locked" id="close-door">≫≪</button>
-        </div>
-
-        <div class="my-3 border-t-2 border-dashed border-secondary pt-3">
-            <button class="control-button" id="log-button">📜</button>
-            <button class="control-button" id="mic-button">🎤</button>
-            <button class="control-button" id="emergency-call-button">
-                <img src="Images/basicphone.png" class="emergency-icon" alt="Emergency Call" />
-            </button>
-            <p id="status-message" class="mt-2"></p>
-        </div>
       </main>
     </div>
 
-    <!-- All audio elements are now included -->
     <audio id="ding-sound" src="audio/ding.mp3" preload="auto"></audio>
     <audio id="door-open" src="audio/ElevatorOpeningFinal.mp3" preload="auto"></audio>
     <audio id="door-click" src="audio/ElevatorButtonFinal.mp3" preload="auto"></audio>
@@ -185,20 +215,21 @@
     <audio id="floor1-sound" src="audio/Floor 1.mp3" preload="auto"></audio>
     <audio id="floor2-sound" src="audio/Floor 2.mp3" preload="auto"></audio>
     <audio id="floor3-sound" src="audio/Floor 3.mp3" preload="auto"></audio>
+    <audio id="shaft-exit-sound" src="audio/shaftExit.mp3" preload="auto"></audio>
 
     <script>
-      // --- Element Selectors ---
+      // The entire script remains the same as before.
       const floorDisplay = document.getElementById('current-floor');
       const openButton = document.getElementById('open-door');
       const closeButton = document.getElementById('close-door');
       const logButton = document.getElementById('log-button');
       const micButton = document.getElementById('mic-button');
+      const maintenanceButton = document.getElementById('maintenance-button');
       const allButtons = document.querySelectorAll('button');
       const floorButtons = document.querySelectorAll('.floor-button');
       const emergencyCallButton = document.getElementById('emergency-call-button');
-      const statusMessage = document.getElementById('status-message');
+      const functionDisplay = document.getElementById('function-display');
       
-      // Audio element selectors
       const dingSound = document.getElementById('ding-sound');
       const openSound = document.getElementById('door-open');
       const clickSound = document.getElementById('door-click');
@@ -208,12 +239,24 @@
       const floor1Sound = document.getElementById('floor1-sound');
       const floor2Sound = document.getElementById('floor2-sound');
       const floor3Sound = document.getElementById('floor3-sound');
+      const shaftExitSound = document.getElementById('shaft-exit-sound');
 
-      // --- Elevator Logic ---
+      const urlParams = new URLSearchParams(window.location.search);
+      const isMaintenanceMode = urlParams.get('mode') === 'maintenance';
+
       allButtons.forEach(button => {
         if (button.id === 'emergency-call-button' || button.id === 'mic-button') return;
+        
         button.addEventListener('click', () => {
-          if (clickSound) { clickSound.currentTime = 0; clickSound.play(); }
+          const isDoorButton = button.id === 'open-door' || button.id === 'close-door';
+          
+          if (!isMaintenanceMode || !isDoorButton) {
+            if (clickSound) { 
+              clickSound.currentTime = 0; 
+              clickSound.play(); 
+            }
+          }
+          
           button.classList.add('lit-up');
           setTimeout(() => { button.classList.remove('lit-up'); }, 500);
         });
@@ -242,43 +285,70 @@
       });
 
       openButton.addEventListener('click', () => {
-        setTimeout(() => { if (openSound) openSound.play(); }, 1500);
-        setTimeout(() => {
-          const currentFloor = floorDisplay.value.trim();
-          if (currentFloor === '1') window.location.href = 'floor1GUI.html';
-          else if (currentFloor === '2') window.location.href = 'floor2GUI.html';
-          else if (currentFloor === '3') window.location.href = 'floor3GUI.html';
-        }, 5250);
+        if (isMaintenanceMode) {
+            if (shaftExitSound) {
+                shaftExitSound.currentTime = 0;
+                shaftExitSound.play();
+            }
+        } else {
+            setTimeout(() => { 
+                if (openSound) {
+                    openSound.currentTime = 0;
+                    openSound.play();
+                }
+            }, 1500);
+            
+            setTimeout(() => {
+              const currentFloor = floorDisplay.value.trim();
+              if (currentFloor === '1') window.location.href = 'floor1GUI.html';
+              else if (currentFloor === '2') window.location.href = 'floor2GUI.html';
+              else if (currentFloor === '3') window.location.href = 'floor3GUI.html';
+            }, 5250);
+        }
       });
 
       closeButton.addEventListener('click', () => {
-        setTimeout(() => { if (closeSound) closeSound.play(); }, 500);
-        floorButtons.forEach(btn => (btn.disabled = false));
-        closeButton.classList.remove('locked');
+        if (isMaintenanceMode) {
+            if (shaftExitSound) {
+                shaftExitSound.currentTime = 0;
+                shaftExitSound.play();
+            }
+        } else {
+            setTimeout(() => { 
+                if (closeSound) {
+                    closeSound.currentTime = 0;
+                    closeSound.play();
+                }
+            }, 500);
+            floorButtons.forEach(btn => (btn.disabled = false));
+            closeButton.classList.remove('locked');
+        }
       });
 
-      // --- Special Function Buttons ---
+      maintenanceButton.addEventListener('click', () => {
+          if (isMaintenanceMode) {
+              functionDisplay.textContent = 'EXITING...';
+              setTimeout(() => {
+                  window.location.href = 'alsaSteamGUI.html';
+              }, 1000);
+          } else {
+              window.location.href = 'maintenance.html';
+          }
+      });
+
       logButton.addEventListener('click', () => {
-        if (clickSound) clickSound.play();
         window.location.href = 'changelog.html';
       });
 
       micButton.addEventListener('click', () => {
-        if (clickSound) clickSound.play();
-        const TRIGGER_URL = 'http://localhost:8081/start_sabbath'; // Use a new port
-        statusMessage.textContent = 'Activating Sabbath Mode...';
-        statusMessage.style.color = '#f0c97d';
+        const TRIGGER_URL = 'http://localhost:8081/start_sabbath';
+        functionDisplay.textContent = 'SABBATH ACTIVE';
         micButton.classList.add('listening');
         micButton.disabled = true;
         fetch(TRIGGER_URL, { mode: 'no-cors' })
-            .then(() => {
-                statusMessage.textContent = 'Sabbath Mode Active: Listening...';
-                statusMessage.style.color = '#76ff03';
-            })
             .catch(error => {
                 console.log('Fetch triggered the Sabbath client. The error is expected:', error);
-                statusMessage.textContent = 'Sabbath Mode Active: Listening...';
-                statusMessage.style.color = '#76ff03';
+                functionDisplay.style.color = '#76ff03'; 
             });
       });
 
@@ -288,8 +358,7 @@
             emergencySound.play();
         }
         const TRIGGER_URL = 'http://localhost:8080/start_emergency';
-        statusMessage.textContent = 'Call Initiated...';
-        statusMessage.style.color = '#f0c97d';
+        functionDisplay.textContent = 'CALLING...';
         emergencyCallButton.classList.add('calling');
         emergencyCallButton.disabled = true;
         fetch(TRIGGER_URL, { mode: 'no-cors' })
@@ -298,16 +367,35 @@
       
       if (emergencySound) {
           emergencySound.addEventListener('ended', () => {
-              statusMessage.textContent = 'Connection Established';
-              statusMessage.style.color = '#76ff03';
+              functionDisplay.textContent = 'CALL ESTABLISHED';
+              functionDisplay.style.color = '#76ff03'; 
           });
       }
 
-      // --- Page Load Logic ---
       document.addEventListener('DOMContentLoaded', () => {
-        floorButtons.forEach(btn => (btn.disabled = true));
-        closeButton.classList.add('locked');
-        const urlParams = new URLSearchParams(window.location.search);
+        if (isMaintenanceMode) {
+            console.log("🛠️ Maintenance Mode Active");
+            functionDisplay.textContent = 'MAINTENANCE MODE';
+            
+            allButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.style.cursor = 'not-allowed';
+            });
+
+            openButton.disabled = false;
+            closeButton.disabled = false;
+            maintenanceButton.disabled = false;
+            
+            openButton.style.cursor = 'pointer';
+            closeButton.style.cursor = 'pointer';
+            maintenanceButton.style.cursor = 'pointer';
+
+            closeButton.classList.remove('locked');
+        } else {
+            floorButtons.forEach(btn => (btn.disabled = true));
+            closeButton.classList.add('locked');
+        }
+
         const initialFloor = urlParams.get('floor');
         if (initialFloor) {
           floorDisplay.value = initialFloor;
