@@ -89,10 +89,10 @@
       
       /* A specific style for the right-hand control panel */
       .right-panel {
-          border: 4px double #4b3621;  /* A dark, double-line border */
+          border: 4px double rgba(0,0,0,0,0); ;  /* A dark, double-line border */
           border-radius: 15px;       /* Rounded corners for the panel */
           padding: 20px;             /* Space between the border and the controls */
-          background-color: rgba(0,0,0,0.2); /* A semi-transparent black background */
+          background-color: rgba(0,0,0,0,0); /* A semi-transparent black background */
       }
       
       /* A grid container for all the circular control buttons */
@@ -112,7 +112,7 @@
       /* Styles the status display above the control buttons */
       #function-display {
         background-color: black;
-        color: #f0c97d; /* A gold color to match the theme */
+        color: red; /* A gold color to match the theme */
         border: 2px solid #4b3621; /* A dark brown border */
         border-radius: 10px;
         padding: 10px;
@@ -485,7 +485,7 @@
             closeButton.classList.add('locked');
         }
 
-        // Set the initial floor number based on URL param or default to 3.
+        // Set the initial floor number based on URL param or default to 1.
         const initialFloor = urlParams.get('floor');
         if (initialFloor) {
           floorDisplay.value = initialFloor;
