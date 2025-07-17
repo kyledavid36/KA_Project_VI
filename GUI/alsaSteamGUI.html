@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Elevator GUI</title>
+
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -12,80 +13,124 @@
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap"
       rel="stylesheet"
     />
+
     <style>
-      /* Your provided CSS for the Steampunk theme */
+      /* ==========================================================================
+         BUTTON STATE AND INTERACTION STYLES
+         --------------------------------------------------------------------------
+         These rules define how buttons look in different states (locked, lit-up)
+         and how they react to user interaction (hover).
+         ========================================================================== */
+      
+      /* Style for the "Close Door" button when it is in a locked state */
       .control-button.locked {
-        border-color: red !important;
-        /* box-shadow removed */
+        border-color: red !important; /* A red border to indicate it's locked */
       }
 
+      /* Style for any button when it's actively pressed or "lit up" */
       .lit-up {
-        /* box-shadow removed */
-        transform: scale(1.1) !important;
+        transform: scale(1.1) !important; /* Makes the button slightly larger */
         transition: all 0.3s ease;
       }
 
+      /* Style for buttons when the user's mouse hovers over them */
       .floor-button:hover:not(.lit-up),
       .control-button:hover:not(.lit-up) {
-        transform: scale(1.05);
-        /* box-shadow removed */
+        transform: scale(1.05); /* Slightly enlarges the button on hover */
       }
+
+      /* ==========================================================================
+         GENERAL PAGE AND THEME STYLES
+         ========================================================================== */
 
       body {
+        /* Sets the metallic background image for the entire page */
         background: url('Images/metal.jpg') no-repeat center center fixed;
         background-size: cover;
+        /* Sets the primary font for the page to the "Cinzel" font */
         font-family: 'Cinzel', serif;
-        color: #f0e6d2;
+        color: #f0e6d2; /* A default light text color that fits the theme */
+      }
+      
+      h1 {
+        text-align: center;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        font-size: 48px;
+        text-shadow: 2px 2px #000; /* A simple shadow for depth */
       }
 
-      /* ** CSS FOR LAYOUT ** */
+      main {
+        text-align: center;
+        margin-top: 40px;
+      }
+
+      /* ==========================================================================
+         LAYOUT CONTAINER STYLES
+         --------------------------------------------------------------------------
+         These rules define the main two-panel layout of the GUI.
+         ========================================================================== */
+      
+      /* The primary container that holds the left and right panels */
       .main-container {
-        display: flex;
-        flex-wrap: wrap; 
-        justify-content: center;
-        align-items: flex-start;
-        gap: 50px; 
+        display: flex; /* Uses Flexbox for easy alignment */
+        flex-wrap: wrap; /* Allows panels to stack on very narrow screens */
+        justify-content: center; /* Centers the panels horizontally */
+        align-items: flex-start; /* Aligns the tops of the panels */
+        gap: 50px; /* Creates a 50px space between the two panels */
       }
       
+      /* A shared rule for both columns in the layout */
       .left-panel, .right-panel {
         display: flex;
-        flex-direction: column;
-        align-items: center;
+        flex-direction: column; /* Stacks content vertically inside each panel */
+        align-items: center;   /* Centers the content horizontally within each panel */
       }
       
+      /* A specific style for the right-hand control panel */
       .right-panel {
-          border: 4px double rgba(0,0,0,0.0);
-          border-radius: 15px;
-          padding: 20px;
-          background-color: rgba(0,0,0,0.0);
+          border: 4px double #4b3621;  /* A dark, double-line border */
+          border-radius: 15px;       /* Rounded corners for the panel */
+          padding: 20px;             /* Space between the border and the controls */
+          background-color: rgba(0,0,0,0.2); /* A semi-transparent black background */
       }
       
+      /* A grid container for all the circular control buttons */
       .control-grid {
           display: grid;
-          grid-template-columns: repeat(2, auto);
-          gap: 15px;
+          grid-template-columns: repeat(2, auto); /* Creates a 2-column grid */
+          gap: 15px; /* Space between the buttons in the grid */
       }
       
+      /* ==========================================================================
+         COMPONENT STYLES
+         --------------------------------------------------------------------------
+         These rules style the individual components of the GUI like displays
+         and buttons, giving them their unique steampunk appearance.
+         ========================================================================== */
+
+      /* Styles the status display above the control buttons */
       #function-display {
         background-color: black;
-        color: #f0c97d;
-        border: 2px solid #4b3621;
+        color: #f0c97d; /* A gold color to match the theme */
+        border: 2px solid #4b3621; /* A dark brown border */
         border-radius: 10px;
         padding: 10px;
         min-height: 48px;
-        width: 100%; 
+        width: 100%; /* Makes the display as wide as its container panel */
         margin-bottom: 20px;
         text-align: center;
         font-size: 16px;
         font-weight: bold;
-        text-transform: uppercase;
+        text-transform: uppercase; /* Makes text look like a formal status message */
         letter-spacing: 1.5px;
-        display: flex;
+        display: flex; /* Used to vertically center the text inside */
         align-items: center;
         justify-content: center;
         transition: all 0.3s ease;
       }
 
+      /* Styles the floor indicator display at the top left */
       #current-floor {
         background-color: black;
         color: red;
@@ -97,26 +142,28 @@
         max-width: 80px;
         margin: 0 auto 20px;
         text-align: center;
-        text-shadow: 1px 1px #440000;
+        text-shadow: 1px 1px #440000; /* Dark red shadow for a glowing effect */
       }
 
+      /* Styles the rectangular floor selection buttons (1, 2, 3) */
       .floor-button {
         width: 100px;
         font-size: 24px;
         margin: 10px auto;
         padding: 15px;
-        background: radial-gradient(circle at 30% 30%, #c4a35a, #7a5c1d);
+        background: radial-gradient(circle at 30% 30%, #c4a35a, #7a5c1d); /* Gives a metallic, brassy look */
         color: #fff;
         border: 4px solid #4b3621;
-        border-radius: 12px;
-        box-shadow: none; /* Shadow removed */
+        border-radius: 12px; /* Rectangular with rounded corners */
+        box-shadow: none; /* User requested shadows to be removed */
         display: block;
         cursor: pointer;
         transition: all 0.3s ease;
       }
 
+      /* Styles the circular control buttons (Open, Close, Maintenance, etc.) */
       .control-button {
-        font-size: 28px; /* Adjusted for emoji */
+        font-size: 28px; /* Adjusted to make emojis render clearly */
         white-space: nowrap;
         line-height: 1;
         text-align: center;
@@ -126,47 +173,39 @@
         background: radial-gradient(circle at 30% 30%, #c4a35a, #7a5c1d);
         color: #fff;
         border: 4px solid #4b3621;
-        border-radius: 50%;
-        box-shadow: none; /* Shadow removed */
+        border-radius: 50%; /* This makes the button perfectly round */
+        box-shadow: none; /* User requested shadows to be removed */
         width: 80px;
         height: 80px;
         cursor: pointer;
-        display: inline-flex;
+        display: inline-flex; /* Flexbox is used to perfectly center the icon/emoji inside */
         align-items: center;
         justify-content: center;
         transition: all 0.3s ease;
       }
       
+      /* Specific style for the emergency call button to make it red */
       #emergency-call-button {
           background: radial-gradient(circle, #b71c1c, #7f0000);
           border-color: #660000;
       }
       
-      /* .emergency-icon class no longer needed and has been removed */
+      /* ==========================================================================
+         ANIMATION STYLES
+         ========================================================================== */
 
+      /* Class applied to buttons that should have a pulsing animation */
       #emergency-call-button.calling,
       #mic-button.listening {
           animation: pulse-green 1.5s infinite;
       }
       
+      /* Defines the "pulse-green" animation */
       @keyframes pulse-green {
-          /* Animation now only affects border color, not shadow */
+          /* The animation now only pulses the border color, as shadows were removed */
           0% { border-color: #00ff00; }
           50% { border-color: #8aff8a; }
           100% { border-color: #00ff00; }
-      }
-
-      h1 {
-        text-align: center;
-        margin-top: 30px;
-        margin-bottom: 30px;
-        font-size: 48px;
-        text-shadow: 2px 2px #000;
-      }
-
-      main {
-        text-align: center;
-        margin-top: 40px;
       }
     </style>
 </head>
@@ -218,7 +257,14 @@
     <audio id="shaft-exit-sound" src="audio/shaftExit.mp3" preload="auto"></audio>
 
     <script>
-      // The entire script remains the same as before.
+      /* ==========================================================================
+         DOM ELEMENT CACHING & GLOBAL STATE
+         --------------------------------------------------------------------------
+         This section gets references to all the important HTML elements and sets
+         up global variables that control the application's state.
+         ========================================================================== */
+
+      // --- Get references to all interactive elements on the page ---
       const floorDisplay = document.getElementById('current-floor');
       const openButton = document.getElementById('open-door');
       const closeButton = document.getElementById('close-door');
@@ -230,6 +276,7 @@
       const emergencyCallButton = document.getElementById('emergency-call-button');
       const functionDisplay = document.getElementById('function-display');
       
+      // --- Get references to all the audio elements for sound effects ---
       const dingSound = document.getElementById('ding-sound');
       const openSound = document.getElementById('door-open');
       const clickSound = document.getElementById('door-click');
@@ -241,15 +288,31 @@
       const floor3Sound = document.getElementById('floor3-sound');
       const shaftExitSound = document.getElementById('shaft-exit-sound');
 
+      // --- Determine application state from URL parameters ---
+      // This allows linking to the page in a specific mode.
       const urlParams = new URLSearchParams(window.location.search);
+      // INPUT: Checks if the URL is "alsaSteamGUI.html?mode=maintenance"
       const isMaintenanceMode = urlParams.get('mode') === 'maintenance';
 
+
+      /* ==========================================================================
+         MAIN EVENT LISTENER LOGIC
+         --------------------------------------------------------------------------
+         This section assigns functions to run when users interact with the GUI,
+         such as clicking buttons.
+         ========================================================================== */
+
+      // --- Generic Listener for All Buttons ---
+      // This loop adds a basic visual "lit-up" effect and a click sound to most buttons.
       allButtons.forEach(button => {
+        // Exclude buttons that have their own unique sound/visual logic
         if (button.id === 'emergency-call-button' || button.id === 'mic-button') return;
         
         button.addEventListener('click', () => {
           const isDoorButton = button.id === 'open-door' || button.id === 'close-door';
           
+          // Logic to prevent the generic click sound from playing on top of
+          // another sound in maintenance mode.
           if (!isMaintenanceMode || !isDoorButton) {
             if (clickSound) { 
               clickSound.currentTime = 0; 
@@ -257,15 +320,23 @@
             }
           }
           
+          // OUTPUT: Add 'lit-up' class for visual feedback, then remove it after 500ms.
           button.classList.add('lit-up');
           setTimeout(() => { button.classList.remove('lit-up'); }, 500);
         });
       });
 
+      // --- Listener for Floor Selection Buttons ---
       floorButtons.forEach(button => {
         button.addEventListener('click', () => {
           const floorNumber = button.innerText;
+          // OUTPUT: Update the floor display visually.
           floorDisplay.value = floorNumber;
+
+          // OUTPUT: Send data to a PHP backend script.
+          // This is an external dependency.
+          // POTENTIAL FAILURE: This 'fetch' will fail if the server is not running
+          // or if the 'php/updateFloor.php' file does not exist.
           fetch('php/updateFloor.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -274,6 +345,8 @@
             if (data.success) console.log("✅ Floor updated in DB: " + data.floor);
             else console.error("❌ Floor update failed: " + (data.message || 'No error message'));
           }).catch(error => console.error("❌ Error sending request:", error));
+          
+          // OUTPUT: Play a sequence of sounds to simulate elevator travel.
           setTimeout(() => { if (screechSound) { screechSound.currentTime = 0; screechSound.play(); } }, 200);
           setTimeout(() => { if (dingSound) { dingSound.currentTime = 0; dingSound.play(); } }, 4800);
           setTimeout(() => {
@@ -284,20 +357,18 @@
         });
       });
 
+      // --- Listeners for Door Control Buttons ---
       openButton.addEventListener('click', () => {
+        // This button has different behavior based on the application mode.
         if (isMaintenanceMode) {
+            // OUTPUT (Maintenance): Play a specific sound and do nothing else.
             if (shaftExitSound) {
                 shaftExitSound.currentTime = 0;
                 shaftExitSound.play();
             }
         } else {
-            setTimeout(() => { 
-                if (openSound) {
-                    openSound.currentTime = 0;
-                    openSound.play();
-                }
-            }, 1500);
-            
+            // OUTPUT (Normal): Play the standard opening sound and redirect to a new page.
+            setTimeout(() => { if (openSound) { openSound.currentTime = 0; openSound.play(); } }, 1500);
             setTimeout(() => {
               const currentFloor = floorDisplay.value.trim();
               if (currentFloor === '1') window.location.href = 'floor1GUI.html';
@@ -314,33 +385,37 @@
                 shaftExitSound.play();
             }
         } else {
-            setTimeout(() => { 
-                if (closeSound) {
-                    closeSound.currentTime = 0;
-                    closeSound.play();
-                }
-            }, 500);
+            // OUTPUT (Normal): Play sound and re-enable the floor buttons.
+            setTimeout(() => { if (closeSound) { closeSound.currentTime = 0; closeSound.play(); } }, 500);
             floorButtons.forEach(btn => (btn.disabled = false));
             closeButton.classList.remove('locked');
         }
       });
 
+      // --- Listeners for Special Function Buttons ---
       maintenanceButton.addEventListener('click', () => {
+          // This button acts as a toggle for entering/exiting maintenance mode.
           if (isMaintenanceMode) {
+              // OUTPUT: If already in maintenance, redirect to the normal page to exit.
               functionDisplay.textContent = 'EXITING...';
               setTimeout(() => {
                   window.location.href = 'alsaSteamGUI.html';
               }, 1000);
           } else {
+              // OUTPUT: If in normal mode, go to the maintenance keypad page.
               window.location.href = 'maintenance.html';
           }
       });
 
       logButton.addEventListener('click', () => {
+        // OUTPUT: Simple navigation to the changelog page.
         window.location.href = 'changelog.html';
       });
 
       micButton.addEventListener('click', () => {
+        // OUTPUT: Triggers a local helper application for "Sabbath Mode".
+        // POTENTIAL FAILURE: This requires a separate program to be running and
+        // listening on localhost:8081. The fetch will fail otherwise.
         const TRIGGER_URL = 'http://localhost:8081/start_sabbath';
         functionDisplay.textContent = 'SABBATH ACTIVE';
         micButton.classList.add('listening');
@@ -353,6 +428,9 @@
       });
 
       emergencyCallButton.addEventListener('click', () => {
+        // OUTPUT: Plays the emergency sound and triggers the 'alsaClient' C program.
+        // POTENTIAL FAILURE: Requires the compiled 'alsaClient' program to be running
+        // and listening on localhost:8080.
         if (emergencySound) {
             emergencySound.currentTime = 0;
             emergencySound.play();
@@ -365,6 +443,7 @@
           .catch(error => console.log('Fetch triggered the Emergency client. The error is expected:', error));
       });
       
+      // Listener for when the emergency sound finishes playing.
       if (emergencySound) {
           emergencySound.addEventListener('ended', () => {
               functionDisplay.textContent = 'CALL ESTABLISHED';
@@ -372,8 +451,16 @@
           });
       }
 
+      /* ==========================================================================
+         PAGE INITIALIZATION LOGIC
+         --------------------------------------------------------------------------
+         This code runs once the entire HTML document has been loaded. It sets up
+         the initial state of the GUI based on the URL parameters.
+         ========================================================================== */
       document.addEventListener('DOMContentLoaded', () => {
+        // INPUT: The value of 'isMaintenanceMode' determined from the URL.
         if (isMaintenanceMode) {
+            // OUTPUT (Maintenance): Display maintenance message and disable most buttons.
             console.log("🛠️ Maintenance Mode Active");
             functionDisplay.textContent = 'MAINTENANCE MODE';
             
@@ -382,6 +469,7 @@
                 btn.style.cursor = 'not-allowed';
             });
 
+            // Re-enable only the necessary controls for this mode.
             openButton.disabled = false;
             closeButton.disabled = false;
             maintenanceButton.disabled = false;
@@ -392,15 +480,17 @@
 
             closeButton.classList.remove('locked');
         } else {
+            // OUTPUT (Normal): Disable floor buttons until the "Close Door" button is pressed.
             floorButtons.forEach(btn => (btn.disabled = true));
             closeButton.classList.add('locked');
         }
 
+        // Set the initial floor number based on URL param or default to 3.
         const initialFloor = urlParams.get('floor');
         if (initialFloor) {
           floorDisplay.value = initialFloor;
         } else {
-          floorDisplay.value = '3';
+          floorDisplay.value = '1';
         }
       });
     </script>
