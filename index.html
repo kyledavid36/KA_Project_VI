@@ -1,46 +1,101 @@
 <!DOCTYPE html>
+<!-- Declares this is an HTML5 document -->
 <html lang="en">
 <head>
+  <!-- Meta tag for proper character encoding -->
   <meta charset="UTF-8" />
+  
+  <!-- Responsive layout for mobile and desktop -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Page title that appears in browser tab -->
   <title>KA_Project_VI - Home</title>
+
+  <!-- Meta description for SEO / search engines -->
   <meta name="description" content="Home page for Project VI - Elevator Control System developed by Alan and Kyle at Conestoga College." />
+
+  <!-- Link to custom stylesheet for site-specific styles -->
   <link rel="stylesheet" href="css/site_style.css" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <!-- Link to Bootstrap 5 CSS from CDN for layout, responsiveness, and styling -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
+        crossorigin="anonymous">
 </head>
+
 <body>
+<!-- Bootstrap container with vertical spacing -->
 <div class="container py-4">
+
+  <!-- === HEADER SECTION === -->
   <header class="mb-4 text-center">
-    <h1 class="display-5">🚀 Welcome to our <span class="text-primary">Project VI</span> Home Page</h1>
-    <p class="text-center">This is our team’s official project portal for the Elevator Control System<br>
-      part of Software Engineering's Project VI.</p>
+    <!-- Project title -->
+    <h1 class="display-5">
+      🚀 Welcome to our <span class="text-primary">Project VI</span> Home Page
+    </h1>
+
+    <!-- Short project description -->
+    <p class="text-center">
+      This is our team’s official project portal for the Elevator Control System<br>
+      part of Software Engineering's Project VI.
+    </p>
   </header>
 
+  <!-- === MAIN CONTENT SECTION === -->
   <main>
     <section class="text-center mb-5">
       <h2 class="mb-4">📂 Explore Project Pages</h2>
-      <nav class="d-flex flex-column flex-md-row justify-content-center gap-3" aria-label="Main project navigation">
+
+      <!-- NAVIGATION BUTTONS -->
+      <nav class="d-flex flex-column flex-md-row justify-content-center gap-3"
+           aria-label="Main project navigation">
+        <!-- Each button links to a relevant project page -->
+
         <a class="btn btn-outline-primary" href="about.html">ℹ️ About the Elevator Project</a>
         <a class="btn btn-outline-secondary" href="proj_details.html">📑 Project Details</a>
         <a class="btn btn-outline-info" href="project_plan.html">📘 Project Plan</a>
         <a class="btn btn-outline-success" href="Test_plan.html">🧪 Test Plan</a>
+
+        <!-- Logbook pages for both group members -->
         <a class="btn btn-outline-dark" href="KD_logbook.html">🗒️ Kyle's Log Book</a>
         <a class="btn btn-outline-dark" href="AH_logbook.html">🗒️ Alan's Log Book</a>
-        <a class="btn btn-outline-dark" href="media_deliverables.html">🎥 <br>Media <br> Deliverables</a> 
+
+        <!-- Media section: video demos, screenshots, deliverables -->
+        <a class="btn btn-outline-dark" href="media_deliverables.html">
+          🎥 <br>Media <br> Deliverables
+        </a>
+
+        <!-- Link to member login page -->
         <a class="btn btn-outline-warning" href="login.html">🔐 Member Login</a>
       </nav>
     </section>
   </main>
 
+  <!-- === FOOTER SECTION === -->
   <footer class="text-center mb-5">
-    <p class="text-center mb-1">Made with 💡 by Alan &amp; Kyle | Project VI | Conestoga College</p>
-    <p class="text-center text-muted small">© 2025 Alan Hosseinpourmoghadam &amp; Kyle Dick. All rights reserved.</p>
-    <p id="currentDateTime" class="text-center text-muted"></p>
+    <!-- Footer attribution -->
+    <p class="text-center mb-1">
+      Made with 💡 by Alan &amp; Kyle | Project VI | Conestoga College
+    </p>
 
+    <!-- Legal rights -->
+    <p class="text-center text-muted small">
+      © 2025 Alan Hosseinpourmoghadam &amp; Kyle Dick. All rights reserved.
+    </p>
+
+    <!-- Placeholder for dynamic date/time (filled by JS) -->
+    <p id="currentDateTime" class="text-center text-muted"></p>
   </footer>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<!-- === JAVASCRIPT SECTION === -->
+
+<!-- Bootstrap JS bundle from CDN (includes popper.js for tooltips) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+<!-- Custom JS file to dynamically insert date/time or other logic -->
 <script src="js/home.js"></script>
 
 </body>
