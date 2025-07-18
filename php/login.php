@@ -1,59 +1,69 @@
 <?php
-// Start the session
+// === PURPOSE ===
+// Authenticates a user from the login form using credentials stored in the database.
+
+// === 1. START SESSION TO TRACK USER LOGIN ===
 session_start();
 
-// Database connection details (REPLACE WITH YOUR ACTUAL CREDENTIALS)
+// === 2. DATABASE CONNECTION INFO ===
+// NOTE: Replace these placeholder values with your actual credentials.
 $servername = "localhost";
-$username_db = "your_db_username";
-$password_db = "your_db_password";
-$dbname = "your_database_name";
+$username_db = "your_db_username";      // <-- Replace with your DB username
+$password_db = "your_db_password";      // <-- Replace with your DB password
+$dbname = "your_database_name";         // <-- Replace with your database name
 
-// Create connection
+// === 3. CONNECT TO DATABASE ===
 $conn = new mysqli($servername, $username_db, $password_db, $dbname);
 
-// Check connection
+// Check for connection errors
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// === 4. HANDLE POST REQUEST FROM LOGIN FORM ===
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Prepare a SQL statement to prevent SQL injection
-    // In a real application, you should HASH your passwords and use password_verify()
+    // === 5. USE PREPARED STATEMENT TO AVOID SQL INJECTION ===
     $stmt = $conn->prepare("SELECT id, username, password FROM members WHERE username = ?");
-    $stmt->bind_param("s", $username);
+    $stmt->bind_param("s", $username); // Bind user input
     $stmt->execute();
     $result = $stmt->get_result();
 
+    // === 6. CHECK IF USER EXISTS ===
     if ($result->num_rows == 1) {
         $user = $result->fetch_assoc();
-        // **IMPORTANT**: In a real application, replace this with password_verify($password, $user['password'])
-        // assuming passwords in your database are hashed.
-        if ($password === $user['password']) { // THIS IS INSECURE FOR PRODUCTION. USE password_verify()!
-            // Login successful
-            $_SESSION['loggedin'] = true;
-            $_SESSION['username'] = $username; // Store username in session if needed
 
-            // Redirect to the member-only page
-            header('Location: ../GUI/member.php'); // Adjust path if necessary
+        // === 7. VERIFY PASSWORD ===
+        // ❌ CURRENT METHOD IS INSECURE: This compares plain text passwords.
+        // ✅ RECOMMENDED: Use password_verify() instead if passwords are hashed
+        if ($password === $user['password']) {  // <-- Insecure for production
+
+            // === 8. SET SESSION VARIABLES ON SUCCESSFUL LOGIN ===
+            $_SESSION['loggedin'] = true;
+            $_SESSION['username'] = $username;
+
+            // Redirect user to member page
+            header('Location: ../GUI/member.php'); // Adjust path as needed
             exit;
+
         } else {
-            // Incorrect password
+            // Password is incorrect
             $_SESSION['login_error'] = "Invalid username or password.";
             header('Location: ../login.html');
             exit;
         }
+
     } else {
-        // User not found
+        // No user found
         $_SESSION['login_error'] = "Invalid username or password.";
         header('Location: ../login.html');
         exit;
     }
 
-    $stmt->close();
+    $stmt->close(); // Close statement
 }
 
-$conn->close();
+$conn->close(); // Close DB connection
 ?>
