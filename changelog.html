@@ -48,9 +48,11 @@
 
         data.forEach(entry => {
           const div = document.createElement('div');
+          const timestamp = new Date(`${entry.date}T${entry.time}`);
+          const formattedTime = timestamp.toLocaleString(); // Local format
           div.className = 'entry';
           div.innerHTML = `
-            🕒 <b>${entry.event_time}</b><br>
+            🕒 <b>${formattedTime}</b><br>
             🧠 Node ID: ${entry.nodeID}<br>
             🧭 Floor Request: ${entry.requestedFloor}, Current: ${entry.currentFloor}<br>
             🗒️ ${entry.otherInfo || '(no details)'}

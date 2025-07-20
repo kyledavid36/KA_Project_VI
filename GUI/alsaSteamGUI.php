@@ -1,10 +1,13 @@
 <?php
 session_start();
+
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("Location: gui_login.html");
+    // Not logged in, redirect to login
+    header('Location: ../php/GUI_login.php');
     exit;
 }
 ?>
+
 
 
 <!DOCTYPE html>
@@ -360,7 +363,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             }
         });
 
-        logButton.addEventListener('click', () => { window.location.href = 'changelog.html'; });
+        logButton.addEventListener('click', () => { window.location.href = '../changelog.html'; });
 
         function sabbathLoop(targetFloor, direction) {
             if (!isSabbathModeActive) {

@@ -4,7 +4,7 @@
  * This program listens for a connection from the client, receives raw
  * audio data, and plays it through the speakers using ALSA.
  *
- * COMPILE WITH: gcc src/alsaServer.c -o bin/server_alsa -lasound
+ * COMPILE WITH: gcc src/alsaServer.c -o bin/alsaServer -lasound
  */
 
 #include <stdio.h>
