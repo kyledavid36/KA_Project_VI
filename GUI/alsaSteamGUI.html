@@ -1,12 +1,3 @@
-<?php
-session_start();
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("Location: gui_login.html");
-    exit;
-}
-?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -360,7 +351,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             }
         });
 
-        logButton.addEventListener('click', () => { window.location.href = 'changelog.html'; });
+        logButton.addEventListener('click', () => { window.location.href = '../schangelog.html'; });
 
         function sabbathLoop(targetFloor, direction) {
             if (!isSabbathModeActive) {

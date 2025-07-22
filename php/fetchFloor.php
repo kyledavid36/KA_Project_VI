@@ -1,19 +1,27 @@
 <?php
-// === PURPOSE ===
-// This script is designed to be called (usually by JavaScript or the frontend GUI)
-// to fetch the most recent currentFloor value of the elevator controller.
-// It returns a JSON response containing the floor number.
+/**
+ * ───────────────────────────────────────────────────────────────
+ * FILE: fetchFloor.php
+ * AUTHORS: Alan Hosseinpour, Kyle Dick
+ * PURPOSE:
+ *  - Retrieves the most recent `currentFloor` value of the elevator.
+ *  - Intended to be called asynchronously by the GUI (e.g., via JavaScript).
+ *  - Returns a JSON object like: { "floor": 2 } works as debugging mechnaism to test the proper logging of floor number to database
+ * DEPENDENCIES:
+ *  - Database: elevator
+ *  - Table: elevatorNetwork
+ * ───────────────────────────────────────────────────────────────
+ */
 
-// === 1. SET RESPONSE TYPE ===
-// Tells the browser this script will return JSON format
+// === 1. SET CONTENT TYPE TO JSON FOR JAVASCRIPT CONSUMPTION ===
 header('Content-Type: application/json');
 
 try {
     // === 2. CONNECT TO DATABASE ===
-    $pdo = new PDO('mysql:host=127.0.0.1;dbname=elevator', 'Alanhpm', 'Alanhpm1382');
+    $pdo = new PDO('mysql:host=127.0.0.1;dbname=elevator', 'ese_group4', 'ESEgroup4!');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // === 3. FETCH LATEST FLOOR ENTRY FOR CONTROLLER NODE ===
+    // === 3. QUERY FOR MOST RECENT currentFloor OF nodeID 0x0101 (257) ===
     $stmt = $pdo->prepare("
         SELECT currentFloor 
         FROM elevatorNetwork 
@@ -21,17 +29,16 @@ try {
         ORDER BY id DESC 
         LIMIT 1
     ");
-    // Use nodeID 0x0101 which is the Elevator Controller
-    $stmt->execute([':id' => 0x0101]);
+    $stmt->execute([':id' => 0x0101]); // 0x0101 = 257, elevator controller node
 
-    // Get the floor number or return null if not found
+    // === 4. EXTRACT FLOOR VALUE OR NULL IF NOT FOUND ===
     $row = $stmt->fetch();
 
-    // === 4. RETURN RESPONSE TO FRONTEND ===
+    // === 5. RETURN FLOOR IN JSON FORMAT ===
     echo json_encode(['floor' => $row ? $row['currentFloor'] : null]);
 
 } catch (PDOException $e) {
-    // If there's an error (e.g., DB failure), return an error response
+    // === 6. HANDLE DATABASE ERRORS ===
     echo json_encode(['error' => 'DB error']);
 }
 ?>

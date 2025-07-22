@@ -45,21 +45,22 @@ int main() {
                 break;
                 
             case 3:
-                // Synchronize website commands with elevator control
-                printf("\nNow listening to commands from the website - press ctrl-z to cancel\n");
-                pcanTx(ID_SC_TO_EC, GO_TO_FLOOR1);  // Start at 1st floor
-                db_setFloorNum(1);                 // Update DB
+                printf("\nListening to GUI requests... (press ctrl-z to stop)\n");
 
-                // Loop to continuously monitor and send floor changes
-                while(1){            
-                    floorNumber = db_getFloorNum(); // Read current floor number from DB
-                    if (prev_floorNumber != floorNumber) { // Check for change
-                        pcanTx(ID_SC_TO_EC, HexFromFloor(floorNumber)); // Send updated floor over CAN
+                pcanTx(ID_SC_TO_EC, GO_TO_FLOOR1);
+                db_setFloorNum(1);
+
+                while (true) {
+                    int floorNumber = db_getFloorNum();
+                    if (floorNumber != prev_floorNumber) {
+                        pcanTx(ID_SC_TO_EC, HexFromFloor(floorNumber));
+                        db_setFloorNum(floorNumber); // reflect movement complete
+                        prev_floorNumber = floorNumber;
                     }
-                    prev_floorNumber = floorNumber;  // Update previous floor
-                    sleep(1);                        // Wait 1 second
+                    sleep(1);
                 }
                 break;
+
                 
             case 4:
                 // Demo mode: Automatically loop between floors

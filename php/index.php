@@ -5,7 +5,7 @@
 // === 1. CONNECT TO DATABASE AND FETCH CURRENT FLOOR ===
 try {
     // Create a new PDO connection
-    $pdo = new PDO('mysql:host=127.0.0.1;dbname=elevator', 'Alanhpm', 'Alanhpm1382');
+    $pdo = new PDO('mysql:host=127.0.0.1;dbname=elevator', 'ese_group4', 'ESEgroup4!');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Prepare SQL query to get the most recent floor log for the elevator controller (nodeID = 0x0101)

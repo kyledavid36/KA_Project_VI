@@ -1,31 +1,75 @@
 <?php
-$success = '';
-$error = '';
+/**
+ * ──────────────────────────────────────────────────────────────
+ * FILE: GUI_request_access.php
+ * AUTHORS: Alan Hpm, Kyle Dick
+ * PURPOSE:
+ *  - Presents an HTML form for new users to request access.
+ *  - Handles form submissions by inserting user data into the `users` table.
+ *  - Performs duplicate checks and password hashing.
+ * DEPENDENCIES:
+ *  - MariaDB `elevator` database
+ *  - `users` table with fields: full_name, email, username, password
+ *  - Redirects to: GUI_login.php for login access
+ * ──────────────────────────────────────────────────────────────
+ */
 
+
+// ─────────────────────────────
+// 1. INITIALIZE MESSAGE FLAGS
+// ─────────────────────────────
+$success = ''; // Message for successful registration
+$error   = ''; // Message for validation or DB errors
+
+
+// ──────────────────────────────────────────────────
+// 2. PROCESS FORM IF SUBMITTED VIA POST METHOD
+// ──────────────────────────────────────────────────
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    // Capture submitted form data or default to empty string
     $full_name = $_POST['full_name'] ?? '';
     $email     = $_POST['email'] ?? '';
     $username  = $_POST['username'] ?? '';
     $password  = $_POST['password'] ?? '';
 
+    // ───────────────────────────────
+    // 3. BASIC VALIDATION CHECK
+    // ───────────────────────────────
     if (!$full_name || !$email || !$username || !$password) {
         $error = "❌ All fields are required.";
     } else {
         try {
-            $pdo = new PDO("mysql:host=127.0.0.1;dbname=elevator", "Alanhpm", "Alanhpm1382!");
+            // ────────────────────────────────────────────────
+            // 4. CONNECT TO DATABASE USING GROUP CREDENTIALS
+            // ────────────────────────────────────────────────
+            $pdo = new PDO("mysql:host=127.0.0.1;dbname=elevator", "ese_group4", "ESEgroup4!");
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+            // ───────────────────────────────────────────────
+            // 5. CHECK FOR DUPLICATE USERNAME OR EMAIL
+            // ───────────────────────────────────────────────
             $check = $pdo->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
             $check->execute([$username, $email]);
+
             if ($check->rowCount() > 0) {
                 $error = "⚠️ Username or email already exists.";
             } else {
+                // ───────────────────────────────────────────────
+                // 6. HASH PASSWORD AND INSERT NEW USER
+                // ───────────────────────────────────────────────
                 $hashed = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare("INSERT INTO users (full_name, email, username, password) VALUES (?, ?, ?, ?)");
+                $stmt = $pdo->prepare("INSERT INTO users (full_name, email, username, password) 
+                                       VALUES (?, ?, ?, ?)");
                 $stmt->execute([$full_name, $email, $username, $hashed]);
+
                 $success = "✅ Account created successfully. You may now login.";
             }
+
         } catch (PDOException $e) {
+            // ─────────────────────────────────────────────
+            // 7. HANDLE DATABASE CONNECTION OR QUERY ERRORS
+            // ─────────────────────────────────────────────
             $error = "❌ Database error: " . $e->getMessage();
         }
     }
@@ -39,6 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <title>Request Access</title>
   <link rel="stylesheet" href="../css/bootstrap.min.css" />
   <style>
+    /* 🖼️ Elevator-themed background and styling */
     body {
       margin: 0;
       padding: 0;
@@ -97,7 +142,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       font-weight: bold;
       cursor: pointer;
       transition: background-color 0.3s ease;
-
     }
 
     .login-box input[type="submit"]:hover {
@@ -129,8 +173,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
   </style>
 </head>
-<body>
 
+<body>
+  <!-- 🔐 GUI Form Box -->
   <div class="login-box">
     <h2>🪪 Request Access</h2>
     <form method="POST">
@@ -141,10 +186,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       <input type="submit" value="Submit Request" />
     </form>
 
+    <!-- 🔁 Redirect to Login -->
     <p style="text-align:center; margin-top: 20px;">
       🔙 Already registered? <a href="GUI_login.php">Back to Login</a>
     </p>
 
+    <!-- 📣 Feedback messages -->
     <?php if ($error): ?>
       <div class="error-msg"><?= htmlspecialchars($error) ?></div>
     <?php elseif ($success): ?>
@@ -155,6 +202,5 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <footer>
     <p>© 2025 Project VI – Elevator System</p>
   </footer>
-
 </body>
 </html>

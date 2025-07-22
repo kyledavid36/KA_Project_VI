@@ -17,17 +17,17 @@ int menu(){
 		printf("2. Receive CAN message(s) using this program\n");
 		printf("3. Control elevator from website\n");
 		printf("4. Demo mode - loop\n");
-		printf("5. Supervison Control to Elevator for Debrief 2\n");
+		printf("5. Supervisory Control with Arduino's direct connection to Elevator Lockout Mode \n");
 		printf("6. Exit program\n");
 		printf("\nYour choice: ");
 		scanf("%d", &usrchoice);
 
 		// Valid input between 1 and 5
-		if (usrchoice >=1 && usrchoice <= 5) {	
+		if (usrchoice >=1 && usrchoice <= 6) {	
 			return usrchoice;
 		} else {
 			// If invalid input, prompt again after pause
-			printf("\nPLEASE SELECT FROM CHOICES 1-5 ONLY!\n\n");
+			printf("\nPLEASE SELECT FROM CHOICES 1-6 ONLY!\n\n");
 			sleep(3);
 			system("@cls||clear");
 		}
