@@ -305,29 +305,50 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             });
         });
 
+        let floorRequestInProgress = false; // Flag to prevent duplicate submissions
+
         floorButtons.forEach(button => {
             button.addEventListener('click', () => {
-                const floorNumber = button.innerText;
-                floorDisplay.value = floorNumber; 
+                if (floorRequestInProgress) return; // Prevent rapid multiple clicks
+                floorRequestInProgress = true;
+
+                const floorNumber = button.innerText.trim();
+                floorDisplay.value = floorNumber;
 
                 fetch('../php/updateFloor.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: 'floor=' + encodeURIComponent(floorNumber)
-                }).then(response => response.json()).then(data => {
-                    if (data.success) console.log("✅ Floor updated in DB: " + data.floor);
-                    else console.error("❌ Floor update failed: " + (data.message || 'No error message'));
-                }).catch(error => console.error("❌ Error sending request:", error));
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log("✅ Floor updated in DB: " + data.floor);
+                    } else {
+                        console.error("❌ Floor update failed: " + (data.message || 'No error message'));
+                    }
+                })
+                .catch(error => {
+                    console.error("❌ Error sending request:", error);
+                })
+                .finally(() => {
+                    // Unlock after 2.5 seconds (after audio finishes)
+                    setTimeout(() => {
+                        floorRequestInProgress = false;
+                    }, 2500);
+                });
 
-                setTimeout(() => { if (screechSound) { screechSound.currentTime = 0; screechSound.play(); } }, 200);
-                setTimeout(() => { if (dingSound) { dingSound.currentTime = 0; dingSound.play(); } }, 4800);
+                // Play elevator movement sounds
+                setTimeout(() => { if (screechSound) screechSound.currentTime = 0, screechSound.play(); }, 200);
+                setTimeout(() => { if (dingSound) dingSound.currentTime = 0, dingSound.play(); }, 4800);
                 setTimeout(() => {
-                    if (floorNumber === '1' && floor1Sound) { floor1Sound.currentTime = 0; floor1Sound.play(); }
-                    else if (floorNumber === '2' && floor2Sound) { floor2Sound.currentTime = 0; floor2Sound.play(); }
-                    else if (floorNumber === '3' && floor3Sound) { floor3Sound.currentTime = 0; floor3Sound.play(); }
+                    if (floorNumber === '1' && floor1Sound) floor1Sound.currentTime = 0, floor1Sound.play();
+                    else if (floorNumber === '2' && floor2Sound) floor2Sound.currentTime = 0, floor2Sound.play();
+                    else if (floorNumber === '3' && floor3Sound) floor3Sound.currentTime = 0, floor3Sound.play();
                 }, 5200);
             });
         });
+
         
         openButton.addEventListener('click', () => {
             if (isMaintenanceMode) {
@@ -464,8 +485,17 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                 micButton.disabled = true;
                 closeButton.classList.add('locked');
             }
-            const initialFloor = urlParams.get('floor') || '3';
-            floorDisplay.value = initialFloor;
+            fetch('../php/fetchFloor.php')
+                .then(response => response.json())
+                .then(data => {
+                    const latestFloor = data.floor || '1'; // fallback if DB fails
+                    floorDisplay.value = latestFloor;
+                    console.log("✅ Initialized with DB floor:", latestFloor);
+                })
+                .catch(error => {
+                    console.error("❌ Error fetching floor from DB:", error);
+                    floorDisplay.value = '1'; // fallback
+                });
         });
     </script>
 </body>

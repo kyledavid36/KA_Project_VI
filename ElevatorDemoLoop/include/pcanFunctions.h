@@ -1,38 +1,49 @@
 #ifndef PCAN_FUNCTIONS
 #define PCAN_FUNCTIONS
+#include "databaseFunctions.h"  // Already declares logCANActivity properly
 
 
-// Defines
-// ***********************************************************************************************************
-#define PCAN_RECEIVE_QUEUE_EMPTY        0x00020U  	// Receive queue is empty
-#define PCAN_NO_ERROR               	0x00000U  	// No error 
-
-// Elevator project specific 
-#define ID_SC_TO_EC  0x100	// ID for messages from Supervisory controller to elevator controller
-#define ID_EC_TO_ALL 0x101	// ID for messages from Elevator controller to all other nodes
-#define ID_CC_TO_SC  0x200	// ID for messages from Car controller to supervisory controller 
-#define ID_F1_TO_SC  0x201	// ID for messages from floor 1 controller to supervisory controller
-#define ID_F2_TO_SC  0x202	// ID for messages from floor 2 controller to supervisory controller
-#define ID_F3_TO_SC  0x203	// ID for messages from floor 3 controller to supervisory controller	
-
-#define GO_TO_FLOOR1 0x05	// Go to floor 1
-#define GO_TO_FLOOR2 0x06	// Go to floor 2
-#define GO_TO_FLOOR3 0x07	// Go to floor 3
+// ─────────────────────────────────────────────────────────────
+// PCAN_FUNCTIONS.H
+// AUTHOR: Alan Hpm (Group 4)
+// DESCRIPTION:
+//   Header for CAN transmission, reception, and forwarding logic.
+//   Also declares logCANActivity for CAN_subnetwork diagnostics.
+// ─────────────────────────────────────────────────────────────
 
 
-// Function declarations
+// ──────────── DEFINES ────────────
+#define PCAN_RECEIVE_QUEUE_EMPTY  0x00020U  // Receive queue is empty
+#define PCAN_NO_ERROR             0x00000U  // No error
 
-// Transmits a CAN message with the given CAN ID and data byte.
-// Opens the CAN channel, configures the message, sends it, and closes the channel.
+// Elevator CAN IDs
+#define ID_SC_TO_EC  0x100  // Supervisory Controller → Elevator Controller
+#define ID_EC_TO_ALL 0x101  // Elevator Controller → All
+#define ID_CC_TO_SC  0x200  // Car Controller → Supervisory Controller
+#define ID_F1_TO_SC  0x201  // Floor 1 → Supervisory Controller
+#define ID_F2_TO_SC  0x202  // Floor 2 → Supervisory Controller
+#define ID_F3_TO_SC  0x203  // Floor 3 → Supervisory Controller
+
+// CAN Commands to Elevator Controller
+#define GO_TO_FLOOR1 0x05
+#define GO_TO_FLOOR2 0x06
+#define GO_TO_FLOOR3 0x07
+
+
+
+// ──────────── FUNCTION DECLARATIONS ────────────
+
+// Transmit a CAN message with ID and data
 int pcanTx(int id, int data);
 
-// Receives a specified number of CAN messages.
-// Opens the CAN channel, waits for messages, displays them, and returns the last data received.
+// Receive N CAN messages and return last data byte
 int pcanRx(int num_msgs);
 
-// Listens for specific STM floor input messages and forwards them to the Arduino (or elevator controller).
-// Designed for direct Pi-to-Arduino communication, bypassing air interface or intermediate modules.
+// Listen for STM (floor) CAN input and forward to elevator controller
 int sc_ec_control();
 
+// Log CAN activity to diagnostics database
+// Updated signature to match databaseFunctions.h
+//int logCANActivity(int nodeID, const std::string& direction, const std::string& message, const std::string& description);
 
-#endif
+#endif  // PCAN_FUNCTIONS

@@ -45,19 +45,35 @@ int main() {
                 break;
                 
             case 3:
-                printf("\nListening to GUI requests... (press ctrl-z to stop)\n");
+                std::cout << "\n[MODE 3] Listening to GUI floor requests..." << std::endl;
 
+                // Step 1: Start on floor 1
                 pcanTx(ID_SC_TO_EC, GO_TO_FLOOR1);
                 db_setFloorNum(1);
+                logCANActivity(ID_SC_TO_EC, "TX", "0x01", "Initialize to Floor 1");
+                
 
                 while (true) {
                     int floorNumber = db_getFloorNum();
+
                     if (floorNumber != prev_floorNumber) {
-                        pcanTx(ID_SC_TO_EC, HexFromFloor(floorNumber));
-                        db_setFloorNum(floorNumber); // reflect movement complete
+                        std::cout << "Detected floor change request: " << floorNumber << std::endl;
+
+                        // Convert to CAN hex message and send
+                        int hexMsg = HexFromFloor(floorNumber);
+                        pcanTx(ID_SC_TO_EC, hexMsg);
+
+                        // Log to CAN_subnetwork
+                        std::stringstream msgHex;
+                        msgHex << "0x" << std::hex << hexMsg;
+                        logCANActivity(ID_SC_TO_EC, "TX", msgHex.str(), "GUI requested floor " + std::to_string(floorNumber));
+
+                        // Update state in elevatorNetwork
+                        db_setFloorNum(floorNumber);
                         prev_floorNumber = floorNumber;
                     }
-                    sleep(1);
+
+                    sleep(1); // Poll once per second
                 }
                 break;
 

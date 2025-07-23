@@ -1,0 +1,155 @@
+<!-- 
+FILE: diagnostics.html
+AUTHOR: Alan Hpm
+PURPOSE:
+  - Display recent CAN bus activity (TX and RX messages)
+  - Retrieve log data from php/fetchCANlog.php
+  - Visualize it using Chart.js for testing and diagnostics
+USAGE:
+  - Open directly in browser (e.g., http://<Pi-IP>/diagnostics.html)
+  - Click "Refresh Logs" to reload recent CAN activity
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CAN Bus Diagnostics</title>
+
+    <!-- Load Chart.js for visualizing data -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #111;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #f9c74f;
+            margin-bottom: 40px;
+        }
+
+        canvas {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        #refresh-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #f9c74f;
+            color: black;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #refresh-button:hover {
+            background-color: #ffe08a;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>📊 CAN Bus Activity (Last 50 Events)</h2>
+
+    <!-- Chart.js will render the chart in this canvas -->
+    <canvas id="canChart" width="1000" height="400"></canvas>
+
+    <!-- Manual refresh button -->
+    <br>
+    <button id="refresh-button" onclick="loadChart()">🔁 Refresh Logs</button>
+
+    <script>
+        // Declare global chart reference for later updates
+        let canChart = null;
+
+        /**
+         * FUNCTION: loadChart()
+         * PURPOSE:
+         *  - Fetch CAN bus data from backend PHP
+         *  - Render bar chart with TX and RX event counts
+         */
+        function loadChart() {
+            fetch("php/fetchCANlog.php")  // Calls PHP to get JSON data from CAN_subnetwork
+                .then(response => response.json())
+                .then(data => {
+                    // Extract timestamp and direction data from each row
+                    const labels = data.map(row => row.timestamp);  // x-axis = time
+                    const txData = data.map(row => row.direction === "TX" ? 1 : 0); // 1 = TX, 0 = other
+                    const rxData = data.map(row => row.direction === "RX" ? 1 : 0); // 1 = RX, 0 = other
+
+                    // Configure chart dataset
+                    const chartData = {
+                        labels: labels.reverse(),  // Reverse to show latest on the right
+                        datasets: [
+                            {
+                                label: "TX (Sent)",
+                                data: txData.reverse(),
+                                backgroundColor: "rgba(54, 162, 235, 0.6)"
+                            },
+                            {
+                                label: "RX (Received)",
+                                data: rxData.reverse(),
+                                backgroundColor: "rgba(255, 99, 132, 0.6)"
+                            }
+                        ]
+                    };
+
+                    const config = {
+                        type: "bar",
+                        data: chartData,
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: "top"
+                                },
+                                title: {
+                                    display: true,
+                                    text: "CAN Bus TX vs RX Activity"
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        precision: 0,
+                                        stepSize: 1
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        autoSkip: true,
+                                        maxTicksLimit: 20
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    // Destroy previous chart if it exists
+                    if (canChart) canChart.destroy();
+
+                    // Render new chart
+                    const ctx = document.getElementById("canChart").getContext("2d");
+                    canChart = new Chart(ctx, config);
+                })
+                .catch(err => {
+                    console.error("❌ Error loading CAN log data:", err);
+                    alert("Failed to load CAN log from server.");
+                });
+        }
+
+        // Automatically load chart when the page is first opened
+        window.onload = loadChart;
+    </script>
+</body>
+</html>
+

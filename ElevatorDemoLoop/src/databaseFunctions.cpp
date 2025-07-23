@@ -4,7 +4,6 @@
 // 'elevator' database schema on localhost.
 
 // === INCLUDE HEADERS ===
-// Include header for this module's function declarations
 #include "../include/databaseFunctions.h"
 
 // Standard library includes
@@ -27,32 +26,22 @@ using namespace std;
 // RETURNS : Integer floor number (default = 1 if not found)
 // ================================================================
 int db_getFloorNum() {
-    sql::Driver *driver;
-    sql::Connection *con;
-    sql::Statement *stmt;
-    sql::ResultSet *res;
-    int floorNum = 1; // Default floor if no result is found
+    try {
+        sql::Driver *driver = get_driver_instance();
+        std::unique_ptr<sql::Connection> con(driver->connect("tcp://127.0.0.1:3306", "ese_group4", "ESEgroup4!"));
+        con->setSchema("elevator");
 
-    // Connect to MySQL server and select schema
-    driver = get_driver_instance();
-    con = driver->connect("tcp://127.0.0.1:3306", "ese_group4", "ESEgroup4!"); // Update as needed
-    con->setSchema("elevator");
+        std::unique_ptr<sql::Statement> stmt(con->createStatement());
+        std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(
+            "SELECT requestedFloor FROM elevatorNetwork WHERE nodeID = 257 ORDER BY id DESC LIMIT 1"));
 
-    // Query the latest requestedFloor for nodeID 257 (Elevator Controller)
-    stmt = con->createStatement();
-    res = stmt->executeQuery("SELECT requestedFloor FROM elevatorNetwork WHERE nodeID = 257");
-
-    // Fetch floor number from query result
-    if (res->next()) {
-        floorNum = res->getInt("requestedFloor");
+        if (res->next()) {
+            return res->getInt("requestedFloor");
+        }
+    } catch (sql::SQLException& e) {
+        std::cerr << "db_getFloorNum() error: " << e.what() << std::endl;
     }
-
-    // Cleanup
-    delete res;
-    delete stmt;
-    delete con;
-
-    return floorNum;
+    return 1; // Default
 }
 
 // ================================================================
@@ -63,25 +52,64 @@ int db_getFloorNum() {
 // RETURNS : 0 on success
 // ================================================================
 int db_setFloorNum(int floorNum) {
-    sql::Driver *driver;
-    sql::Connection *con;
-    sql::PreparedStatement *pstmt;
+    try {
+        sql::Driver *driver = get_driver_instance();
+        std::unique_ptr<sql::Connection> con(driver->connect("tcp://127.0.0.1:3306", "ese_group4", "ESEgroup4!"));
+        con->setSchema("elevator");
 
-    // Connect to MySQL server and select schema
-    driver = get_driver_instance();
-    con = driver->connect("tcp://127.0.0.1:3306", "ese_group4", "ESEgroup4!");
-    con->setSchema("elevator");
+        std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement(R"(
+            UPDATE elevatorNetwork 
+            SET currentFloor = ? 
+            WHERE id = (
+                SELECT id FROM (
+                    SELECT id FROM elevatorNetwork 
+                    WHERE nodeID = 257 
+                    ORDER BY id DESC 
+                    LIMIT 1
+                ) AS latest
+            )
+        )"));
 
-    // Prepare and execute the update query for currentFloor
-    pstmt = con->prepareStatement("UPDATE elevatorNetwork SET currentFloor = ? WHERE nodeID = 257");
-    pstmt->setInt(1, floorNum);
-    pstmt->executeUpdate();
+        pstmt->setInt(1, floorNum);
+        pstmt->executeUpdate();
 
-    // Cleanup
-    delete pstmt;
-    delete con;
-
-    return 0;
+        return 0;
+    } catch (sql::SQLException& e) {
+        std::cerr << "db_setFloorNum() error: " << e.what() << std::endl;
+        return 1;
+    }
 }
 
- 
+// ================================================================
+// FUNCTION: logCANActivity()
+// AUTHOR: Alan Hpm
+// PURPOSE : Logs CAN messages into CAN_subnetwork table for diagnostics
+// INPUT   : nodeID - CAN node identifier
+//         : direction - "TX" or "RX"
+//         : message - message content in hex
+//         : description - (optional) human-readable context
+// RETURNS : 0 on success, 1 on failure
+// ================================================================
+int logCANActivity(int nodeID, const std::string& direction, const std::string& message, const std::string& description) {
+    try {
+        sql::Driver* driver = get_driver_instance();
+        std::unique_ptr<sql::Connection> con(driver->connect("tcp://127.0.0.1:3306", "ese_group4", "ESEgroup4!"));
+        con->setSchema("elevator");
+
+        std::unique_ptr<sql::PreparedStatement> pstmt(
+            con->prepareStatement("INSERT INTO CAN_subnetwork (nodeID, direction, message, description) VALUES (?, ?, ?, ?)")
+        );
+
+        pstmt->setInt(1, nodeID);
+        pstmt->setString(2, direction);
+        pstmt->setString(3, message);
+        pstmt->setString(4, description);
+        pstmt->execute();
+
+        return 0;
+
+    } catch (sql::SQLException& e) {
+        std::cerr << "CAN logging error: " << e.what() << std::endl;
+        return 1;
+    }
+}

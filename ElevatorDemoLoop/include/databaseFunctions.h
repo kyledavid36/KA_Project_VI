@@ -1,18 +1,23 @@
 // FILE: databaseFunctions.h
-// DESCRIPTION: Header file for database interaction functions used by the 
-// elevator control system. Provides declarations for reading and writing
-// floor numbers to the MySQL database.
+// AUTHORS: Alan Hosseinpour, Kyle Dick
+// PURPOSE: Header file declaring MySQL database interaction functions for the elevator system
+// FUNCTIONS:
+// - db_getFloorNum()
+// - db_setFloorNum()
+// - logCANActivity()
 
-#ifndef DB_FUNCTIONS
-#define DB_FUNCTIONS
+#ifndef DATABASE_FUNCTIONS_H
+#define DATABASE_FUNCTIONS_H
 
-// Reads the most recent requested floor number from the database
-// Returns: Integer value of the requested floor (default is 1 if not found)
+#include <string>
+
+// Read latest requested floor from elevatorNetwork
 int db_getFloorNum();
 
-// Updates the current floor number for the elevator controller in the database
-// Parameters: floorNum - the floor number to set
-// Returns: 0 on success
+// Update latest current floor in elevatorNetwork
 int db_setFloorNum(int floorNum);
+
+// Log CAN activity to CAN_subnetwork (TX or RX messages)
+int logCANActivity(int nodeID, const std::string& direction, const std::string& message, const std::string& description = "");
 
 #endif

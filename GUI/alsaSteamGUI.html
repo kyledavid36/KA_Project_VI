@@ -452,8 +452,17 @@
                 micButton.disabled = true;
                 closeButton.classList.add('locked');
             }
-            const initialFloor = urlParams.get('floor') || '3';
-            floorDisplay.value = initialFloor;
+            fetch('../php/fetchFloor.php')
+                .then(response => response.json())
+                .then(data => {
+                    const latestFloor = data.floor || '1'; // fallback if DB fails
+                    floorDisplay.value = latestFloor;
+                    console.log("✅ Initialized with DB floor:", latestFloor);
+                })
+                .catch(error => {
+                    console.error("❌ Error fetching floor from DB:", error);
+                    floorDisplay.value = '1'; // fallback
+                });
         });
     </script>
 </body>
