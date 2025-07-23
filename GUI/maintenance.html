@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Maintenance Access</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+        /* Reusing the Steampunk theme from the main GUI */
+        body {
+            background: url('Images/metal.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Cinzel', serif;
+            color: #f0e6d2;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 48px;
+            text-shadow: 2px 2px #000;
+        }
+
+        main {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        #pin-display {
+            background-color: #111;
+            color: #ffc107;
+            border: 4px solid #4b3621;
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 36px;
+            max-width: 350px;
+            margin: 20px auto;
+            text-align: center;
+            letter-spacing: 8px;
+            box-shadow: 0 0 10px #8b6f47, inset 0 0 15px #000;
+        }
+
+        .keypad-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-width: 350px;
+            margin: 20px auto;
+        }
+
+        .keypad-button {
+            height: 80px;
+            font-size: 28px;
+            background: radial-gradient(circle at 30% 30%, #c4a35a, #7a5c1d);
+            color: #fff;
+            border: 4px solid #4b3621;
+            border-radius: 12px;
+            box-shadow: 0 0 10px #8b6f47, inset 0 0 5px #000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .keypad-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #f0c97d, inset 0 0 10px #000;
+        }
+
+        #status-message {
+            min-height: 24px;
+            font-size: 1.2rem;
+            color: #ff4d4d; /* Default to error color */
+        }
+        
+        .back-button {
+            margin-top: 20px;
+            background: radial-gradient(circle, #6c757d, #343a40);
+            border-color: #212529;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <main>
+            <h1>Maintenance Access</h1>
+            <div id="pin-display" readonly>----</div>
+            <p id="status-message" class="mt-2"></p>
+            
+            <div class="keypad-container">
+                <button class="keypad-button" data-key="1">1</button>
+                <button class="keypad-button" data-key="2">2</button>
+                <button class="keypad-button" data-key="3">3</button>
+                <button class="keypad-button" data-key="4">4</button>
+                <button class="keypad-button" data-key="5">5</button>
+                <button class="keypad-button" data-key="6">6</button>
+                <button class="keypad-button" data-key="7">7</button>
+                <button class="keypad-button" data-key="8">8</button>
+                <button class="keypad-button" data-key="9">9</button>
+                <button class="keypad-button" data-key="clear">CLR</button>
+                <button class="keypad-button" data-key="0">0</button>
+                <button class="keypad-button" data-key="enter">ENT</button>
+            </div>
+
+            <button class="keypad-button back-button" onclick="window.location.href='alsaSteamGUI.html'">Back</button>
+        </main>
+    </div>
+
+    <audio id="beep-sound" src="audio/beep2.mp3" preload="auto"></audio>
+    <audio id="unlock-sound" src="audio/enterUnlock.mp3" preload="auto"></audio>
+
+    <script>
+        const pinDisplay = document.getElementById('pin-display');
+        const statusMessage = document.getElementById('status-message');
+        const keypadButtons = document.querySelectorAll('.keypad-button');
+        const beepSound = document.getElementById('beep-sound');
+        const unlockSound = document.getElementById('unlock-sound');
+
+        const validCodes = ['6287', '5132'];
+        let currentPin = '';
+
+        const updateDisplay = () => {
+            pinDisplay.textContent = currentPin.padEnd(4, '-');
+        };
+
+        keypadButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Play beep sound for every button press
+                if (beepSound) {
+                    beepSound.currentTime = 0;
+                    beepSound.play();
+                }
+
+                const key = button.dataset.key;
+
+                if (key === 'enter') {
+                    // Check code
+                    if (validCodes.includes(currentPin)) {
+                        // Play unlock sound on correct code
+                        if(unlockSound) {
+                            unlockSound.currentTime = 0;
+                            unlockSound.play();
+                        }
+                        statusMessage.textContent = 'Access Granted. Redirecting...';
+                        statusMessage.style.color = '#76ff03'; // Green for success
+                        setTimeout(() => {
+                            window.location.href = 'alsaSteamGUI.html?mode=maintenance';
+                        }, 2800);
+                    } else {
+                        // On wrong code, only the beep has played, which is correct.
+                        statusMessage.textContent = 'ACCESS DENIED';
+                        statusMessage.style.color = '#ff4d4d'; // Red for error
+                        currentPin = '';
+                        updateDisplay();
+                    }
+                } else if (key === 'clear') {
+                    // Clear pin
+                    currentPin = '';
+                    statusMessage.textContent = '';
+                    updateDisplay();
+                } else if (key) { // Ensure it's a number key, not the 'Back' button
+                    // Append digit if PIN is not too long
+                    if (currentPin.length < 9) {
+                        currentPin += key;
+                        updateDisplay();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

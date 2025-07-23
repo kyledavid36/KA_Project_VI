@@ -1,0 +1,3 @@
+If you have a problem establishing a socket in Linux using these programs, add permissions on the files/folders
+
+$ chmod 777 -R '<folder name>'

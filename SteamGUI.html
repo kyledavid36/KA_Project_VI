@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Elevator GUI</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .control-button.locked {
+        border-color: red !important;
+        box-shadow: 0 0 15px 5px red, inset 0 0 10px #660000 !important;
+      }
+
+      .lit-up {
+        box-shadow: 0 0 25px 10px #f0c97d, inset 0 0 20px #fff !important;
+        transform: scale(1.1) !important;
+        transition: all 0.3s ease;
+      }
+
+      .floor-button:hover:not(.lit-up),
+      .control-button:hover:not(.lit-up),
+      .icon-button:hover:not(.lit-up) {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px #f0c97d, inset 0 0 10px #000;
+      }
+
+      body {
+        background: url('Images/metal.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Cinzel', serif;
+        color: #f0e6d2;
+      }
+
+      #current-floor {
+        background-color: black;
+        color: red;
+        border: 2px solid black;
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: bold;
+        font-size: 24px;
+        max-width: 80px;
+        margin: 0 auto 20px;
+        text-align: center;
+        text-shadow: 1px 1px #440000;
+      }
+
+      .floor-button {
+        width: 100px;
+        font-size: 24px;
+        margin: 10px auto;
+        padding: 15px;
+        background: radial-gradient(circle at 30% 30%, #c4a35a, #7a5c1d);
+        color: #fff;
+        border: 4px solid #4b3621;
+        border-radius: 12px;
+        box-shadow: 0 0 10px #8b6f47, inset 0 0 5px #000;
+        display: block;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .control-button {
+        font-size: 20px;
+        white-space: nowrap;
+        line-height: 1;
+        text-align: center;
+        vertical-align: middle;
+        margin: 10px;
+        padding: 15px;
+        background: radial-gradient(circle at 30% 30%, #c4a35a, #7a5c1d);
+        color: #fff;
+        border: 4px solid #4b3621;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #8b6f47, inset 0 0 5px #000;
+        width: 80px;
+        height: 80px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #music-button,
+      #mic-button {
+        font-size: 24px;
+        margin: 10px;
+        padding: 15px;
+        background: radial-gradient(circle at 30% 30%, #c4a35a, #7a5c1d);
+        color: #fff;
+        border: 4px solid #4b3621;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #8b6f47, inset 0 0 5px #000;
+        width: 80px;
+        height: 80px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      #music-button:hover,
+      #mic-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px #f0c97d, inset 0 0 10px #000;
+      }
+
+      .icon-button {
+        font-size: 24px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      h1 {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 48px;
+        text-shadow: 2px 2px #000;
+      }
+
+      main {
+        text-align: center;
+        margin-top: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <main>
+        <div class="mb-3">
+          <label for="current-floor" class="form-label"></label><br />
+          <input type="text" id="current-floor" readonly value="3" />
+        </div>
+
+        <div>
+          <button class="floor-button">3</button>
+          <button class="floor-button">2</button>
+          <button class="floor-button">1</button>
+        </div>
+
+        <div class="my-3">
+          <button class="control-button" id="open-door">≪≫</button>
+          <button class="control-button locked" id="close-door">≫≪</button>
+        </div>
+
+        <div class="my-3">
+          <button class="control-button" id="log-button">📜</button>
+          <button class="control-button" id="mic-button">🎤</button>
+        </div>
+
+      </main>
+    </div>
+
+
+
+    <audio id="ding-sound" src="audio/ding.mp3" preload="auto"></audio>
+    <audio id="door-open" src="audio/ElevatorOpeningFinal.mp3" preload="auto"></audio>
+    <audio id="door-click" src="audio/ElevatorButtonFinal.mp3" preload="auto"></audio>
+    <audio id="door-close" src="audio/ElevatorOpeningFinal.mp3" preload="auto"></audio>
+    <audio id="floor-button" src="audio/screeching.mp3" preload="auto"></audio>
+
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const floorDisplay = document.getElementById('current-floor');
+      const openButton = document.getElementById('open-door');
+      const closeButton = document.getElementById('close-door');
+      const allButtons = document.querySelectorAll('button');
+      const floorButtons = document.querySelectorAll('.floor-button');
+      const dingSound = document.getElementById('ding-sound');
+      const openSound = document.getElementById('door-open');
+      const clickSound = document.getElementById('door-click');
+      const closeSound = document.getElementById('door-close');
+
+      // Sound and lighting feedback for all buttons
+      allButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          if (clickSound) {
+            clickSound.currentTime = 0;
+            clickSound.play();
+          }
+          button.classList.add('lit-up');
+          setTimeout(() => {
+            button.classList.remove('lit-up');
+          }, 500);
+        });
+      });
+
+      // Floor button functionality + database update
+      floorButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const selectedFloor = button.innerText.trim();
+          floorDisplay.value = selectedFloor;
+
+          if (dingSound) {
+            dingSound.currentTime = 0;
+            dingSound.play();
+          }
+
+          console.log("🟡 Button clicked, sending floor: " + selectedFloor);
+
+          // Send request to backend
+          fetch('php/updateFloor.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'floor=' + encodeURIComponent(selectedFloor)
+          })
+          .then(response => {
+            console.log("🟢 Received response");
+            return response.json();
+          })
+          .then(data => {
+            if (data.success) {
+              console.log("✅ Floor updated in DB: " + data.floor);
+            } else {
+              console.error("❌ Floor update failed: " + (data.message || 'No error message'));
+            }
+          })
+          .catch(error => {
+            console.error("❌ Error sending request:", error);
+          });
+        });
+      });
+
+      // Open door logic + redirect after delay
+      openButton.addEventListener('click', () => {
+        if (openSound) {
+          openSound.currentTime = 0;
+          openSound.play();
+        }
+
+        setTimeout(() => {
+          const currentFloor = floorDisplay.value.trim();
+          if (currentFloor === '1') {
+            window.location.href = 'floor1GUI.html';
+          } else if (currentFloor === '2') {
+            window.location.href = 'floor2GUI.html';
+          } else if (currentFloor === '3') {
+            window.location.href = 'floor3GUI.html';
+          }
+        }, 5000);
+      });
+
+      // Close door logic
+      closeButton.addEventListener('click', () => {
+        if (closeSound) {
+          closeSound.currentTime = 0;
+          closeSound.play();
+        }
+
+        floorButtons.forEach(btn => btn.disabled = false);
+        closeButton.classList.remove('locked');
+        closeButton.style.borderColor = '';
+        closeButton.style.boxShadow = '';
+        console.log('Close Door pressed - red highlight removed');
+      });
+
+      // Initial setup: disable buttons, set locked door, display floor from URL if available
+      floorButtons.forEach(btn => btn.disabled = true);
+      closeButton.classList.add('locked');
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialFloor = urlParams.get('floor');
+      floorDisplay.value = initialFloor || '3'; // default fallback
+    });
+
+          // Handle Log Button → Navigate to changelog page
+      const logButton = document.getElementById('log-button');
+      logButton.addEventListener('click', () => {
+        window.location.href = 'changelog.html';
+      });
+    </script>
+
+  </body>
+</html>

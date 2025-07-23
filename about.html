@@ -1,63 +1,99 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Project VI - About</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Project VI - About</title>
+  <link rel="stylesheet" href="css/site_style.css" />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
 </head>
 <body>
-<meta charset="UTF-8">
-    <h1>🚀 Project VI – About the Madness</h1>
+  <div class="container py-5">
+    <h1 class="mb-4 text-center">🚀 Project VI – About the Madness</h1>
 
-	<p>
-	  Welcome to the <i>About</i> page for <b>Project VI</b> — our team's ambitious take on building a smarter elevator system. <br />
-	  In this project, we’re not just pressing buttons… we’re engineering the brains behind them. From CAN bus communication to real-time LED feedback, this elevator isn't just going up and down — it’s leveling up. <br />
- 	 <em>Seriously though</em>, we’re proud of what we’re building and how we’re applying both software and hardware concepts to bring it to life. <br />
- 	 This might not be Einstein’s <strong>E = mc<sup>2</sup></strong>, but give us some time and a PCB or two — we’ll get there.
-	</p>
-
-<p>
-  Already bored of elevator talk? 🚪 No worries — head back to the <a href="index.html">Home Page</a> and explore the fun stuff!
-</p>
-
-    <hr />
-
-    <h2>Our Team</h2>
-    <iframe
-        width="450"
-        height="300"
-        src="https://www.youtube.com/embed/uG8VdOj598s"
-        frameborder="0"
-        allowfullscreen>
-    </iframe>
-    <br>
-    <img src="Headshot.jpg" alt="Kyle & Levi">
-    <p><b>Kyle Dick</b> <br />
-    Deep thinker with a passion for people and the fusion of spirituality and music</p>
-
-    <p><b>Alan Hosseinpourmoghadam</b><br />
-  	Gym rat by morning, gearhead by night — lifting weights and revving engines with equal passion.<br />
- 	Fuelled by adrenaline, dumbbells, and premium octane.</p>
-
-   
-<div class="map-container">
-        <h4>📍 Project Test Location</h4>
-        <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2899.520361502676!2d-80.39990002383722!3d43.387052071116095!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x882b8a7ec9d60715%3A0xd5e712873de8af2d!2sConestoga%20College%20Cambridge%20-%20Fountain%20Street%20campus!5e0!3m2!1sen!2sca!4v1747602378601!5m2!1sen!2sca"
-            width="500"
-            height="450"
-            style="border:0;"
-            allowfullscreen=""
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
+    <div class="row mb-4">
+      <div class="col-lg-8 mx-auto">
+        <p>
+          Welcome to the <em>About</em> page for <strong>Project VI</strong> — our team's ambitious take on building a smarter elevator system.
+        </p>
+        <p>
+          <em>Seriously though</em>, we’re proud of what we’re building and how we’re applying both software and hardware concepts.
+        </p>
+        <p>
+          This might not be Einstein’s <strong>E = mc<sup>2</sup></strong>, but give us some time and a PCB or two — we’ll get there.
+        </p>
+        <p>
+          📘 Want to see more technical detail? Visit the <a href="proj_details.html">Project Details</a> page.
+        </p>
+      </div>
     </div>
 
+    <!-- Meet the Team Video -->
+    <div class="row mb-5">
+      <div class="col-md-6 mb-4">
+        <h2>🎥 Meet the Team</h2>
+        <div class="ratio ratio-16x9">
+          <iframe src="https://www.youtube.com/embed/uG8VdOj598s" title="Team Introduction Video" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <h2>👥 Our Team</h2>
+        <div class="ratio ratio-16x9">
+          <iframe src="https://www.youtube.com/embed/vaqzgcP_SMk" title="Our Project Video" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
 
-	<footer style="margin-top: 40px; text-align: center; font-size: 0.9rem; color: #777;">
-  		<p>© 2025 Alan Hosseinpourmoghadam & Kyle Dick. All rights reserved.</p>
-	</footer>
+  <!-- Team Profiles with dynamic ages -->
+  <div class="row align-items-start mb-5">
+  <!-- Kyle Profile -->
+  <div class="col-md-6 text-center">
+    <div class="team-image-container mb-2">
+      <img src="Images/Headshot.jpg" alt="Kyle Dick" />
+    </div>
+    <p><strong>Kyle Dick</strong></p>
+    <p>Deep thinker with a passion for people and the fusion of music and thought.</p>
+    <p id="kyle-age"></p>
+  </div>
 
+  <!-- Alan Profile -->
+  <div class="col-md-6 text-center">
+    <div class="team-image-container mb-2">
+      <img src="Images/Alansprofile.jpg" alt="Alan Test Image" style="width: 450px; height: 620px;" />
+    </div>
+    <p><strong>Alan Hosseinpourmoghadam</strong></p>
+    <p>Gym rat by morning, gearhead by night — lifting weights and revving engines with equal passion.</p>
+    <p id="alan-age"></p>
+  </div>
+</div>
 
+    <!-- Map -->
+    <div class="row mb-5">
+      <div class="col-lg-8 mx-auto">
+        <h4 class="mb-3">📍 Project Test Location</h4>
+        <div class="ratio ratio-4x3">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2899.520175021505!2d-80.39990002435763!3d43.38705596960441!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x882b8a7ec9d60715%3A0xd5e712873de8af2d!2sConestoga%20College%20Cambridge%20-%20Fountain%20Street%20campus!5e0!3m2!1sen!2sca!4v1748626140224!5m2!1sen!2sca" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+            style="border:0;"
+            allowfullscreen
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Conestoga College Map">
+          </iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="foot" class="footer text-center mt-5"></footer>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+ </script>
+    <!-- Our custom JS for age and copyright -->
+    <script src="js/about.js"></script>
 </body>
 </html>
- 

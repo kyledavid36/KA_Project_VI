@@ -1,0 +1,6 @@
+The server is from the simple Linux Sockets in C example
+
+1. Place client.php in Apache's server directory:	/var/www/html  
+2. Compile server.c from the terminal:  		gcc -o server server.c
+2. Run server from the terminal: 			./server 
+3. In a browser enter: 					localhost/client.php

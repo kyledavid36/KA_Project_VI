@@ -1,0 +1,99 @@
+/* === Project Details Page CSS (Cleaned & Corrected) === */
+
+/* Base layout and page container */
+body {
+    font-family: sans-serif;
+    width: 950px;
+    padding: 0 10px;
+    margin: 0 auto;
+    border: 2px solid black;
+    background-color: #ffffff;
+}
+
+/* Text formatting */
+p,
+ul,
+ol {
+    font-size: 100%;
+    line-height: 20px;
+    letter-spacing: 0px;
+    text-align: justify;
+}
+
+p {
+    text-indent: 15px;
+}
+
+h1 {
+    font-size: 160%;
+    text-align: center;
+    margin: 20px 0;
+}
+
+h2 {
+    font-size: 125%;
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+/* Unordered and ordered list types */
+ul {
+    list-style-type: square;
+    margin-bottom: 1rem;
+}
+
+ol {
+    list-style-type: lower-roman;
+    margin-bottom: 1rem;
+}
+
+/* Images */
+img {
+    height: 300px;
+    display: block;
+    margin: 0 auto;
+    border: 2px solid blue;
+    box-shadow: 10px 10px 5px gray;
+    border-radius: 10px;
+}
+
+/* Figures */
+figure {
+    margin: 30px auto;
+    text-align: center;
+    border: 2px solid green;
+    border-radius: 25px;
+    padding: 10px;
+    background-color: #f9fff9;
+}
+
+figcaption {
+    font-style: italic;
+    text-align: center;
+    font-size: 90%;
+    margin-top: 10px;
+    color: #444;
+}
+
+/* Class-based formatting */
+.mkbold {
+    font-weight: bold;
+}
+
+.mkunderlined {
+    text-decoration: underline;
+}
+
+.mkitalic {
+    font-style: italic;
+}
+
+/* ID-based targets (blue) — allowed */
+#hcs12,
+#can,
+#buttons {
+    font-weight: bold;
+    color: blue;
+}
+

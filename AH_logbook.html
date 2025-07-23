@@ -1,57 +1,41 @@
-</head>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Alan's Log Book</title>
-
-    <meta name="author" content="Alan Hosseinpour">
-    <meta name="description" content="Weekly engineering logbook entries for Project VI.">
-    <meta name="robots" content="index, follow">
-    <meta http-equiv="pragma" content="no-cache">
-    
-    <!-- Other style or link tags here -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AH Logbook</title>
+  <link rel="stylesheet" href="css/site_style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
 </head>
-
 <body>
- 
-  <h1 id="top"><img src="Images/alana.jpg" alt="Alan working on project"
-    	title="Giga Alan" width="100"/>Personal Engineering Logbook</h1>
+  <div class="container py-4">
+    <!-- Page Title -->
+    <header class="text-center mb-5">
+      <h1 class="display-5">Weekly Log Book</h1>
+      <h2 class="h4 text-muted">Alan Hosseinpour</h2>
+      <img src="Images/alanheadshot.jpg" alt="Alan Hosseinpour" title="Alan at Work" class="img-thumbnail mt-3" style="max-width: 200px;">
+      <h4>"Alan in the lift mode!!"</h4>
+    </header>
 
-  <p><strong>Name:</strong> Alan Hosseinpourmogahdam</p>
-  <p><strong>Project Title:</strong> The Elevator Project</p>
-  <p><strong>Course:</strong> Engineering Project VI</p>
-  <p><strong>Group:</strong> Group 4 </p>
-  <p><strong>Institution:</strong> Conestoga College</p>
-  <p><strong>Term:</strong> Spring 2025</p>
-  <hr/>	
+    <!-- Embedded Iframe -->
+    <section class="mb-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="ratio ratio-16x9">
+            <iframe src="https://docs.google.com/document/d/e/2PACX-1vRYWRNeR_fQOjSDpZDw2eemsJS9n6ypXmN4IzK2T4stH9oUdMWDmb2PEAEWUbSKnCj1Bsojk6tNvcmH/pub?embedded=true" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  <h2>Week 1: STM32CubeIDE Setup and Initial CAN Communication</h2>
-  <p><strong>Date:</strong> May 6th – May 10th, 2025</p>
-  <ul>
-    <li>Installed STM32CubeIDE and created a project using STM32 F303RE Nucleo board.</li>
-    <li>Configured GPIO and NVIC settings as per CUBE IDE guide.</li>
-    <li>Assigned GPIO pins to onboard LEDs and pushbuttons.</li>
-    <li>Generated base project code using STM32 HAL libraries.</li>
-    <li>Wrote and tested CAN transmit and receive functions.</li>
-    <li>Verified functionality by pressing blue pushbutton to activate green LED on both boards for 2 seconds.</li>
-  </ul>
-  <hr/>
-  <h2>Week 2: Code Testing, Elevator Verification, and Remote Access</h2>
-  <p><strong>Date:</strong> May 11th – May 16th, 2025</p>
-  <ul>
-    <li>Tested Part 2 code for LED logic and floor selection through pushbuttons.</li>
-    <li>Verified CAN transmission and elevator weight movement to correct floors.</li>
-    <li>Installed and configured TigerVNC for remote access to Raspberry Pi.</li>
-    <li>Connected to Pi using provided server ID and IP address.</li>
-    <li>Accessed GUI for elevator control and tested floor commands remotely.</li>
-    <li>Drew initial GUI layout and refined it after project feedback.</li>
-    <li>Confirmed reliable LAN communication with Raspberry Pi.</li>
-    <li>Contributed to documentation: updated Test Plan, Status Report, and Project Plan Spreadsheet.</li>
-  </ul>
-	<footer style="margin-top: 40px; text-align: center; font-size:0.9rem;">
-         <p>© 2025 Alan Hosseinpour. All rights reserved.</p>
-	</footer>
+    <!-- Home Page Link -->
+    <div class="text-center">
+      <a class="btn btn-primary" href="index.html">🏠 Home Page</a>
+    </div>
+  </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

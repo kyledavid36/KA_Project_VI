@@ -1,0 +1,24 @@
+Options: 
+
+1. Client and server on same machine: Open two instances of the terminal (in Ubuntu)
+2. Client and server on seprate machines: Open server and client separately (need IP address of server) - Use another computer on the same network with this program or run 2 VMs (make sure to run a 'Bridged' (for Ethernet) or 'NAT' for wireless network connection
+
+To run the programs
+
+2. Navigate to folder with s.c (server) and c.c (client)
+3. Compile both s.c and c.c  
+      gcc -o server server.c
+      gcc -o client client.c
+
+Note: If you don't have gcc installed on your machine then run:
+
+$ sudo apt-get install gcc
+
+From the terminal
+
+4. Run the server via command: ./server
+5. Run the client via command: ./client 127.0.0.1    <-- This means localhost / Otherwise
+				
+					or
+
+				./client IP address of server (use ifconfig to find address of server)
