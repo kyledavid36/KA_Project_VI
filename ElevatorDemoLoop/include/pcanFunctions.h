@@ -5,7 +5,7 @@
 
 // ─────────────────────────────────────────────────────────────
 // PCAN_FUNCTIONS.H
-// AUTHOR: Alan Hpm (Group 4)
+// AUTHOR: Micahel Galle (Intructor) | edited by:  Alan Hpm - Kyle Dick 
 // DESCRIPTION:
 //   Header for CAN transmission, reception, and forwarding logic.
 //   Also declares logCANActivity for CAN_subnetwork diagnostics.
@@ -40,10 +40,19 @@ int pcanTx(int id, int data);
 int pcanRx(int num_msgs);
 
 // Listen for STM (floor) CAN input and forward to elevator controller
-int sc_ec_control();
+//int sc_ec_control();
 
+typedef struct {
+    int senderID;
+    int floor;
+} CANMessage;
+
+CANMessage sc_ec_control();
 // Log CAN activity to diagnostics database
 // Updated signature to match databaseFunctions.h
 //int logCANActivity(int nodeID, const std::string& direction, const std::string& message, const std::string& description);
+
+int getLastRxNodeID();
+
 
 #endif  // PCAN_FUNCTIONS

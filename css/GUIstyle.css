@@ -1,3 +1,14 @@
+/* =============================================================================
+   FILE: elevator_gui_style.css
+   PURPOSE: Stylesheet for the Elevator GUI interface
+   AUTHOR: Alan Hpm & Kyle Dick
+   DESCRIPTION: Contains all layout and styling rules for the elevator control
+                panel interface including buttons, display, and overlay.
+============================================================================= */
+
+/* ========================
+   PAGE RESET AND LAYOUT
+======================== */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -8,6 +19,9 @@ body {
   height: 100vh;
 }
 
+/* ==============================
+   FLOOR DISPLAY BOX STYLING
+============================== */
 .floor-display {
   margin-bottom: 20px;
 }
@@ -22,7 +36,9 @@ body {
   background-color: #eaffea;
 }
 
-
+/* ==========================
+   CONTAINER STYLING BLOCK
+========================== */
 .elevator-container {
   text-align: center;
   background-color: white;
@@ -30,43 +46,28 @@ body {
   border-radius: 1rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-/*
-.hex-button {
-  position: relative;
-  background-color: #4CAF50;
-  color: white;
-  font-size: 1.2rem;
-  border: none;
-  cursor: pointer;
-  width: 100px;
-  height: 55px;
-  margin: 10px;
-  clip-path: polygon(
-    50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%
-  );
-  transition: background-color 0.3s;
-}
 
-.hex-button:hover {
-  background-color: #45a049;
-}
-*/
-
-/* Match floor buttons with current floor display */
+/* ========================================================
+   FLOOR BUTTON STYLING - UNIFORMLY WIDE AND CENTERED
+======================================================== */
 .floor-button {
   width: 100%;
   max-width: 300px;
   margin: 0 auto 10px;
 }
 
-/* Make control buttons uniform size */
+/* ===========================================
+   CONTROL BUTTON STYLING (OPEN, CLOSE, ETC)
+=========================================== */
 .control-button {
   min-width: 120px;
   height: 40px;
   font-size: 16px;
 }
 
-/* Align icons to same size as control buttons */
+/* ==============================================
+   ICON-STYLE BUTTONS (MAINTENANCE, LOG, MIC, ETC)
+================================================ */
 .icon-button {
   min-width: 120px;
   height: 40px;
@@ -78,7 +79,9 @@ body {
   margin: 5px;
 }
 
-
+/* =============================================
+   FLEX ROW LAYOUT FOR GROUPED BUTTON ROWS
+============================================= */
 .button-row {
   display: flex;
   margin: 5px 0;
@@ -92,6 +95,9 @@ body {
   justify-content: center;
 }
 
+/* ==========================
+   YOUTUBE SECTION (OPTIONAL)
+========================== */
 .youtube-section {
   margin-top: 2rem;
 }
@@ -101,6 +107,9 @@ body {
   margin-bottom: 0.5rem;
 }
 
+/* =======================================
+   VOICE OVERLAY STYLING FOR EMERGENCIES
+======================================= */
 #voice-overlay {
   display: none;
   position: fixed;
@@ -121,3 +130,6 @@ body {
   50% { opacity: 0.4; }
 }
 
+/* ========================
+   END OF STYLESHEET
+======================== */

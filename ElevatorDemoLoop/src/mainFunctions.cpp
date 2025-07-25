@@ -3,8 +3,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdlib.h>
 #include <unistd.h> 
+#include <sstream>
+#include <iomanip>
+#include <iostream>
+
 
 // Menu function to display main options and return the user’s choice
 int menu(){
@@ -15,9 +18,9 @@ int menu(){
 		printf("\n\nMenu - Transmit/Receive CAN Messages\n");
 		printf("1. Transmit CAN message using this program\n");
 		printf("2. Receive CAN message(s) using this program\n");
-		printf("3. Control elevator from website\n");
+		printf("3. Website-Controlled Elevator Mode (GUI Request Handling)\n");
 		printf("4. Demo mode - loop\n");
-		printf("5. Supervisory Control with Arduino's direct connection to Elevator Lockout Mode \n");
+		printf("5. Bypass direct air STM to Arduino Maintenance Mode: STM Button → CAN RX → Elevator\n");
 		printf("6. Exit program\n");
 		printf("\nYour choice: ");
 		scanf("%d", &usrchoice);
@@ -144,20 +147,34 @@ int HexFromFloor(int floorVal) {
 }
 
 // Convert CAN message hex value to corresponding floor number
-int FloorFromHex(int Hex){
-		
-	switch(Hex) {
-		case GO_TO_FLOOR1:
-			return(1);
-			break;
-		case GO_TO_FLOOR2:
-			return(2);
-			break;
-		case GO_TO_FLOOR3:
-			return(3);
-			break;
-		default:
-			// On invalid hex, default to floor 1
-			return(1);							
-		}
+int FloorFromHex(int hex) {
+    switch (hex) {
+        case 0x01: return 1;  // GUI
+        case 0x02: return 2;
+        case 0x03: return 3;
+        case 0x05: return 1;  // STM
+        case 0x06: return 2;
+        case 0x07: return 3;
+        default:
+            std::cerr << "Invalid floor code received: 0x" << std::hex << hex << std::endl;
+            return -1;
+    }
 }
+
+std::string getNodeSource(uint16_t nodeID) {
+    switch (nodeID) {
+        case 0x0201: return "STM Floor 1 NucleoShield";
+        case 0x0202: return "STM Floor 2 NucleoShield";
+        case 0x0203: return "STM Floor 3 NucleoShield";
+        case 0x0101: return "Elevator Controller";
+        default:     return "Unknown Device";
+    }
+}
+
+std::string to_hex(uint16_t num) {
+    std::stringstream ss;
+    ss << std::hex << std::uppercase << num;
+    return ss.str();
+}
+
+

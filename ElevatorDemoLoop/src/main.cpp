@@ -1,57 +1,83 @@
-// Include custom header files for PCAN functions, database functions, and main functions
+// ╔════════════════════════════════════════════════════════════════════════╗
+// ║ FILE: main.cpp                                                         ║
+// ║ AUTHORS: Alan Hpm, Kyle Dick                                           ║
+// ║ PURPOSE:                                                               ║
+// ║  - Main control loop for CAN-based elevator system on Raspberry Pi     ║
+// ║  - Communicates with GUI, STM32 nodes, CAN bus, and MySQL backend      ║
+// ║  - Supports multiple operating modes: manual, GUI, demo, maintenance   ║
+// ║ DEPENDENCIES:                                                          ║
+// ║  - pcanFunctions.h, databaseFunctions.h, mainFunctions.h               ║
+// ╚════════════════════════════════════════════════════════════════════════╝
+
+// ─── Include Custom Headers ──────────────────────────────────────────────
 #include "../include/pcanFunctions.h"
 #include "../include/databaseFunctions.h"
 #include "../include/mainFunctions.h"
 
-// Include standard C/C++ libraries
+// ─── Include Standard Libraries ──────────────────────────────────────────
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h> 
 #include <iostream>
+#include <sstream>
+#include <string>
 
 using namespace std;
 
-// ******************************************************************
-// Main program starts here
-int main() {
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║ FUNCTION: main                                                       ║
+// ║ DESCRIPTION:                                                         ║
+// ║ - Entry point for main program loop.                                ║
+// ║ - Handles menu options and routes control flow to CAN actions.      ║
+// ╚══════════════════════════════════════════════════════════════════════╝
+int main(int argc, char* argv[]) {
 
-    // Variable declarations
-    int choice;                    // User choice for menu option
-    int ID;                        // CAN ID to transmit
-    int data;                      // Message data to transmit
-    int numRx;                     // Number of messages to receive
-    int floorNumber = 1;           // Current floor number
-    int prev_floorNumber = 1;      // Previous floor number (for comparison)
+    // ─── VARIABLE DECLARATIONS ─────────────────────────────
+    int choice;
+    int ID;
+    int data;
+    int numRx;
+    int floorNumber = 1;
+    int prev_floorNumber = 1;
 
-    // Infinite loop for continuous program operation
+    // ─── MAIN MENU LOOP ─────────────────────────────────────
     while(1) {
-        system("@cls||clear");     // Clear the console screen
-        choice = menu();           // Show menu and get user's choice
+        system("@cls||clear");
+        choice = menu();
 
         switch (choice) {
-            case 1: 
-                // Manual transmission of a message
-                ID = chooseID();                // User selects CAN ID
-                data = chooseMsg();             // User selects message data
-                pcanTx(ID, data);               // Transmit CAN message
-                db_setFloorNum(FloorFromHex(data));  // Update database floor number
-                break; 
-                
+            // ─────────────────────────────────────────────
+            // CASE 1: MANUAL CAN TRANSMISSION
+            case 1:
+                ID = chooseID();
+                data = chooseMsg();
+                pcanTx(ID, data);
+                db_setFloorNum(FloorFromHex(data));
+                break;
+
+            // ─────────────────────────────────────────────
+            // CASE 2: MANUAL CAN RECEIVING
             case 2:
-                // Manual receiving of CAN messages
                 printf("\nHow many messages to receive? ");
                 scanf("%d", &numRx);
-                pcanRx(numRx);                  // Call function to receive messages
+                pcanRx(numRx);
                 break;
-                
+
+            // ─────────────────────────────────────────────
+            // CASE 3: GUI FLOOR REQUEST LISTENER MODE
+            // Purpose:
+            //   - Starts by sending elevator to Floor 1
+            //   - Continuously polls database for GUI floor request
+            //   - If floor has changed, it:
+            //       1. Converts to CAN hex
+            //       2. Sends CAN TX command to elevator controller
+            //       3. Logs to CAN_subnetwork and elevatorNetwork
             case 3:
                 std::cout << "\n[MODE 3] Listening to GUI floor requests..." << std::endl;
 
-                // Step 1: Start on floor 1
                 pcanTx(ID_SC_TO_EC, GO_TO_FLOOR1);
                 db_setFloorNum(1);
                 logCANActivity(ID_SC_TO_EC, "TX", "0x01", "Initialize to Floor 1");
-                
 
                 while (true) {
                     int floorNumber = db_getFloorNum();
@@ -59,27 +85,24 @@ int main() {
                     if (floorNumber != prev_floorNumber) {
                         std::cout << "Detected floor change request: " << floorNumber << std::endl;
 
-                        // Convert to CAN hex message and send
                         int hexMsg = HexFromFloor(floorNumber);
                         pcanTx(ID_SC_TO_EC, hexMsg);
 
-                        // Log to CAN_subnetwork
                         std::stringstream msgHex;
                         msgHex << "0x" << std::hex << hexMsg;
                         logCANActivity(ID_SC_TO_EC, "TX", msgHex.str(), "GUI requested floor " + std::to_string(floorNumber));
 
-                        // Update state in elevatorNetwork
                         db_setFloorNum(floorNumber);
                         prev_floorNumber = floorNumber;
                     }
-
-                    sleep(1); // Poll once per second
+                    sleep(1);
                 }
                 break;
 
-                
+            // ─────────────────────────────────────────────
+            // CASE 4: DEMO MODE
+            // Loops between all 3 floors automatically every 20 seconds.
             case 4:
-                // Demo mode: Automatically loop between floors
                 printf("\nDemo Mode - loop from floor to floor - press ctrl-z to cancel\n");
                 while(1) {
                     pcanTx(ID_SC_TO_EC, GO_TO_FLOOR1);
@@ -93,33 +116,55 @@ int main() {
                     sleep(20);
                 }
                 break;
-                
-            case 5: 
-                // *** NEW OPTION ADDED: Listen for STM input directly and send it to Arduino ***
-                // This mode bypasses the Arduino's air communication and directly forwards STM messages to the Arduino.
-                while(1){
-                    data = sc_ec_control();         // Listen for STM input (floor button press)
-                    db_setFloorNum(data);           // Update floor number in DB with received STM message
+
+            // ─────────────────────────────────────────────
+            // CASE 5: MAINTENANCE MODE (STM32 BUTTON INPUT)
+            // Purpose:
+            //   - Listens to CAN RX messages from STM32 NodeIDs
+            //   - Interprets message as a floor request
+            //   - Updates MySQL and logs to CAN_subnetwork and elevatorNetwork
+            case 5:
+                std::cout << "[MODE 5] Maintenance Mode Activated - STM input directly to elevator controller\n";
+
+                while (true) {
+                    CANMessage msg = sc_ec_control();  // Blocking CAN RX function
+
+                    int decodedFloor = FloorFromHex(msg.floor);  // Convert 0x05, 0x06, 0x07 to 1, 2, 3
+                    int senderID = msg.senderID;
+
+                    if (decodedFloor >= 1 && decodedFloor <= 3) {
+                        db_setFloorNum(decodedFloor);
+
+                        std::string canMsgHex = "0x" + to_hex(msg.floor);  // Still log original CAN hex
+                        std::string source = getNodeSource(senderID);
+                        std::string info = "STM button (NodeID 0x" + to_hex(senderID) + ") requested floor " + std::to_string(decodedFloor);
+
+                        logCANActivity(senderID, "RX", canMsgHex, source);
+                        logElevatorRequest(257, decodedFloor, decodedFloor, source, "FLOOR_REQUEST");
+                    } else {
+                        std::cout << "?? Invalid floor received: 0x" << std::hex << msg.floor 
+                                  << " from STM NodeID 0x" << std::hex << senderID << std::endl;
+                    }
+
+                    sleep(1);
                 }
                 break;
-            
+
+            // ─────────────────────────────────────────────
+            // CASE 6: EXIT
             case 6:
-                // Exit the program
                 return(0);
 
+            // ─────────────────────────────────────────────
+            // DEFAULT: Invalid menu input
             default:
-                // Handle invalid input
                 printf("Error on input values");
                 sleep(3);
                 break;
         }
-        sleep(1);   // Delay between menu operations
+
+        if (argc > 1) break; // Auto-trigger mode
+        sleep(1); // Delay before next loop
     }
-
-    return(0);      // End of program
+    return(0);
 }
-
-
-
-	
- 

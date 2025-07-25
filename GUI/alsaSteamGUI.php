@@ -9,6 +9,29 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 ?>
 
 
+<!-- ===========================================================
+  FILE: alsaSteamGUI.php
+  TITLE: Steampunk Elevator GUI Interface
+  AUTHOR: Alan Hpm and Kyle Dick
+  PURPOSE:
+    This HTML file serves as the main graphical user interface (GUI)
+    for the elevator control system. It allows authenticated users to:
+      - Request elevator floors
+      - Open/close doors
+      - Enter maintenance and Sabbath modes
+      - Trigger emergency calls
+    It connects with backend PHP scripts (updateFloor.php, fetchFloor.php)
+    and communicates with Raspberry Pi CAN system and audio triggers.
+  DEPENDENCIES:
+    - ../php/updateFloor.php (POST floor requests)
+    - ../php/fetchFloor.php (GET current floor)
+    - ../php/GUI_login.php (Session login)
+    - audio/*.mp3 files for cues
+    - maintenance.html, changelog.html, SteamGUI.html
+    - Python/C++ backend trigger scripts (maintenance mode, emergency)
+=========================================================== -->
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -197,6 +220,26 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             background: radial-gradient(circle, #b71c1c, #7f0000);
             border-color: #660000;
         }
+
+        /* Position the logout button in the bottom-right corner */
+        #logout-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        /* Adjustments to match floor-button size but keep it square */
+        #logout-button {
+            width: 60px;
+            height: 60px;
+            font-size: 10px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         
         /* ==========================================================================
            ANIMATION STYLES
@@ -244,6 +287,11 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             </div>
         </main>
     </div>
+            <!-- Logout Button in Bottom-Right Corner -->
+        <div id="logout-container">
+            <button class="floor-button" id="logout-button" title="Logout">Logout</button>
+        </div>
+
 
     <audio id="ding-sound" src="audio/ding.mp3" preload="auto"></audio>
     <audio id="door-open" src="audio/ElevatorOpeningFinal.mp3" preload="auto"></audio>
@@ -257,11 +305,22 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     <audio id="shaft-exit-sound" src="audio/shaftExit.mp3" preload="auto"></audio>
 
     <script>
-        /* ==========================================================================
-           JAVASCRIPT LOGIC
-           ========================================================================== */
+        /* =============================================================================
+           JAVASCRIPT LOGIC FOR ELEVATOR GUI INTERFACE
+           -----------------------------------------------------------------------------
+           FILE: alsaSteamGUI.html (JavaScript Section)
+           PURPOSE:
+             - Handles user interactions and audio feedback for elevator operation
+             - Sends floor requests to backend (updateFloor.php)
+             - Controls Maintenance Mode and Sabbath Mode logic
+             - Interfaces with CAN system and emergency audio trigger
+        ============================================================================= */
 
-        // --- SECTION 1: DOM ELEMENT CACHING & GLOBAL STATE ---
+        /* ============================================================================
+           SECTION 1: DOM ELEMENT CACHING & GLOBAL STATE
+           - Stores references to all interactive DOM elements
+           - Declares audio elements and mode state flags
+        ============================================================================ */
         const floorDisplay = document.getElementById('current-floor');
         const openButton = document.getElementById('open-door');
         const closeButton = document.getElementById('close-door');
@@ -288,13 +347,16 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         const isMaintenanceMode = urlParams.get('mode') === 'maintenance';
 
         let isSabbathModeActive = false;
-        let sabbathLoopTimeout; 
+        let sabbathLoopTimeout;
 
-
-        // --- SECTION 2: EVENT LISTENERS ---
+        /* ============================================================================
+           SECTION 2: EVENT LISTENERS
+           ----------------------------------------------------------------------------
+           A. Generic button lighting and click sound (excluding mic/emergency buttons)
+        ============================================================================ */
         allButtons.forEach(button => {
             if (button.id === 'emergency-call-button' || button.id === 'mic-button') return;
-            
+
             button.addEventListener('click', () => {
                 const isDoorButton = button.id === 'open-door' || button.id === 'close-door';
                 if (!isMaintenanceMode || !isDoorButton) {
@@ -305,11 +367,12 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             });
         });
 
-        let floorRequestInProgress = false; // Flag to prevent duplicate submissions
+        // --- B. Floor Button Request Handling ---
+        let floorRequestInProgress = false;
 
         floorButtons.forEach(button => {
             button.addEventListener('click', () => {
-                if (floorRequestInProgress) return; // Prevent rapid multiple clicks
+                if (floorRequestInProgress) return;
                 floorRequestInProgress = true;
 
                 const floorNumber = button.innerText.trim();
@@ -332,29 +395,26 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                     console.error("❌ Error sending request:", error);
                 })
                 .finally(() => {
-                    // Unlock after 2.5 seconds (after audio finishes)
-                    setTimeout(() => {
-                        floorRequestInProgress = false;
-                    }, 2500);
+                    setTimeout(() => { floorRequestInProgress = false; }, 2500);
                 });
 
-                // Play elevator movement sounds
+                // Audio simulation for elevator movement
                 setTimeout(() => { if (screechSound) screechSound.currentTime = 0, screechSound.play(); }, 200);
                 setTimeout(() => { if (dingSound) dingSound.currentTime = 0, dingSound.play(); }, 4800);
                 setTimeout(() => {
-                    if (floorNumber === '1' && floor1Sound) floor1Sound.currentTime = 0, floor1Sound.play();
-                    else if (floorNumber === '2' && floor2Sound) floor2Sound.currentTime = 0, floor2Sound.play();
-                    else if (floorNumber === '3' && floor3Sound) floor3Sound.currentTime = 0, floor3Sound.play();
+                    if (floorNumber === '1' && floor1Sound) floor1Sound.play();
+                    else if (floorNumber === '2' && floor2Sound) floor2Sound.play();
+                    else if (floorNumber === '3' && floor3Sound) floor3Sound.play();
                 }, 5200);
             });
         });
 
-        
+        // --- C. Door Controls ---
         openButton.addEventListener('click', () => {
             if (isMaintenanceMode) {
-                if (shaftExitSound) { shaftExitSound.currentTime = 0; shaftExitSound.play(); }
+                shaftExitSound?.play();
             } else {
-                setTimeout(() => { if (openSound) { openSound.currentTime = 0; openSound.play(); } }, 1500);
+                setTimeout(() => { openSound?.play(); }, 1500);
                 setTimeout(() => {
                     const currentFloor = floorDisplay.value.trim();
                     if (currentFloor === '1') window.location.href = 'floor1GUI.html';
@@ -366,15 +426,16 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
         closeButton.addEventListener('click', () => {
             if (isMaintenanceMode) {
-                if (shaftExitSound) { shaftExitSound.currentTime = 0; shaftExitSound.play(); }
+                shaftExitSound?.play();
             } else {
-                setTimeout(() => { if (closeSound) { closeSound.currentTime = 0; closeSound.play(); } }, 500);
+                setTimeout(() => { closeSound?.play(); }, 500);
                 floorButtons.forEach(btn => (btn.disabled = false));
                 micButton.disabled = false;
                 closeButton.classList.remove('locked');
             }
         });
 
+        // --- D. Maintenance Mode Toggle ---
         maintenanceButton.addEventListener('click', () => {
             if (isMaintenanceMode) {
                 functionDisplay.textContent = 'EXITING...';
@@ -384,87 +445,81 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             }
         });
 
+        // --- E. Log Button ---
         logButton.addEventListener('click', () => { window.location.href = '../changelog.html'; });
 
+        /* ============================================================================
+           FUNCTION: sabbathLoop()
+           ----------------------------------------------------------------------------
+           - Recursively loops between floors simulating automatic Sabbath Mode
+           - Updates visual and audio indicators accordingly
+        ============================================================================ */
         function sabbathLoop(targetFloor, direction) {
             if (!isSabbathModeActive) {
-                console.log("Sabbath loop finishing gracefully.");
                 functionDisplay.textContent = 'EXITING...';
                 setTimeout(() => { window.location.reload(); }, 1500);
-                return; 
+                return;
             }
 
-            console.log(`Sabbath Mode: Moving to floor ${targetFloor}`);
             functionDisplay.textContent = `GOING TO ${targetFloor}`;
-            
-            setTimeout(() => { if (screechSound) screechSound.play(); }, 200);
-            setTimeout(() => { if (dingSound) dingSound.play(); }, 4800);
-            
+            screechSound?.play();
+            setTimeout(() => { dingSound?.play(); }, 4800);
             setTimeout(() => {
                 floorDisplay.value = targetFloor;
                 functionDisplay.textContent = `FLOOR ${targetFloor}`;
-                if (targetFloor === 1 && floor1Sound) floor1Sound.play();
-                else if (targetFloor === 2 && floor2Sound) floor2Sound.play();
-                else if (targetFloor === 3 && floor3Sound) floor3Sound.play();
+                if (targetFloor === 1) floor1Sound?.play();
+                else if (targetFloor === 2) floor2Sound?.play();
+                else if (targetFloor === 3) floor3Sound?.play();
             }, 5200);
 
             sabbathLoopTimeout = setTimeout(() => {
-                let nextFloor, nextDirection = direction;
-                if (direction === 'down') {
-                    nextFloor = (targetFloor > 1) ? targetFloor - 1 : 2;
-                    if (targetFloor === 1) nextDirection = 'up';
-                } else { 
-                    nextFloor = (targetFloor < 3) ? targetFloor + 1 : 2;
-                    if (targetFloor === 3) nextDirection = 'down';
-                }
+                let nextFloor = direction === 'down' ? (targetFloor > 1 ? targetFloor - 1 : 2) : (targetFloor < 3 ? targetFloor + 1 : 2);
+                let nextDirection = (targetFloor === 1) ? 'up' : (targetFloor === 3) ? 'down' : direction;
                 sabbathLoop(nextFloor, nextDirection);
-            }, 10200); 
+            }, 10200);
         }
 
+        // --- F. Sabbath Mode Mic Button ---
         micButton.addEventListener('click', () => {
-            if (clickSound) clickSound.play();
+            clickSound?.play();
             isSabbathModeActive = !isSabbathModeActive;
 
             if (isSabbathModeActive) {
                 functionDisplay.textContent = 'SABBATH MODE';
                 micButton.classList.add('listening');
-
-                // *** MODIFICATION START ***
-                // This loop now also checks for 'emergency-call-button' to keep it enabled.
                 allButtons.forEach(btn => {
                     if (btn.id !== 'mic-button' && btn.id !== 'emergency-call-button') {
                         btn.disabled = true;
                         btn.style.cursor = 'not-allowed';
                     }
                 });
-                // *** MODIFICATION END ***
-                
                 setTimeout(() => sabbathLoop(2, 'down'), 1500);
-
             } else {
                 functionDisplay.textContent = 'FINISHING MOVE...';
                 micButton.classList.remove('listening');
             }
         });
 
+        // --- G. Emergency Call Button ---
         emergencyCallButton.addEventListener('click', () => {
-            if (emergencySound) { emergencySound.currentTime = 0; emergencySound.play(); }
+            emergencySound?.play();
             const TRIGGER_URL = 'http://localhost:8080/start_emergency';
             functionDisplay.textContent = 'CALLING...';
             emergencyCallButton.classList.add('calling');
             emergencyCallButton.disabled = true;
-            fetch(TRIGGER_URL, { mode: 'no-cors' })
-            .catch(error => console.log('Fetch triggered the Emergency client. The error is expected:', error));
+            fetch(TRIGGER_URL, { mode: 'no-cors' }).catch(err => console.log('Trigger error (expected):', err));
         });
-        
-        if (emergencySound) {
-            emergencySound.addEventListener('ended', () => {
-                functionDisplay.textContent = 'CALL ESTABLISHED';
-                functionDisplay.style.color = '#76ff03'; 
-            });
-        }
 
-        // --- SECTION 3: PAGE INITIALIZATION ---
+        emergencySound?.addEventListener('ended', () => {
+            functionDisplay.textContent = 'CALL ESTABLISHED';
+            functionDisplay.style.color = '#76ff03';
+        });
+
+        /* ============================================================================
+           SECTION 3: PAGE INITIALIZATION ON LOAD
+           - Checks if in maintenance mode and disables/enables controls accordingly
+           - Fetches current floor from backend on startup
+        ============================================================================ */
         document.addEventListener('DOMContentLoaded', () => {
             if (isMaintenanceMode) {
                 functionDisplay.textContent = 'MAINTENANCE MODE';
@@ -480,23 +535,39 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                 maintenanceButton.style.cursor = 'pointer';
                 closeButton.classList.remove('locked');
             } else {
-                // This is the default state for Normal Mode on page load.
                 floorButtons.forEach(btn => (btn.disabled = true));
                 micButton.disabled = true;
                 closeButton.classList.add('locked');
             }
+
             fetch('../php/fetchFloor.php')
                 .then(response => response.json())
                 .then(data => {
-                    const latestFloor = data.floor || '1'; // fallback if DB fails
+                    const latestFloor = data.floor || '1';
                     floorDisplay.value = latestFloor;
                     console.log("✅ Initialized with DB floor:", latestFloor);
                 })
                 .catch(error => {
                     console.error("❌ Error fetching floor from DB:", error);
-                    floorDisplay.value = '1'; // fallback
+                    floorDisplay.value = '1';
                 });
         });
+
+        // Trigger C++ maintenance listener via fetch if in maintenance mode
+        window.addEventListener('DOMContentLoaded', () => {
+            if (urlParams.get('mode') === 'maintenance') {
+                fetch('http://localhost:8090/start')
+                    .then(response => response.text())
+                    .then(msg => console.log("🛠️ Maintenance mode triggered:", msg))
+                    .catch(err => console.error("⚠️ Failed to trigger maintenance mode:", err));
+            }
+        });
+
+        document.getElementById('logout-button').addEventListener('click', () => {
+            window.location.href = '../php/GUI_logout.php';
+        });
     </script>
+
+
 </body>
 </html>

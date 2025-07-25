@@ -20,6 +20,6 @@ session_destroy();
 
 // === 3. REDIRECT TO LOGIN PAGE ===
 // After logging out, user is returned to the login screen
-header("Location: ../GUI_login.html");
+header("Location: GUI_login.php");
 exit;
 ?>

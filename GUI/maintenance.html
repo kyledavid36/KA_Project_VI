@@ -1,21 +1,35 @@
+<!-- ============================================================================
+  FILE: maintenance.html
+  AUTHOR: Alan Hpm & Kyle Dick
+  PURPOSE:
+    - Provides a secure access interface for Maintenance Mode in Project VI.
+    - Uses a PIN-protected steampunk-themed GUI for maintenance personnel.
+    - On successful PIN entry, redirects to alsaSteamGUI.html in maintenance mode.
+    - Features audio feedback (beep and unlock) and supports multiple valid PINs.
+  DEPENDENCIES:
+    - Bootstrap 5 (CDN)
+    - Google Fonts (Cinzel)
+    - Audio: /audio/beep2.mp3, /audio/enterUnlock.mp3
+    - Image: /Images/metal.jpg
+============================================================================ -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- ==== META & EXTERNAL STYLES ==== -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Maintenance Access</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap"
-      rel="stylesheet"
-    />
+
+    <!-- Bootstrap & Google Fonts -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet" />
+
+    <!-- ==== INTERNAL STYLE FOR MAINTENANCE UI ==== -->
     <style>
-        /* Reusing the Steampunk theme from the main GUI */
+        /* Background & Typography */
         body {
-            background: url('Images/metal.jpg') no-repeat center center fixed;
+            background: url('Images/goldelevator.png') no-repeat center center fixed;
             background-size: cover;
             font-family: 'Cinzel', serif;
             color: #f0e6d2;
@@ -33,6 +47,7 @@
             margin-top: 40px;
         }
 
+        /* PIN Display Styling */
         #pin-display {
             background-color: #111;
             color: #ffc107;
@@ -48,6 +63,7 @@
             box-shadow: 0 0 10px #8b6f47, inset 0 0 15px #000;
         }
 
+        /* Keypad Styling */
         .keypad-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -78,7 +94,7 @@
             font-size: 1.2rem;
             color: #ff4d4d; /* Default to error color */
         }
-        
+
         .back-button {
             margin-top: 20px;
             background: radial-gradient(circle, #6c757d, #343a40);
@@ -86,13 +102,16 @@
         }
     </style>
 </head>
+
 <body>
+    <!-- ==== MAIN CONTENT AREA ==== -->
     <div class="container">
         <main>
             <h1>Maintenance Access</h1>
             <div id="pin-display" readonly>----</div>
             <p id="status-message" class="mt-2"></p>
-            
+
+            <!-- Keypad Interface -->
             <div class="keypad-container">
                 <button class="keypad-button" data-key="1">1</button>
                 <button class="keypad-button" data-key="2">2</button>
@@ -108,13 +127,16 @@
                 <button class="keypad-button" data-key="enter">ENT</button>
             </div>
 
+            <!-- Back Button -->
             <button class="keypad-button back-button" onclick="window.location.href='alsaSteamGUI.html'">Back</button>
         </main>
     </div>
 
+    <!-- ==== AUDIO FEEDBACK ==== -->
     <audio id="beep-sound" src="audio/beep2.mp3" preload="auto"></audio>
     <audio id="unlock-sound" src="audio/enterUnlock.mp3" preload="auto"></audio>
 
+    <!-- ==== SCRIPT FOR PIN VALIDATION AND REDIRECT ==== -->
     <script>
         const pinDisplay = document.getElementById('pin-display');
         const statusMessage = document.getElementById('status-message');
@@ -122,16 +144,18 @@
         const beepSound = document.getElementById('beep-sound');
         const unlockSound = document.getElementById('unlock-sound');
 
+        // Valid maintenance codes
         const validCodes = ['6287', '5132'];
         let currentPin = '';
 
+        // Updates visual PIN display
         const updateDisplay = () => {
             pinDisplay.textContent = currentPin.padEnd(4, '-');
         };
 
+        // Attach event listeners to all keypad buttons
         keypadButtons.forEach(button => {
             button.addEventListener('click', () => {
-                // Play beep sound for every button press
                 if (beepSound) {
                     beepSound.currentTime = 0;
                     beepSound.play();
@@ -140,32 +164,28 @@
                 const key = button.dataset.key;
 
                 if (key === 'enter') {
-                    // Check code
+                    // On Enter: Validate PIN
                     if (validCodes.includes(currentPin)) {
-                        // Play unlock sound on correct code
-                        if(unlockSound) {
+                        if (unlockSound) {
                             unlockSound.currentTime = 0;
                             unlockSound.play();
                         }
                         statusMessage.textContent = 'Access Granted. Redirecting...';
-                        statusMessage.style.color = '#76ff03'; // Green for success
+                        statusMessage.style.color = '#76ff03'; // Success green
                         setTimeout(() => {
                             window.location.href = 'alsaSteamGUI.html?mode=maintenance';
                         }, 2800);
                     } else {
-                        // On wrong code, only the beep has played, which is correct.
                         statusMessage.textContent = 'ACCESS DENIED';
-                        statusMessage.style.color = '#ff4d4d'; // Red for error
+                        statusMessage.style.color = '#ff4d4d'; // Error red
                         currentPin = '';
                         updateDisplay();
                     }
                 } else if (key === 'clear') {
-                    // Clear pin
                     currentPin = '';
                     statusMessage.textContent = '';
                     updateDisplay();
-                } else if (key) { // Ensure it's a number key, not the 'Back' button
-                    // Append digit if PIN is not too long
+                } else if (key) {
                     if (currentPin.length < 9) {
                         currentPin += key;
                         updateDisplay();

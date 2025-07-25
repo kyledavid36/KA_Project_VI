@@ -1,11 +1,11 @@
 // FILE: pcanFunctions.cpp
 // DESCRIPTION: Handles CAN transmission and reception for elevator control system.
 //              Logs all TX/RX CAN activity to database using logCANActivity().
-// AUTHOR: Alan (Group 4)
+// AUTHOR: Michael Galle (Intructor) | Edited by: Alan Hpm (Group 4)
 
 #include "../include/pcanFunctions.h"
 #include "../include/databaseFunctions.h"  // For logging CAN activity
-
+#include "../include/mainFunctions.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -96,40 +96,68 @@ int pcanRx(int num_msgs){
 // PURPOSE : Listens for STM node floor inputs (201, 202, 203) and relays to Elevator Controller
 // LOGGING : Logs STM RX messages and TX to elevator controller
 // ===========================================================================
-int sc_ec_control(){
-    int circle = 0;
+CANMessage sc_ec_control() {
+    CANMessage msg;
+    msg.senderID = 0;
+    msg.floor = -1;
+
+    TPCANMsg Rxmsg;
+
+    // Open CAN
     h2 = LINUX_CAN_Open("/dev/pcanusb32", O_RDWR);
     status = CAN_Init(h2, CAN_BAUD_125K, CAN_INIT_TYPE_ST);
     status = CAN_Status(h2);
 
     system("@cls||clear");
-    printf("\nWaiting for STM Floor Input\n");
+    printf("\n🟡 Waiting for STM Floor Input...\n");
 
-    while(circle != 1) {
-        while((status = CAN_Read(h2, &Rxmsg)) == PCAN_RECEIVE_QUEUE_EMPTY){
+    while (true) {
+        while ((status = CAN_Read(h2, &Rxmsg)) == PCAN_RECEIVE_QUEUE_EMPTY) {
             sleep(1);
         }
-        if(status != PCAN_NO_ERROR) {
+
+        if (status != PCAN_NO_ERROR) {
             printf("Error 0x%x\n", (int)status);
         }
 
-        if(Rxmsg.ID == 0x201 || Rxmsg.ID == 0x202 || Rxmsg.ID == 0x203) {
+        if (Rxmsg.ID == 0x201 || Rxmsg.ID == 0x202 || Rxmsg.ID == 0x203) {
             printf("  - R ID:%4x LEN:%1x DATA:%02x \n",
-                (int)Rxmsg.ID, 
-                (int)Rxmsg.LEN,
-                (int)Rxmsg.DATA[0]);
+                   (int)Rxmsg.ID,
+                   (int)Rxmsg.LEN,
+                   (int)Rxmsg.DATA[0]);
 
-            // ✅ Log RX from STM
+            int rawFloor = (int)Rxmsg.DATA[0];
+            int decodedFloor = FloorFromHex(rawFloor);
+
+            msg.senderID = Rxmsg.ID;
+            msg.floor = rawFloor;
+
+            // ✅ Log RX from STM to CAN_subnetwork
             std::stringstream stmMsg;
             stmMsg << "0x" << std::hex << static_cast<int>(Rxmsg.DATA[0]);
             logCANActivity(Rxmsg.ID, "RX", stmMsg.str(), "STM floor request");
 
-            // ✅ Forward to Elevator Controller (SC → EC)
-            pcanTx(0x100, (int)Rxmsg.DATA[0]);
-            circle = 1;
+            // ✅ Forward floor to Elevator Controller
+            pcanTx(0x100, floor);
+
+            // ✅ Log to elevatorNetwork table
+            std::string desc = getNodeSource(Rxmsg.ID);
+            logElevatorRequest(257, decodedFloor, decodedFloor, desc, "FLOOR_REQUEST");
+
+            break;  // exit after one valid message
         }
     }
 
     CAN_Close(h2);
-    return ((int)Rxmsg.DATA[0]);
+    return msg;
+}
+
+
+// ===========================================================================
+// FUNCTION: getLastRxNodeID
+// PURPOSE : Returns the most recent CAN RX Node ID
+// ===========================================================================
+
+int getLastRxNodeID() {
+    return (int)Rxmsg.ID;
 }

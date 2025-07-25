@@ -245,11 +245,22 @@
     <audio id="shaft-exit-sound" src="audio/shaftExit.mp3" preload="auto"></audio>
 
     <script>
-        /* ==========================================================================
-           JAVASCRIPT LOGIC
-           ========================================================================== */
+        /* =============================================================================
+           JAVASCRIPT LOGIC FOR ELEVATOR GUI INTERFACE
+           -----------------------------------------------------------------------------
+           FILE: alsaSteamGUI.html (JavaScript Section)
+           PURPOSE:
+             - Handles user interactions and audio feedback for elevator operation
+             - Sends floor requests to backend (updateFloor.php)
+             - Controls Maintenance Mode and Sabbath Mode logic
+             - Interfaces with CAN system and emergency audio trigger
+        ============================================================================= */
 
-        // --- SECTION 1: DOM ELEMENT CACHING & GLOBAL STATE ---
+        /* ============================================================================
+           SECTION 1: DOM ELEMENT CACHING & GLOBAL STATE
+           - Stores references to all interactive DOM elements
+           - Declares audio elements and mode state flags
+        ============================================================================ */
         const floorDisplay = document.getElementById('current-floor');
         const openButton = document.getElementById('open-door');
         const closeButton = document.getElementById('close-door');
@@ -276,13 +287,16 @@
         const isMaintenanceMode = urlParams.get('mode') === 'maintenance';
 
         let isSabbathModeActive = false;
-        let sabbathLoopTimeout; 
+        let sabbathLoopTimeout;
 
-
-        // --- SECTION 2: EVENT LISTENERS ---
+        /* ============================================================================
+           SECTION 2: EVENT LISTENERS
+           ----------------------------------------------------------------------------
+           A. Generic button lighting and click sound (excluding mic/emergency buttons)
+        ============================================================================ */
         allButtons.forEach(button => {
             if (button.id === 'emergency-call-button' || button.id === 'mic-button') return;
-            
+
             button.addEventListener('click', () => {
                 const isDoorButton = button.id === 'open-door' || button.id === 'close-door';
                 if (!isMaintenanceMode || !isDoorButton) {
@@ -293,35 +307,54 @@
             });
         });
 
+        // --- B. Floor Button Request Handling ---
+        let floorRequestInProgress = false;
+
         floorButtons.forEach(button => {
             button.addEventListener('click', () => {
-                const floorNumber = button.innerText;
-                floorDisplay.value = floorNumber; 
+                if (floorRequestInProgress) return;
+                floorRequestInProgress = true;
+
+                const floorNumber = button.innerText.trim();
+                floorDisplay.value = floorNumber;
 
                 fetch('../php/updateFloor.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: 'floor=' + encodeURIComponent(floorNumber)
-                }).then(response => response.json()).then(data => {
-                    if (data.success) console.log("✅ Floor updated in DB: " + data.floor);
-                    else console.error("❌ Floor update failed: " + (data.message || 'No error message'));
-                }).catch(error => console.error("❌ Error sending request:", error));
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log("✅ Floor updated in DB: " + data.floor);
+                    } else {
+                        console.error("❌ Floor update failed: " + (data.message || 'No error message'));
+                    }
+                })
+                .catch(error => {
+                    console.error("❌ Error sending request:", error);
+                })
+                .finally(() => {
+                    setTimeout(() => { floorRequestInProgress = false; }, 2500);
+                });
 
-                setTimeout(() => { if (screechSound) { screechSound.currentTime = 0; screechSound.play(); } }, 200);
-                setTimeout(() => { if (dingSound) { dingSound.currentTime = 0; dingSound.play(); } }, 4800);
+                // Audio simulation for elevator movement
+                setTimeout(() => { if (screechSound) screechSound.currentTime = 0, screechSound.play(); }, 200);
+                setTimeout(() => { if (dingSound) dingSound.currentTime = 0, dingSound.play(); }, 4800);
                 setTimeout(() => {
-                    if (floorNumber === '1' && floor1Sound) { floor1Sound.currentTime = 0; floor1Sound.play(); }
-                    else if (floorNumber === '2' && floor2Sound) { floor2Sound.currentTime = 0; floor2Sound.play(); }
-                    else if (floorNumber === '3' && floor3Sound) { floor3Sound.currentTime = 0; floor3Sound.play(); }
+                    if (floorNumber === '1' && floor1Sound) floor1Sound.play();
+                    else if (floorNumber === '2' && floor2Sound) floor2Sound.play();
+                    else if (floorNumber === '3' && floor3Sound) floor3Sound.play();
                 }, 5200);
             });
         });
-        
+
+        // --- C. Door Controls ---
         openButton.addEventListener('click', () => {
             if (isMaintenanceMode) {
-                if (shaftExitSound) { shaftExitSound.currentTime = 0; shaftExitSound.play(); }
+                shaftExitSound?.play();
             } else {
-                setTimeout(() => { if (openSound) { openSound.currentTime = 0; openSound.play(); } }, 1500);
+                setTimeout(() => { openSound?.play(); }, 1500);
                 setTimeout(() => {
                     const currentFloor = floorDisplay.value.trim();
                     if (currentFloor === '1') window.location.href = 'floor1GUI.html';
@@ -333,15 +366,16 @@
 
         closeButton.addEventListener('click', () => {
             if (isMaintenanceMode) {
-                if (shaftExitSound) { shaftExitSound.currentTime = 0; shaftExitSound.play(); }
+                shaftExitSound?.play();
             } else {
-                setTimeout(() => { if (closeSound) { closeSound.currentTime = 0; closeSound.play(); } }, 500);
+                setTimeout(() => { closeSound?.play(); }, 500);
                 floorButtons.forEach(btn => (btn.disabled = false));
                 micButton.disabled = false;
                 closeButton.classList.remove('locked');
             }
         });
 
+        // --- D. Maintenance Mode Toggle ---
         maintenanceButton.addEventListener('click', () => {
             if (isMaintenanceMode) {
                 functionDisplay.textContent = 'EXITING...';
@@ -351,87 +385,81 @@
             }
         });
 
-        logButton.addEventListener('click', () => { window.location.href = '../schangelog.html'; });
+        // --- E. Log Button ---
+        logButton.addEventListener('click', () => { window.location.href = '../changelog.html'; });
 
+        /* ============================================================================
+           FUNCTION: sabbathLoop()
+           ----------------------------------------------------------------------------
+           - Recursively loops between floors simulating automatic Sabbath Mode
+           - Updates visual and audio indicators accordingly
+        ============================================================================ */
         function sabbathLoop(targetFloor, direction) {
             if (!isSabbathModeActive) {
-                console.log("Sabbath loop finishing gracefully.");
                 functionDisplay.textContent = 'EXITING...';
                 setTimeout(() => { window.location.reload(); }, 1500);
-                return; 
+                return;
             }
 
-            console.log(`Sabbath Mode: Moving to floor ${targetFloor}`);
             functionDisplay.textContent = `GOING TO ${targetFloor}`;
-            
-            setTimeout(() => { if (screechSound) screechSound.play(); }, 200);
-            setTimeout(() => { if (dingSound) dingSound.play(); }, 4800);
-            
+            screechSound?.play();
+            setTimeout(() => { dingSound?.play(); }, 4800);
             setTimeout(() => {
                 floorDisplay.value = targetFloor;
                 functionDisplay.textContent = `FLOOR ${targetFloor}`;
-                if (targetFloor === 1 && floor1Sound) floor1Sound.play();
-                else if (targetFloor === 2 && floor2Sound) floor2Sound.play();
-                else if (targetFloor === 3 && floor3Sound) floor3Sound.play();
+                if (targetFloor === 1) floor1Sound?.play();
+                else if (targetFloor === 2) floor2Sound?.play();
+                else if (targetFloor === 3) floor3Sound?.play();
             }, 5200);
 
             sabbathLoopTimeout = setTimeout(() => {
-                let nextFloor, nextDirection = direction;
-                if (direction === 'down') {
-                    nextFloor = (targetFloor > 1) ? targetFloor - 1 : 2;
-                    if (targetFloor === 1) nextDirection = 'up';
-                } else { 
-                    nextFloor = (targetFloor < 3) ? targetFloor + 1 : 2;
-                    if (targetFloor === 3) nextDirection = 'down';
-                }
+                let nextFloor = direction === 'down' ? (targetFloor > 1 ? targetFloor - 1 : 2) : (targetFloor < 3 ? targetFloor + 1 : 2);
+                let nextDirection = (targetFloor === 1) ? 'up' : (targetFloor === 3) ? 'down' : direction;
                 sabbathLoop(nextFloor, nextDirection);
-            }, 10200); 
+            }, 10200);
         }
 
+        // --- F. Sabbath Mode Mic Button ---
         micButton.addEventListener('click', () => {
-            if (clickSound) clickSound.play();
+            clickSound?.play();
             isSabbathModeActive = !isSabbathModeActive;
 
             if (isSabbathModeActive) {
                 functionDisplay.textContent = 'SABBATH MODE';
                 micButton.classList.add('listening');
-
-                // *** MODIFICATION START ***
-                // This loop now also checks for 'emergency-call-button' to keep it enabled.
                 allButtons.forEach(btn => {
                     if (btn.id !== 'mic-button' && btn.id !== 'emergency-call-button') {
                         btn.disabled = true;
                         btn.style.cursor = 'not-allowed';
                     }
                 });
-                // *** MODIFICATION END ***
-                
                 setTimeout(() => sabbathLoop(2, 'down'), 1500);
-
             } else {
                 functionDisplay.textContent = 'FINISHING MOVE...';
                 micButton.classList.remove('listening');
             }
         });
 
+        // --- G. Emergency Call Button ---
         emergencyCallButton.addEventListener('click', () => {
-            if (emergencySound) { emergencySound.currentTime = 0; emergencySound.play(); }
+            emergencySound?.play();
             const TRIGGER_URL = 'http://localhost:8080/start_emergency';
             functionDisplay.textContent = 'CALLING...';
             emergencyCallButton.classList.add('calling');
             emergencyCallButton.disabled = true;
-            fetch(TRIGGER_URL, { mode: 'no-cors' })
-            .catch(error => console.log('Fetch triggered the Emergency client. The error is expected:', error));
+            fetch(TRIGGER_URL, { mode: 'no-cors' }).catch(err => console.log('Trigger error (expected):', err));
         });
-        
-        if (emergencySound) {
-            emergencySound.addEventListener('ended', () => {
-                functionDisplay.textContent = 'CALL ESTABLISHED';
-                functionDisplay.style.color = '#76ff03'; 
-            });
-        }
 
-        // --- SECTION 3: PAGE INITIALIZATION ---
+        emergencySound?.addEventListener('ended', () => {
+            functionDisplay.textContent = 'CALL ESTABLISHED';
+            functionDisplay.style.color = '#76ff03';
+        });
+
+        /* ============================================================================
+           SECTION 3: PAGE INITIALIZATION ON LOAD
+           - Checks if in maintenance mode and disables/enables controls accordingly
+           - Fetches current floor from backend on startup
+        ============================================================================ */
         document.addEventListener('DOMContentLoaded', () => {
             if (isMaintenanceMode) {
                 functionDisplay.textContent = 'MAINTENANCE MODE';
@@ -447,23 +475,34 @@
                 maintenanceButton.style.cursor = 'pointer';
                 closeButton.classList.remove('locked');
             } else {
-                // This is the default state for Normal Mode on page load.
                 floorButtons.forEach(btn => (btn.disabled = true));
                 micButton.disabled = true;
                 closeButton.classList.add('locked');
             }
+
             fetch('../php/fetchFloor.php')
                 .then(response => response.json())
                 .then(data => {
-                    const latestFloor = data.floor || '1'; // fallback if DB fails
+                    const latestFloor = data.floor || '1';
                     floorDisplay.value = latestFloor;
                     console.log("✅ Initialized with DB floor:", latestFloor);
                 })
                 .catch(error => {
                     console.error("❌ Error fetching floor from DB:", error);
-                    floorDisplay.value = '1'; // fallback
+                    floorDisplay.value = '1';
                 });
         });
+
+        // Trigger C++ maintenance listener via fetch if in maintenance mode
+        window.addEventListener('DOMContentLoaded', () => {
+            if (urlParams.get('mode') === 'maintenance') {
+                fetch('http://localhost:8090/start')
+                    .then(response => response.text())
+                    .then(msg => console.log("🛠️ Maintenance mode triggered:", msg))
+                    .catch(err => console.error("⚠️ Failed to trigger maintenance mode:", err));
+            }
+        });
     </script>
+
 </body>
 </html>

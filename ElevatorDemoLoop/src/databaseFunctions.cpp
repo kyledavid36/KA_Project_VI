@@ -113,3 +113,56 @@ int logCANActivity(int nodeID, const std::string& direction, const std::string& 
         return 1;
     }
 }
+
+// ================================================================
+// FUNCTION: logElevatorRequest()
+// AUTHOR  : Alan Hosseinpour
+// PURPOSE : Logs elevator events (floor requests, STM input, Pi control)
+//           into the elevatorNetwork table for tracking and diagnostics.
+// INPUT   : nodeID         - Source CAN node identifier
+//         : currentFloor   - Current floor of the elevator
+//         : requestedFloor - Target/requested floor
+//         : source         - Description of origin (e.g. "STM Floor 1")
+//         : eventType      - Type of event (e.g. "STM_RX", "GUI_TX")
+// RETURNS : void
+// ================================================================
+void logElevatorRequest(int nodeID, int currentFloor, int requestedFloor, const std::string& source, const std::string& eventType) {
+    try {
+        sql::Driver *driver;
+        sql::Connection *con;
+        sql::PreparedStatement *pstmt;
+
+        driver = get_driver_instance();
+        con = driver->connect(DB_HOST, DB_USER, DB_PASS);
+        con->setSchema(DB_NAME);
+
+        time_t now = time(0);
+        tm *ltm = localtime(&now);
+
+        char dateStr[11], timeStr[9];
+        strftime(dateStr, sizeof(dateStr), "%Y-%m-%d", ltm);
+        strftime(timeStr, sizeof(timeStr), "%H:%M:%S", ltm);
+
+        pstmt = con->prepareStatement(
+            "INSERT INTO elevatorNetwork (date, time, nodeID, status, currentFloor, requestedFloor, otherInfo, eventType, processed) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        
+        pstmt->setString(1, dateStr);
+        pstmt->setString(2, timeStr);
+        pstmt->setInt(3, nodeID);
+        pstmt->setInt(4, 1); // status = active
+        pstmt->setInt(5, currentFloor);
+        pstmt->setInt(6, requestedFloor);
+        pstmt->setString(7, source);
+        pstmt->setString(8, eventType);
+        pstmt->setInt(9, 0); // not processed
+
+        pstmt->execute();
+
+        delete pstmt;
+        delete con;
+    } catch (sql::SQLException &e) {
+        std::cerr << "Error in logElevatorRequest(): " << e.what() << std::endl;
+    }
+}
+

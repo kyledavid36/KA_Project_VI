@@ -1,13 +1,21 @@
-/* ====== GLOBAL BASE STYLING FOR PROJECT VI FILES IN GROUP 4 ====== */
+/* =============================================================================
+   FILE: site_style.css
+   AUTHOR: Alan Hpm, Group 4
+   PURPOSE: Unified base styling for Project VI elevator GUI and logbook pages.
+            Provides consistent layout, typography, and UI element formatting.
+   DEPENDENCIES: Linked in HTML pages such as changelog.html and alsaSteamGUI.html
+============================================================================= */
 
-/* ===== Global Reset ===== */
+
+/* =============================================================================
+   GLOBAL RESET AND BASE STYLING
+============================================================================= */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* ===== Layout and Base Font ===== */
 body {
     font-family: 'Segoe UI', Georgia, serif;
     background-color: #f4f4f9;
@@ -16,14 +24,20 @@ body {
     padding: 40px 20px;
 }
 
-/* Centered container for all content */
+
+/* =============================================================================
+   GENERAL CONTAINER WRAPPERS
+============================================================================= */
 .container {
     max-width: 1000px;
     margin: 0 auto;
     padding: 0 20px;
 }
 
-/* ===== Headings ===== */
+
+/* =============================================================================
+   HEADINGS STYLING
+============================================================================= */
 h1 {
     font-size: 2rem;
     margin-bottom: 1rem;
@@ -53,7 +67,10 @@ h3 {
     margin-left: 80px;
 }
 
-/* ===== Text ===== */
+
+/* =============================================================================
+   PARAGRAPH & TEXT BLOCK FORMATTING
+============================================================================= */
 p {
     font-size: 1rem;
     margin-bottom: 1rem;
@@ -68,6 +85,10 @@ p {
     text-indent: 15px;
 }
 
+
+/* =============================================================================
+   LISTS AND LIST ITEMS
+============================================================================= */
 ul, ol {
     margin-left: 2rem;
     margin-bottom: 1.5rem;
@@ -78,7 +99,10 @@ li {
     margin-bottom: 0.5rem;
 }
 
-/* ===== Links ===== */
+
+/* =============================================================================
+   LINK STYLING
+============================================================================= */
 a {
     color: #007BFF;
     text-decoration: none;
@@ -90,7 +114,10 @@ a:hover {
     color: #0056b3;
 }
 
-/* ===== Images & Figures ===== */
+
+/* =============================================================================
+   IMAGES & FIGURES
+============================================================================= */
 img {
     max-width: 100%;
     height: auto;
@@ -110,7 +137,10 @@ figcaption {
     margin-top: 0.5rem;
 }
 
-/* ===== Tables ===== */
+
+/* =============================================================================
+   TABLE FORMATTING
+============================================================================= */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -127,7 +157,10 @@ th {
     background-color: #f0f0f0;
 }
 
-/* ===== Footer ===== */
+
+/* =============================================================================
+   FOOTER AND UTILITY STYLES
+============================================================================= */
 footer, .footer {
     text-align: center !important;
     font-size: 0.9rem;
@@ -137,7 +170,6 @@ footer, .footer {
     border-top: 1px solid #ccc;
 }
 
-/* ===== Utility Classes ===== */
 .text-center {
     text-align: center !important;
 }
@@ -154,7 +186,10 @@ footer, .footer {
     text-decoration: underline;
 }
 
-/* ===== Logbook Specific Styling ===== */
+
+/* =============================================================================
+   LOGBOOK-SPECIFIC SECTION STYLES
+============================================================================= */
 .logbook-container {
     max-width: 800px;
     margin: 0 auto;
@@ -202,13 +237,16 @@ footer, .footer {
     margin-bottom: 0.6rem;
 }
 
+
+/* =============================================================================
+   HORIZONTAL RULE & NAVIGATION LINKS
+============================================================================= */
 hr {
     border: none;
     border-top: 1px solid #ccc;
     margin: 1.5rem 0;
 }
 
-/* Centered navigation links */
 nav.center-links {
     display: flex;
     flex-direction: column;
@@ -223,7 +261,10 @@ nav.center-links a {
     font-size: 1.1em;
 }
 
-/* Consistent sizing and cropping for team images */
+
+/* =============================================================================
+   IMAGE CONTAINER FOR TEAM PHOTOS
+============================================================================= */
 .team-image-container {
     width: 200px;
     height: 200px;

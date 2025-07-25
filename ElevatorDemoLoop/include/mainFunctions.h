@@ -27,4 +27,8 @@ int HexFromFloor(int floorVal);
 // Returns: Floor number (1, 2, or 3).
 int FloorFromHex(int Hex);
 
+// Formatting and ID helpers
+std::string to_hex(uint16_t num);
+std::string getNodeSource(uint16_t nodeID);
+
 #endif
