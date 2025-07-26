@@ -1,0 +1,429 @@
+/* ====== GLOBAL BASE STYLING FOR PROJECT VI FILES IN GROUP 4 ====== */
+
+/* ===== Global Reset ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ===== Layout and Base Font ===== */
+body {
+    font-family: 'Segoe UI', Georgia, serif;
+    background-color: #f4f4f9;
+    color: #222;
+    line-height: 1.6;
+    padding: 40px 20px;
+    /* IMPORTANT: For the background image to appear, ensure:
+       1. There is an 'images' folder directly in the same directory as your 'css' folder.
+       2. Inside that 'images' folder, there is a file named 'background_image.jpg' (case-sensitive). */
+    background-image: url('../images/bars.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* Centered container for all content */
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ===== Headings ===== */
+h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 0.5rem;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #FFFFFF; /* Changed from #333 to white */
+    text-align: center;
+}
+
+h3 {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #333;
+    text-align: left;
+}
+
+.tabbed-heading {
+    margin-left: 80px;
+}
+
+/* ===== Text ===== */
+p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    text-align: justify;
+    text-indent: 15px;
+}
+
+.p2 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: white;
+    text-indent: 15px;
+}
+
+ul, ol {
+    margin-left: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+li {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* ===== Links ===== */
+a {
+    color: #007BFF;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #0056b3;
+}
+
+/* ===== Images & Figures ===== */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+}
+
+figure {
+    margin: 2rem 0;
+    text-align: center;
+}
+
+figcaption {
+    font-style: italic;
+    font-size: 90%;
+    color: #555;
+    margin-top: 0.5rem;
+}
+
+/* ===== Tables ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #f0f0f0;
+}
+
+/* ===== Footer ===== */
+footer {
+    text-align: center !important;
+    font-size: 0.9rem;
+    color: #777;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #ccc;
+}
+
+/* ===== Utility Classes ===== */
+.text-center {
+    text-align: center !important;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+/* ===== Logbook Specific Styling ===== */
+.logbook-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    color: #333;
+}
+
+.logbook-title {
+    font-size: 2rem;
+    color: #2c3e50;
+    border-bottom: 3px solid #2c3e50;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.logbook-subtitle {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    text-align: left;
+    border-top: 2px solid #ccc;
+    padding-top: 0.3rem;
+}
+
+.logbook-list {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.logbook-info {
+    list-style-type: none;
+    padding-left: 0;
+    margin-bottom: 2rem;
+}
+
+.logbook-info li {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 0.6rem;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 1.5rem 0;
+}
+
+/* Centered navigation links */
+nav.center-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75em;
+    margin-top: 1.5em;
+}
+
+nav.center-links a {
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+/* Consistent sizing and cropping for team images */
+.team-image-container {
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 8px;
+    margin: 0 auto;
+}
+
+.team-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Request Access Form Specific Styling */
+form {
+    max-width: 600px;
+    margin: 20px auto; /* Adjust margin for overall form */
+    background-color: #ffffff;
+    padding: 20px;
+    border: 1px solid #ccc; /* General border for the form container */
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+fieldset {
+    border: 2px dashed #007BFF; /* Blue dashed border as in image */
+    border-radius: 8px; /* Rounded corners for fieldset */
+    padding: 20px;
+    margin-bottom: 20px; /* Space between fieldset and next section */
+}
+
+legend {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #007BFF;
+    padding: 0 10px;
+    float: none; /* Override default float behavior */
+    width: auto; /* Allow legend to shrink to content */
+    margin-left: 20px; /* Adjust as needed to align with legend box */
+    background-color: #f0f8ff; /* Light blue background for legend box */
+    border: 1px solid #007BFF; /* Outline for legend box */
+    border-radius: 5px; /* Rounded corners for legend box */
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    position: relative; /* For calendar icon positioning */
+}
+
+label {
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="url"],
+textarea {
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 100%; /* Make inputs take full width */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+textarea:focus {
+    border-color: #007BFF;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.calendar-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%; /* Vertically center the icon */
+    transform: translateY(-50%); /* Adjust for icon's own height */
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: row; /* Display radio buttons in a row */
+    align-items: center;
+    gap: 15px; /* Space between radio buttons */
+}
+
+.radio-group label {
+    margin-bottom: 0; /* Remove bottom margin for radio labels */
+    font-weight: normal; /* Reset font-weight for radio labels */
+}
+
+.radio-group input[type="radio"] {
+    width: auto; /* Auto width for radio buttons */
+    margin-right: 5px;
+}
+
+
+.tell-us-about-yourself {
+    margin-top: 20px;
+    position: relative; /* Essential for positioning the child .profile-pic absolutely */
+    padding-bottom: 90px; /* Add padding to make space for the absolutely positioned image, adjust as needed */
+}
+
+.tell-us-about-yourself p {
+    text-align: left;
+    text-indent: 0;
+    margin-bottom: 10px;
+}
+
+textarea#comments {
+    resize: vertical; /* Allow vertical resizing */
+    min-height: 100px; /* Minimum height for textarea */
+    color: grey; /* Grey out text initially */
+}
+
+
+/* Styles for the profile picture placed within the 'tell-us-about-yourself' box */
+.profile-pic {
+    position: absolute; /* Position absolutely within its relative parent (.tell-us-about-yourself) */
+    bottom: 10px; /* 10px from the bottom of the tell-us-about-yourself div */
+    right: 10px; /* 10px from the right of the tell-us-about-yourself div */
+    max-width: 80px; /* Smaller size to fit within the box */
+    height: auto;
+    border-radius: 0; /* Changed to 0 to keep it square */
+    border: 2px solid #007BFF; /* Optional: add a border */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Optional: add a subtle shadow */
+}
+
+
+button[type="submit"] {
+    margin-top: 15px;
+    background-color: #007BFF;
+    color: #fff;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%; /* Make button take full width */
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+button[type="submit"]:active {
+    background-color: #003d80; /* While clicking */
+}
+
+a.button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color:#003d80;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-family: sans-serif;
+    transition: background-color 0.3s ease;
+
+        /* Center text */
+    text-align: center;
+    line-height: normal;
+    vertical-align: middle;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: background-color 0.3s ease;
+}
+
+a.button:hover {
+    background-color: #0056b3;
+}
+
+a.button:active {
+    background-color: #004085;
+    transform: scale(0.98);
+}
+
+footer p {
+    text-align: center;
+    text-indent: 0;
+}
