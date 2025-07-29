@@ -1,3 +1,0 @@
-#JSGF V1.0;
-grammar commands;
-public <command> = ( FLOOR ( ONE | TWO | THREE ) | ( OPEN | CLOSE ) DOOR | EMERGENCY );

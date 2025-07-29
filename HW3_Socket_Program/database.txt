@@ -1,2 +1,0 @@
-{"action": "submit", "name": "John Doe", "id": "123456", "street_number": "10", "street_name": "Main St", "city": "Toronto", "postal_code": "A1B2C3", "province": "ON", "country": "Canada"}
-{"action": "submit", "name": "Jane Smith", "id": "654321", "street_number": "25", "street_name": "Queen St", "city": "Ottawa", "postal_code": "Z9Y8X7", "province": "ON", "country": "Canada"}
