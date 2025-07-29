@@ -1,0 +1,84 @@
+classDiagram
+    class Node {
+        +int id
+        +__construct(int id)
+        +getID(): int
+    }
+
+    class Elevator {
+        -int currentFloor
+        -int totalFloors
+        +__construct(int id, int totalFloors, int startFloor = 1)
+        +requestFloor(int requestedFloor)
+        +getCurrentFloor(): int
+    }
+
+    class FloorNode {
+        +int floorNumber
+        +__construct(int id, int floorNumber)
+        +getFloorNumber(): int
+        +registerElevator(Elevator elevator)
+        +callElevator(int targetFloor)
+    }
+
+    class CallButton {
+        +int buttonId
+        +int targetFloor
+        +__construct(int id, int targetFloor)
+        +press(): void
+        +isPressed(): bool
+    }
+
+    class DistanceSensor {
+        +string sensorId
+        +__construct(int id, string sensorId)
+        +getDistance(): float
+        +detectObstacle(): bool
+    }
+
+    class InvalidFloorException {
+        +__construct(string message = "", int code = 0, Throwable previous = null)
+    }
+
+    class User {
+        +string username
+        +string password (hashed)
+        +string full_name
+        +string email
+        +__construct(string username, string password, string full_name, string email)
+        +verifyPassword(string plainPassword): bool
+        +getUsername(): string
+    }
+
+    class ConnectionInterface {
+        <<interface>>
+    }
+
+    class AudioStreamServer {
+        -SplObjectStorage clients
+        +__construct()
+        +onOpen(ConnectionInterface conn)
+        +onMessage(ConnectionInterface from, string msg)
+        +onClose(ConnectionInterface conn)
+        +onError(ConnectionInterface conn, Exception e)
+    }
+
+    Node <|-- Elevator : inherits
+    Node <|-- FloorNode : inherits
+    Node <|-- CallButton : inherits
+    Node <|-- DistanceSensor : inherits
+    Elevator "1" -- "1..*" FloorNode : interacts with
+    Elevator "1" -- "1..*" CallButton : responds to
+    Elevator "1" -- "1..*" DistanceSensor : uses data from
+    Elevator ..> InvalidFloorException : throws
+
+    FloorNode "1" -- "1..*" CallButton : contains
+
+    User ..> GUI_login.php : managed by
+    User ..> request_access.php : registered by
+    User ..> login.php : authenticated by
+
+    AudioStreamServer o-- ConnectionInterface : aggregates
+    alsaSteamGUI.php ..> AudioStreamServer : triggers emergency call
+    alsaSteamGUI.php ..> Elevator : updates/fetches floor
+    test_oop.php ..> Elevator : tests

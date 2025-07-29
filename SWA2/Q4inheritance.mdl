@@ -1,0 +1,89 @@
+classDiagram
+    class Node {
+        <<abstract>>
+        +int id
+        +__construct(int id)
+        +getID(): int
+        +processInput(data: string): bool
+    }
+
+    interface IRequestable {
+        +request(int): bool
+    }
+
+    interface ICallable {
+        +call(int): bool
+    }
+
+    interface ISensor {
+        +read(): float
+        +detect(): bool
+    }
+
+    class Elevator {
+        -int currentFloor
+        -int totalFloors
+        +__construct(int id, int totalFloors, int startFloor = 1)
+        +requestFloor(int requestedFloor)
+        +getCurrentFloor(): int
+    }
+
+    class FloorNode {
+        -int floorNumber
+        +__construct(int id, int floorNumber)
+        +getFloorNumber(): int
+        +callElevator(int targetFloor)
+    }
+
+    class CallButton {
+        -int targetFloor
+        -bool isPressed
+        +__construct(int id, int targetFloor)
+        +press(): string
+        +release(): void
+        +getTargetFloor(): int
+        +isPressed(): bool
+    }
+
+    class DistanceSensor {
+        -float currentDistance
+        -float detectionThreshold
+        +static string units
+        +__construct(int id, float detectionThreshold = 0.5)
+        +getDistance(): float
+        +detectObstacle(): bool
+        +static convertToCentimeters(float): float
+    }
+
+    class InvalidFloorException {
+        +__construct(string message = "", int code = 0, Throwable previous = null)
+    }
+
+
+    Node <|-- Elevator : inherits
+    Node <|-- FloorNode : inherits
+    Node <|-- CallButton : inherits
+    Node <|-- DistanceSensor : inherits
+
+    Elevator ..|> IRequestable
+    FloorNode ..|> ICallable
+    CallButton ..|> ICallable
+    DistanceSensor ..|> ISensor
+
+    Elevator "1" -- "1..*" FloorNode : interacts with
+    Elevator "1" -- "1..*" CallButton : responds to
+    Elevator "1" -- "1..*" DistanceSensor : uses data from
+    Elevator ..> InvalidFloorException : throws
+    FloorNode "1" -- "1..*" CallButton : contains
+
+    GUI_login.php ..> User : authenticates
+    request_access.php ..> User : registers
+    login.php ..> User : authenticates
+
+    AudioStreamServer .o Ratchet\ConnectionInterface : aggregates
+    alsaSteamGUI.php ..> AudioStreamServer : triggers emergency call
+    alsaSteamGUI.php ..> Elevator : updates/fetches floor
+    test_oop.php ..> Elevator : tests
+    test_oop.php ..> FloorNode : tests
+    test_oop.php ..> CallButton : tests
+    test_oop.php ..> DistanceSensor : tests
