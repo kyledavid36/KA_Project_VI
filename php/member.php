@@ -9,10 +9,10 @@ if (!isset($_SESSION['user_id'])) {
 
 // --- Database Connection ---
 try {
-    $pdo = new PDO('mysql:host=127.0.0.1;dbname=elevator', 'Alanhpm', 'Alanhpm1382');
+    $pdo = new PDO('mysql:host=127.0.0.1;dbname=elevator', 'ese_group4', 'ESEgroup4!');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Fetch all records to display
+    // Fetch all records to displayed
     $stmt = $pdo->query("SELECT id, nodeID, currentFloor, requestedFloor, otherInfo, event_time FROM elevatorNetwork ORDER BY id DESC");
     $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
