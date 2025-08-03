@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.embeddedhtml": "html",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "inet.h": "c"
     }
 }

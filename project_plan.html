@@ -97,13 +97,13 @@
     document.addEventListener('DOMContentLoaded', function () {
       const username = 'kyledavid36'; // Your GitHub username
       const repo = 'KA_Project_VI'; // Your GitHub repository name
-      const branchName = 'Phase2'; // The specific branch you want to see
+      const branchName = 'w13'; // The specific branch you want to see
       const commitHistoryDiv = document.getElementById('commit-history');
 
-      // Dynamically set the date range for the last 30 days
+      // Dynamically set the date range for the last 7 days
       const untilDate = new Date(); // today
-      const sinceDate = new Date(); // will be modified to 30 days ago
-      sinceDate.setDate(untilDate.getDate() - 30);
+      const sinceDate = new Date(); // will be modified to 7 days ago
+      sinceDate.setDate(untilDate.getDate() - 7);
 
       // Convert dates to the ISO format required by the GitHub API (e.g., "2025-07-10T16:33:39.000Z")
       const untilDateString = untilDate.toISOString();

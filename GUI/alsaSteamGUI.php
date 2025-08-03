@@ -306,20 +306,20 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
     <script>
         /* =============================================================================
-           JAVASCRIPT LOGIC FOR ELEVATOR GUI INTERFACE
-           -----------------------------------------------------------------------------
-           FILE: alsaSteamGUI.html (JavaScript Section)
-           PURPOSE:
-             - Handles user interactions and audio feedback for elevator operation
-             - Sends floor requests to backend (updateFloor.php)
-             - Controls Maintenance Mode and Sabbath Mode logic
-             - Interfaces with CAN system and emergency audio trigger
+        JAVASCRIPT LOGIC FOR ELEVATOR GUI INTERFACE
+        -----------------------------------------------------------------------------
+        FILE: alsaSteamGUI.html (JavaScript Section)
+        PURPOSE:
+            - Handles user interactions and audio feedback for elevator operation
+            - Sends floor requests to backend (updateFloor.php)
+            - Controls Maintenance Mode and Sabbath Mode logic
+            - Interfaces with CAN system and emergency audio trigger
         ============================================================================= */
 
         /* ============================================================================
-           SECTION 1: DOM ELEMENT CACHING & GLOBAL STATE
-           - Stores references to all interactive DOM elements
-           - Declares audio elements and mode state flags
+        SECTION 1: DOM ELEMENT CACHING & GLOBAL STATE
+        - Stores references to all interactive DOM elements
+        - Declares audio elements and mode state flags
         ============================================================================ */
         const floorDisplay = document.getElementById('current-floor');
         const openButton = document.getElementById('open-door');
@@ -331,7 +331,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         const floorButtons = document.querySelectorAll('.floor-button');
         const emergencyCallButton = document.getElementById('emergency-call-button');
         const functionDisplay = document.getElementById('function-display');
-        
+
         const dingSound = document.getElementById('ding-sound');
         const openSound = document.getElementById('door-open');
         const clickSound = document.getElementById('door-click');
@@ -348,11 +348,12 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
         let isSabbathModeActive = false;
         let sabbathLoopTimeout;
+        let isEmergencyCallActive = false; // State variable for emergency call status
 
         /* ============================================================================
-           SECTION 2: EVENT LISTENERS
-           ----------------------------------------------------------------------------
-           A. Generic button lighting and click sound (excluding mic/emergency buttons)
+        SECTION 2: EVENT LISTENERS
+        ----------------------------------------------------------------------------
+        A. Generic button lighting and click sound (excluding mic/emergency buttons)
         ============================================================================ */
         allButtons.forEach(button => {
             if (button.id === 'emergency-call-button' || button.id === 'mic-button') return;
@@ -449,10 +450,10 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         logButton.addEventListener('click', () => { window.location.href = '../changelog.html'; });
 
         /* ============================================================================
-           FUNCTION: sabbathLoop()
-           ----------------------------------------------------------------------------
-           - Recursively loops between floors simulating automatic Sabbath Mode
-           - Updates visual and audio indicators accordingly
+        FUNCTION: sabbathLoop()
+        ----------------------------------------------------------------------------
+        - Recursively loops between floors simulating automatic Sabbath Mode
+        - Updates visual and audio indicators accordingly
         ============================================================================ */
         function sabbathLoop(targetFloor, direction) {
             if (!isSabbathModeActive) {
@@ -502,23 +503,59 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
         // --- G. Emergency Call Button ---
         emergencyCallButton.addEventListener('click', () => {
-            emergencySound?.play();
             const TRIGGER_URL = 'http://localhost:8080/start_emergency';
-            functionDisplay.textContent = 'CALLING...';
-            emergencyCallButton.classList.add('calling');
-            emergencyCallButton.disabled = true;
-            fetch(TRIGGER_URL, { mode: 'no-cors' }).catch(err => console.log('Trigger error (expected):', err));
+            const DISCONNECT_URL = 'http://localhost:8080/end_emergency';
+
+            if (!isEmergencyCallActive) {
+                // Initiate call
+                emergencySound?.play();
+                functionDisplay.textContent = 'CALLING...';
+                emergencyCallButton.classList.add('calling');
+                // emergencyCallButton.disabled = true; // No need to disable; we want it clickable to end
+
+                fetch(TRIGGER_URL, { mode: 'no-cors' })
+                    .then(() => {
+                        isEmergencyCallActive = true;
+                        // emergencyCallButton.disabled = false; // Re-enable button after trigger sent
+                        functionDisplay.textContent = 'CALL ESTABLISHED';
+                        functionDisplay.style.color = '#76ff03'; // Green for established
+                    })
+                    .catch(err => {
+                        console.error('Trigger error (expected, or actual issue):', err);
+                        functionDisplay.textContent = 'CALL FAILED';
+                        emergencyCallButton.classList.remove('calling');
+                        // emergencyCallButton.disabled = false; // Re-enable on failure
+                        functionDisplay.style.color = 'red';
+                    });
+            } else {
+                // Disconnect call
+                functionDisplay.textContent = 'DISCONNECTING...';
+                emergencyCallButton.classList.remove('calling');
+                emergencyCallButton.style.borderColor = ''; // Reset border color
+                functionDisplay.style.color = 'red'; // Back to red for disconnected state
+                emergencySound?.pause(); // Stop emergency sound if playing
+                emergencySound.currentTime = 0; // Reset sound
+
+                fetch(DISCONNECT_URL, { mode: 'no-cors' })
+                    .then(() => {
+                        isEmergencyCallActive = false;
+                        // emergencyCallButton.disabled = false; // Re-enable button after disconnect sent
+                        functionDisplay.textContent = 'CALL ENDED'; // Updated text here
+                    })
+                    .catch(err => {
+                        console.error('Disconnect error (expected, or actual issue):', err);
+                        functionDisplay.textContent = 'DISCONNECT FAILED';
+                        // emergencyCallButton.disabled = false; // Re-enable on failure
+                    });
+            }
         });
 
-        emergencySound?.addEventListener('ended', () => {
-            functionDisplay.textContent = 'CALL ESTABLISHED';
-            functionDisplay.style.color = '#76ff03';
-        });
+        // Removed the redundant emergencySound?.addEventListener('ended', ...) as it was causing issues.
 
         /* ============================================================================
-           SECTION 3: PAGE INITIALIZATION ON LOAD
-           - Checks if in maintenance mode and disables/enables controls accordingly
-           - Fetches current floor from backend on startup
+        SECTION 3: PAGE INITIALIZATION ON LOAD
+        - Checks if in maintenance mode and disables/enables controls accordingly
+        - Fetches current floor from backend on startup
         ============================================================================ */
         document.addEventListener('DOMContentLoaded', () => {
             if (isMaintenanceMode) {
@@ -567,7 +604,6 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             window.location.href = '../php/GUI_logout.php';
         });
     </script>
-
 
 </body>
 </html>
