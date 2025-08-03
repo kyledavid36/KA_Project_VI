@@ -48,99 +48,206 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap"
         rel="stylesheet"
     />
-    
 
-    <style>
-        /* ==========================================================================
+     <style>
+        /* ========================================================================
            BUTTON STATE AND INTERACTION STYLES
-           ========================================================================== */
-        
-        /* Style for a control button when it is logically "locked" */
+        ======================================================================== */
+
+        /* Highlight a control button when it is logically "locked" */
         .control-button.locked {
             border-color: red !important;
         }
 
-        /* A class to provide visual feedback when a button is clicked */
+        /* Visual feedback for a button press (lit-up) with red glow */
         .lit-up {
-            transform: scale(1.1) !important; /* Makes the button temporarily larger */
-            transition: all 0.3s ease;
+            transform: scale(1.15) !important; /* Pop the button slightly */
+            transition: all 0.1s ease;        /* Quick animation */
+            z-index: 9999;                    /* Bring button above neighbors */
+
+            /* Strong red glow using multiple box-shadows */
+            box-shadow:
+                0 0 40px 15px rgba(255, 0, 0, 1),
+                0 0 60px 30px rgba(255, 0, 0, 0.7);
         }
 
-        /* A subtle scaling effect when the user hovers over a button */
+        /* Gentle hover effect for non-lit buttons */
         .floor-button:hover:not(.lit-up),
         .control-button:hover:not(.lit-up) {
             transform: scale(1.05);
         }
 
-        /* ==========================================================================
-           GENERAL PAGE THEME
-           ========================================================================== */
+        /* Emergency button: base color (red metallic) */
+        #emergency-call-button {
+            background: radial-gradient(circle, #b71c1c, #7f0000);
+            border-color: #660000;
+        }
+
+        /* Pulsing green glow when emergency button is in "calling" state */
+        #emergency-call-button.calling {
+            animation: pulse-green 1.5s infinite;
+        }
+
+        /* Green pulse animation for emergency button */
+        @keyframes pulse-green {
+            0%   { box-shadow: 0 0 10px 2px #00ff00; }
+            50%  { box-shadow: 0 0 20px 4px #8aff8a; }
+            100% { box-shadow: 0 0 10px 2px #00ff00; }
+        }
+
+        /* ========================================================================
+           PAGE BACKGROUND & THEME
+        ======================================================================== */
 
         body {
-            background: url('Images/metal.jpg') no-repeat center center fixed;
+            /* Elevator-themed background image */
+            background: url('Images/elevator.png') no-repeat center center fixed;
             background-size: cover;
-            font-family: 'Cinzel', serif; /* The primary "steampunk" font */
-            color: #f0e6d2;
+            font-family: 'Cinzel', serif; /* Steampunk/silver theme font */
+            color: #f0f0f0;
+            margin: 0;
+            height: 100vh;
         }
 
+        /* Main page title with silver metallic gradient text */
         h1 {
             text-align: center;
-            margin-top: 30px;
-            margin-bottom: 30px;
-            font-size: 48px;
-            text-shadow: 2px 2px #000;
+            margin-top: 120px;
+            margin-bottom: 50px;
+            font-size: 52px;
+            font-family: 'Cinzel', serif;
+
+            /* Brighter metallic gradient */
+            background: linear-gradient(
+                180deg,
+                #f8f8f8 0%,   /* top highlight */
+                #dcdcdc 30%,  /* light silver */
+                #a0a0a0 70%,  /* darker steel */
+                #c0c0c0 100%  /* base reflection */
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: #eaeaea; /* solid color to keep edges crisp */
+
+            /* Outline / Border effect for better contrast */
+            text-shadow:
+                0 0 6px rgba(255,255,255,0.7),  /* subtle glow */
+                0 0 12px rgba(200,200,200,0.5), /* softer outer glow */
+                -1px -1px 0 #222, /* dark gray border top-left */
+                1px -1px 0 #222,  /* dark gray border top-right */
+                -1px 1px 0 #222,  /* dark gray border bottom-left */
+                1px 1px 0 #222;   /* dark gray border bottom-right */
         }
+
+
 
         main {
             text-align: center;
-            margin-top: 40px;
         }
 
-        /* ==========================================================================
-           LAYOUT STYLES
-           ========================================================================== */
-        
-        /* The main flex container that creates the two-column layout */
+        /* Layout for two panels (floors on left, controls on right) */
         .main-container {
             display: flex;
-            flex-wrap: wrap; 
             justify-content: center;
-            align-items: flex-start; /* This aligns the tops of the panel boxes */
-            gap: 50px; /* Space between the left and right panels */
+            align-items: flex-start; 
+            gap: 80px;          /* Space between left/right panels */
+            min-height: 65vh; 
         }
-        
-        /* Shared style for the left and right columns */
+
+        /* Panels use vertical stacking */
         .left-panel, .right-panel {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        
-        /* Added top padding for vertical content alignment */
-        .left-panel {
-            padding-top: 20px;
+
+        /* ========================================================================
+           FLOOR DISPLAY & BUTTONS
+        ======================================================================== */
+
+        /* Digital floor indicator (left panel) */
+        #current-floor {
+            background-color: black;
+            color: red;
+            border: 2px solid black;
+            border-radius: 10px;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 24px;
+            max-width: 80px; 
+            margin-bottom: 25px;
+            text-align: center;
+            text-shadow: 1px 1px #440000;
         }
-        
-        /* A decorative border and background for the right-side control panel */
-        .right-panel {
-            border: 4px double  rgba(0,0,0,0);
-            border-radius: 15px;
-            padding: 20px;
-            background-color: rgba(0,0,0,0);
-        }
-        
-        /* A CSS Grid container for the 6 control buttons on the right panel */
-        .control-grid {
-            display: grid;
-            grid-template-columns: repeat(2, auto); /* Creates a 2-column layout */
+
+        /* Vertical stack of floor buttons */
+        .floor-panel {
+            display: flex;
+            flex-direction: column;
             gap: 15px;
         }
-        
-        /* ==========================================================================
-           COMPONENT STYLES
-           ========================================================================== */
 
-        /* The black status display screen on the right panel */
+        /* Metallic style for all buttons (floor + control) */
+        .floor-button,
+        .control-button {
+            font-weight: bold;
+            color: #222;
+            border: 2px solid #888;
+            border-radius: 12px;
+            text-shadow: 0 1px 1px #fff;
+
+            /* Brushed steel metallic background */
+            background: 
+                linear-gradient(145deg, #f2f2f2, #c1c1c1 40%, #8a8a8a 70%, #d9d9d9 100%),
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.3) 0px, rgba(255,255,255,0.05) 2px, rgba(0,0,0,0.05) 4px);
+            background-blend-mode: overlay;
+
+            /* Inner and outer shadows for depth */
+            box-shadow: inset 0 1px 2px #fff, inset 0 -2px 4px #777, 0 2px 4px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
+        }
+
+        /* Floor buttons: rectangular */
+        .floor-button {
+            width: 100px;
+            font-size: 26px;
+            padding: 15px;
+        }
+
+        /* Control buttons grid (right panel) */
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(2, auto);
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        /* Control buttons: circular shape */
+        .control-button {
+            font-size: 26px;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Emergency button: red metallic style */
+        #emergency-call-button {
+            background: linear-gradient(145deg, #ff5555, #bb0000 60%);
+            color: white;
+            border: 3px solid #660000;
+            text-shadow: 0 1px 2px black;
+        }
+
+        /* Hover effect for all buttons */
+        .floor-button:hover,
+        .control-button:hover {
+            filter: brightness(1.2);
+            transform: scale(1.05);
+        }
+
+        /* Digital function display (right panel) */
         #function-display {
             background-color: black;
             color: red;
@@ -158,70 +265,11 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
         }
 
-        /* The black floor indicator screen on the left panel */
-        #current-floor {
-            background-color: black;
-            color: red;
-            border: 2px solid black;
-            border-radius: 10px;
-            padding: 10px;
-            font-weight: bold;
-            font-size: 24px;
-            max-width: 80px; 
-            margin: 0 auto 20px;
-            text-align: center;
-            text-shadow: 1px 1px #440000;
-        }
-
-        /* Styles for the rectangular floor buttons */
-        .floor-button {
-            width: 100px;
-            font-size: 24px;
-            margin: 10px auto;
-            padding: 15px;
-            background: radial-gradient(circle at 30% 30%, #c4a35a, #7a5c1d);
-            color: #fff;
-            border: 4px solid #4b3621;
-            border-radius: 12px;
-            box-shadow: none;
-            display: block;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        /* Shared styles for all circular control buttons */
-        .control-button {
-            font-size: 28px; /* Sized for emojis to render well */
-            white-space: nowrap;
-            line-height: 1;
-            text-align: center;
-            vertical-align: middle;
-            margin: 0; 
-            padding: 15px;
-            background: radial-gradient(circle at 30% 30%, #c4a35a, #7a5c1d);
-            color: #fff;
-            border: 4px solid #4b3621;
-            border-radius: 50%; /* This creates the circular shape */
-            box-shadow: none;
-            width: 80px;
-            height: 80px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-        
-        /* Specific style to make the emergency button red */
-        #emergency-call-button {
-            background: radial-gradient(circle, #b71c1c, #7f0000);
-            border-color: #660000;
-        }
-
-        /* Position the logout button in the bottom-right corner */
+        /* ========================================================================
+           LOGOUT BUTTON
+        ======================================================================== */
         #logout-container {
             position: fixed;
             bottom: 20px;
@@ -229,7 +277,6 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             z-index: 9999;
         }
 
-        /* Adjustments to match floor-button size but keep it square */
         #logout-button {
             width: 60px;
             height: 60px;
@@ -239,58 +286,51 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             align-items: center;
             justify-content: center;
         }
-
-        
-        /* ==========================================================================
-           ANIMATION STYLES
-           ========================================================================== */
-
-        /* A class added via JavaScript to indicate an active, ongoing process */
-        #emergency-call-button.calling,
-        #mic-button.listening {
-            animation: pulse-green 1.5s infinite;
-        }
-        
-        /* The definition of the pulsing green border animation */
-        @keyframes pulse-green {
-            0% { border-color: #00ff00; }
-            50% { border-color: #8aff8a; }
-            100% { border-color: #00ff00; }
-        }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <main>
-            <h1>Elevator Control</h1>
-            <div class="main-container">
-                <div class="left-panel">
-                    <input type="text" id="current-floor" readonly value="3" />
-                    
-                    <div>
-                        <button class="floor-button">3</button>
-                        <button class="floor-button">2</button>
-                        <button class="floor-button">1</button>
-                    </div>
-                </div>
-                <div class="right-panel">
-                    <div id="function-display"></div>
-                    <div class="control-grid">
-                        <button class="control-button" id="open-door">≪≫</button>
-                        <button class="control-button locked" id="close-door">≫≪</button>
-                        <button class="control-button" id="maintenance-button" title="Maintenance">⚙️</button>
-                        <button class="control-button" id="log-button" title="Log">📜</button>
-                        <button class="control-button" id="mic-button" title="Sabbath">♾️</button>
-                        <button class="control-button" id="emergency-call-button" title="Emergency">📞</button>
-                    </div>
+    <main>
+        <h1>Elevator Control</h1>
+        <div class="main-container">
+            <!-- ======================= LEFT PANEL ======================= -->
+            <div class="left-panel">
+                <!-- Digital Floor Display -->
+                <input type="text" id="current-floor" readonly value="3" />
+
+                <!-- Floor Call Buttons -->
+                <div class="floor-panel">
+                    <button class="floor-button">3</button>
+                    <button class="floor-button">2</button>
+                    <button class="floor-button">1</button>
                 </div>
             </div>
-        </main>
-    </div>
-            <!-- Logout Button in Bottom-Right Corner -->
-        <div id="logout-container">
-            <button class="floor-button" id="logout-button" title="Logout">Logout</button>
+
+            <!-- ======================= RIGHT PANEL ====================== -->
+            <div class="right-panel">
+                <!-- Function Display (Status Screen) -->
+                <div id="function-display"></div>
+
+                <!-- Control Buttons Grid -->
+                <div class="control-grid">
+                    <button class="control-button" id="open-door">≪≫</button>
+                    <button class="control-button" id="close-door">≫≪</button>
+                    <button class="control-button" id="maintenance-button" title="Maintenance">⚙️</button>
+                    <button class="control-button" id="log-button" title="Log">📜</button>
+                    <button class="control-button" id="mic-button" title="Sabbath">♾️</button>
+                    <button class="control-button" id="emergency-call-button" title="Emergency">📞</button>
+                </div>
+            </div>
         </div>
+    </main>
+
+    <!-- ======================= LOGOUT BUTTON ========================= -->
+    <div id="logout-container">
+        <button class="floor-button" id="logout-button" title="Logout">Logout</button>
+    </div>
+</body>
+</html>
+
 
 
     <audio id="ding-sound" src="audio/ding.mp3" preload="auto"></audio>
