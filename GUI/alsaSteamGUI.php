@@ -1,38 +1,3 @@
-<?php
-session_start();
-
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    // Not logged in, redirect to login
-    header('Location: ../php/GUI_login.php');
-    exit;
-}
-?>
-
-
-<!-- ===========================================================
-  FILE: alsaSteamGUI.php
-  TITLE: Steampunk Elevator GUI Interface
-  AUTHOR: Alan Hpm and Kyle Dick
-  PURPOSE:
-    This HTML file serves as the main graphical user interface (GUI)
-    for the elevator control system. It allows authenticated users to:
-      - Request elevator floors
-      - Open/close doors
-      - Enter maintenance and Sabbath modes
-      - Trigger emergency calls
-    It connects with backend PHP scripts (updateFloor.php, fetchFloor.php)
-    and communicates with Raspberry Pi CAN system and audio triggers.
-  DEPENDENCIES:
-    - ../php/updateFloor.php (POST floor requests)
-    - ../php/fetchFloor.php (GET current floor)
-    - ../php/GUI_login.php (Session login)
-    - audio/*.mp3 files for cues
-    - maintenance.html, changelog.html, SteamGUI.html
-    - Python/C++ backend trigger scripts (maintenance mode, emergency)
-=========================================================== -->
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,9 +14,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         rel="stylesheet"
     />
 
-     <style>
+    <style>
         /* ========================================================================
-           BUTTON STATE AND INTERACTION STYLES
+            BUTTON STATE AND INTERACTION STYLES
         ======================================================================== */
 
         /* Highlight a control button when it is logically "locked" */
@@ -96,7 +61,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         }
 
         /* ========================================================================
-           PAGE BACKGROUND & THEME
+            PAGE BACKGROUND & THEME
         ======================================================================== */
 
         body {
@@ -120,10 +85,10 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             /* Brighter metallic gradient */
             background: linear-gradient(
                 180deg,
-                #f8f8f8 0%,   /* top highlight */
-                #dcdcdc 30%,  /* light silver */
-                #a0a0a0 70%,  /* darker steel */
-                #c0c0c0 100%  /* base reflection */
+                #f8f8f8 0%,  /* top highlight */
+                #dcdcdc 30%, /* light silver */
+                #a0a0a0 70%, /* darker steel */
+                #c0c0c0 100% /* base reflection */
             );
             -webkit-background-clip: text;
             -webkit-text-fill-color: #eaeaea; /* solid color to keep edges crisp */
@@ -148,9 +113,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         .main-container {
             display: flex;
             justify-content: center;
-            align-items: flex-start; 
-            gap: 80px;          /* Space between left/right panels */
-            min-height: 65vh; 
+            align-items: flex-start;  
+            gap: 80px;            /* Space between left/right panels */
+            min-height: 65vh;  
         }
 
         /* Panels use vertical stacking */
@@ -161,7 +126,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         }
 
         /* ========================================================================
-           FLOOR DISPLAY & BUTTONS
+            FLOOR DISPLAY & BUTTONS
         ======================================================================== */
 
         /* Digital floor indicator (left panel) */
@@ -173,7 +138,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             padding: 10px;
             font-weight: bold;
             font-size: 24px;
-            max-width: 80px; 
+            max-width: 80px;  
             margin-bottom: 25px;
             text-align: center;
             text-shadow: 1px 1px #440000;
@@ -255,7 +220,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             border-radius: 10px;
             padding: 10px;
             min-height: 48px;
-            width: 100%; 
+            width: 100%;  
             margin-bottom: 20px;
             text-align: center;
             font-size: 16px;
@@ -268,7 +233,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         }
 
         /* ========================================================================
-           LOGOUT BUTTON
+            LOGOUT BUTTON
         ======================================================================== */
         #logout-container {
             position: fixed;
@@ -293,12 +258,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     <main>
         <h1>Elevator Control</h1>
         <div class="main-container">
-            <!-- ======================= LEFT PANEL ======================= -->
             <div class="left-panel">
-                <!-- Digital Floor Display -->
                 <input type="text" id="current-floor" readonly value="3" />
 
-                <!-- Floor Call Buttons -->
                 <div class="floor-panel">
                     <button class="floor-button">3</button>
                     <button class="floor-button">2</button>
@@ -306,12 +268,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                 </div>
             </div>
 
-            <!-- ======================= RIGHT PANEL ====================== -->
             <div class="right-panel">
-                <!-- Function Display (Status Screen) -->
                 <div id="function-display"></div>
 
-                <!-- Control Buttons Grid -->
                 <div class="control-grid">
                     <button class="control-button" id="open-door">≪≫</button>
                     <button class="control-button" id="close-door">≫≪</button>
@@ -324,7 +283,6 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         </div>
     </main>
 
-    <!-- ======================= LOGOUT BUTTON ========================= -->
     <div id="logout-container">
         <button class="floor-button" id="logout-button" title="Logout">Logout</button>
     </div>
@@ -514,8 +472,27 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             }, 5200);
 
             sabbathLoopTimeout = setTimeout(() => {
-                let nextFloor = direction === 'down' ? (targetFloor > 1 ? targetFloor - 1 : 2) : (targetFloor < 3 ? targetFloor + 1 : 2);
-                let nextDirection = (targetFloor === 1) ? 'up' : (targetFloor === 3) ? 'down' : direction;
+                let nextFloor;
+                let nextDirection;
+
+                if (direction === 'down') {
+                    if (targetFloor > 1) {
+                        nextFloor = targetFloor - 1;
+                        nextDirection = 'down';
+                    } else { // targetFloor is 1
+                        nextFloor = 2;
+                        nextDirection = 'up';
+                    }
+                } else { // direction is 'up'
+                    if (targetFloor < 3) {
+                        nextFloor = targetFloor + 1;
+                        nextDirection = 'up';
+                    } else { // targetFloor is 3
+                        nextFloor = 2;
+                        nextDirection = 'down';
+                    }
+                }
+
                 sabbathLoop(nextFloor, nextDirection);
             }, 10200);
         }
