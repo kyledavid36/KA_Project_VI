@@ -157,7 +157,7 @@ int setup_alsa(snd_pcm_t **handle) {
     int err;
     snd_pcm_hw_params_t *params;
 
-    if ((err = snd_pcm_open(handle, "default", SND_PCM_STREAM_CAPTURE, 0)) < 0) {
+    if ((err = snd_pcm_open(handle, "plughw:1,0", SND_PCM_STREAM_CAPTURE, 0)) < 0) {
         fprintf(stderr, "cannot open audio device %s (%s)\n", "default", snd_strerror(err));
         return -1;
     }
