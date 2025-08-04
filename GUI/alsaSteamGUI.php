@@ -451,24 +451,45 @@
         FUNCTION: sabbathLoop()
         ----------------------------------------------------------------------------
         - Recursively loops between floors simulating automatic Sabbath Mode
-        - Updates visual and audio indicators accordingly
+        - Updates visual and audio indicators for each move
+        - Disables manual floor buttons while active
+        - Sends DB updates via updateFloor.php with source = "Sabbath Auto-Cycle"
+          for Pi backend to trigger real elevator movement
         ============================================================================ */
-        function sabbathLoop(targetFloor, direction) {
-            if (!isSabbathModeActive) {
-                functionDisplay.textContent = 'EXITING...';
-                setTimeout(() => { window.location.reload(); }, 1500);
-                return;
-            }
+        function updateFloorInDB(floorNumber, source = 'GUI') {
+            return fetch('../php/updateFloor.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'floor=' + encodeURIComponent(floorNumber) +
+                    '&source=' + encodeURIComponent(source)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log(`✅ ${source} updated DB to floor: ${data.floor}`);
+                } else {
+                    console.error("❌ DB update failed:", data.message || 'No error');
+                }
+            })
+            .catch(err => console.error("❌ Fetch error:", err));
+        }
 
             functionDisplay.textContent = `GOING TO ${targetFloor}`;
             screechSound?.play();
             setTimeout(() => { dingSound?.play(); }, 4800);
+
             setTimeout(() => {
                 floorDisplay.value = targetFloor;
                 functionDisplay.textContent = `FLOOR ${targetFloor}`;
+
+                // Play the correct floor audio
                 if (targetFloor === 1) floor1Sound?.play();
                 else if (targetFloor === 2) floor2Sound?.play();
                 else if (targetFloor === 3) floor3Sound?.play();
+
+                // **NEW: Update DB so Pi sees the floor change**
+                updateFloorInDB(targetFloor, 'Sabbath Auto-Cycle');
+
             }, 5200);
 
             sabbathLoopTimeout = setTimeout(() => {
@@ -479,15 +500,15 @@
                     if (targetFloor > 1) {
                         nextFloor = targetFloor - 1;
                         nextDirection = 'down';
-                    } else { // targetFloor is 1
+                    } else {
                         nextFloor = 2;
                         nextDirection = 'up';
                     }
-                } else { // direction is 'up'
+                } else {
                     if (targetFloor < 3) {
                         nextFloor = targetFloor + 1;
                         nextDirection = 'up';
-                    } else { // targetFloor is 3
+                    } else {
                         nextFloor = 2;
                         nextDirection = 'down';
                     }
@@ -496,6 +517,7 @@
                 sabbathLoop(nextFloor, nextDirection);
             }, 10200);
         }
+
 
         // --- F. Sabbath Mode Mic Button ---
         micButton.addEventListener('click', () => {

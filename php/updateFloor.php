@@ -55,6 +55,9 @@ try {
     }
 
     $floor = intval($_POST['floor']);  // Convert to integer
+
+    // ───── CAPTURE SOURCE (GUI vs Sabbath) ─────
+    $source = isset($_POST['source']) ? $_POST['source'] : 'GUI call (alsaSteamGUI)';
     $now = new DateTime("now", new DateTimeZone("America/Toronto"));  // Get current timestamp in EST
 
     // ───── SPAM PROTECTION: ENFORCE 1s DEBOUNCE WINDOW ─────
@@ -99,13 +102,14 @@ try {
     $insert = $pdo->prepare("
         INSERT INTO elevatorNetwork 
         (date, time, nodeID, status, eventType, currentFloor, requestedFloor, processed, otherInfo)
-        VALUES (:date, :time, 257, 1, 'FLOOR_REQUEST', :currentFloor, :requestedFloor, 0, 'GUI call (alsaSteamGUI)')
+        VALUES (:date, :time, 257, 1, 'FLOOR_REQUEST', :currentFloor, :requestedFloor, 0, :otherInfo)
     ");
     $insert->execute([
         ':date' => $now->format('Y-m-d'),
         ':time' => $now->format('H:i:s'),
         ':currentFloor' => $currentFloor ?? null,
-        ':requestedFloor' => $floor
+        ':requestedFloor' => $floor,
+        ':otherInfo' => $source
     ]);
 
     // ───── SIMULATED TX ENTRY FOR CAN_subnetwork (FROM GUI) ─────
