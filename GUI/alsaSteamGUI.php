@@ -456,6 +456,8 @@
         - Sends DB updates via updateFloor.php with source = "Sabbath Auto-Cycle"
           for Pi backend to trigger real elevator movement
         ============================================================================ */
+
+        // --- Helper: Update Floor in DB for Sabbath ---
         function updateFloorInDB(floorNumber, source = 'GUI') {
             return fetch('../php/updateFloor.php', {
                 method: 'POST',
@@ -474,27 +476,38 @@
             .catch(err => console.error("❌ Fetch error:", err));
         }
 
+        // --- Main Sabbath Loop Function ---
+        function sabbathLoop(targetFloor, direction) {
+            if (!isSabbathModeActive) return;  // Stop if mode turned off
+
+            // Clamp to 1–3
+            targetFloor = Math.max(1, Math.min(3, targetFloor));
+
+            // 1️⃣ Show elevator moving to next floor
             functionDisplay.textContent = `GOING TO ${targetFloor}`;
             screechSound?.play();
             setTimeout(() => { dingSound?.play(); }, 4800);
 
+            // 2️⃣ After travel delay, update GUI & DB
             setTimeout(() => {
                 floorDisplay.value = targetFloor;
                 functionDisplay.textContent = `FLOOR ${targetFloor}`;
 
-                // Play the correct floor audio
+                // Clamp to 1–3
+                targetFloor = Math.max(1, Math.min(3, targetFloor));
+
+                // Play floor arrival sound
                 if (targetFloor === 1) floor1Sound?.play();
                 else if (targetFloor === 2) floor2Sound?.play();
                 else if (targetFloor === 3) floor3Sound?.play();
 
-                // **NEW: Update DB so Pi sees the floor change**
+                // ✅ Update DB for Pi backend
                 updateFloorInDB(targetFloor, 'Sabbath Auto-Cycle');
-
             }, 5200);
 
+            // 3️⃣ Schedule next floor move (non-blocking)
             sabbathLoopTimeout = setTimeout(() => {
-                let nextFloor;
-                let nextDirection;
+                let nextFloor, nextDirection;
 
                 if (direction === 'down') {
                     if (targetFloor > 1) {
@@ -515,11 +528,10 @@
                 }
 
                 sabbathLoop(nextFloor, nextDirection);
-            }, 10200);
+            }, 10200); // ~10 sec total cycle time
         }
 
-
-        // --- F. Sabbath Mode Mic Button ---
+        // --- Toggle Sabbath Mode ---
         micButton.addEventListener('click', () => {
             clickSound?.play();
             isSabbathModeActive = !isSabbathModeActive;
@@ -527,18 +539,33 @@
             if (isSabbathModeActive) {
                 functionDisplay.textContent = 'SABBATH MODE';
                 micButton.classList.add('listening');
+
+                // Disable manual buttons
                 allButtons.forEach(btn => {
                     if (btn.id !== 'mic-button' && btn.id !== 'emergency-call-button') {
                         btn.disabled = true;
                         btn.style.cursor = 'not-allowed';
                     }
                 });
+
+                // Start loop at Floor 2 going down first
                 setTimeout(() => sabbathLoop(2, 'down'), 1500);
+
             } else {
                 functionDisplay.textContent = 'FINISHING MOVE...';
                 micButton.classList.remove('listening');
+
+                // Re-enable manual buttons
+                allButtons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.style.cursor = 'pointer';
+                });
+
+                // Stop the Sabbath loop
+                clearTimeout(sabbathLoopTimeout);
             }
         });
+
 
         // --- G. Emergency Call Button ---
         emergencyCallButton.addEventListener('click', () => {
@@ -619,8 +646,9 @@
             fetch('../php/fetchFloor.php')
                 .then(response => response.json())
                 .then(data => {
-                    const latestFloor = data.floor || '1';
-                    floorDisplay.value = latestFloor;
+                let latestFloor = parseInt(data.floor, 10) || 1;
+                if (latestFloor < 1 || latestFloor > 3) latestFloor = 1;
+                floorDisplay.value = latestFloor;
                     console.log("✅ Initialized with DB floor:", latestFloor);
                 })
                 .catch(error => {

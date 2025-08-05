@@ -17,7 +17,7 @@
  * DEPENDENCIES:
  * ─────────────────────────────────────────────────────────────────────
  *  - CALLED FROM:
- *     • /GUI/alsaSteamGUI.html or similar GUI pages (via JavaScript POST)
+ *     • /GUI/alsaSteamGUI.php or similar GUI pages (via JavaScript POST)
  * 
  *  - DATABASE STRUCTURE:
  *     • 'elevatorNetwork' table stores elevator state changes
@@ -55,6 +55,10 @@ try {
     }
 
     $floor = intval($_POST['floor']);  // Convert to integer
+    //  Clamp floor between 1 and 3
+    if ($floor < 1 || $floor > 3) {
+        $floor = 1;
+    }
 
     // ───── CAPTURE SOURCE (GUI vs Sabbath) ─────
     $source = isset($_POST['source']) ? $_POST['source'] : 'GUI call (alsaSteamGUI)';
