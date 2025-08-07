@@ -1,3 +1,37 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    // Not logged in, redirect to login
+    header('Location: ../php/GUI_login.php');
+    exit;
+}
+?>
+
+<!-- ===========================================================
+  FILE: alsaSteamGUI.php
+  TITLE: Steampunk Elevator GUI Interface
+  AUTHOR: Alan Hpm and Kyle Dick
+  PURPOSE:
+    This HTML file serves as the main graphical user interface (GUI)
+    for the elevator control system. It allows authenticated users to:
+      - Request elevator floors
+      - Open/close doors
+      - Enter maintenance and Sabbath modes
+      - Trigger emergency calls
+    It connects with backend PHP scripts (updateFloor.php, fetchFloor.php)
+    and communicates with Raspberry Pi CAN system and audio triggers.
+  DEPENDENCIES:
+    - ../php/updateFloor.php (POST floor requests)
+    - ../php/fetchFloor.php (GET current floor)
+    - ../php/GUI_login.php (Session login)
+    - audio/*.mp3 files for cues
+    - maintenance.html, changelog.html, alsaSteamGUI.html
+    - Python/C++ backend trigger scripts (maintenance mode, emergency)
+=========================================================== -->
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
