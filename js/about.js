@@ -13,7 +13,7 @@ var alanBirthdate = new Date('July 2, 2003 00:00:00');
 var alanAge = Math.floor((today.getTime() - alanBirthdate.getTime()) / 31556900000);
 
 // Kyle's birth date (update as needed!)
-var kyleBirthdate = new Date('June 10, 2000 00:00:00');
+var kyleBirthdate = new Date('June 10, 1997 00:00:00');
 var kyleAge = Math.floor((today.getTime() - kyleBirthdate.getTime()) / 31556900000);
 
 // Display Alan's age
