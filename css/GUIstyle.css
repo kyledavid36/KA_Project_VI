@@ -1,0 +1,135 @@
+/* =============================================================================
+   FILE: elevator_gui_style.css
+   PURPOSE: Stylesheet for the Elevator GUI interface
+   AUTHOR: Alan Hpm & Kyle Dick
+   DESCRIPTION: Contains all layout and styling rules for the elevator control
+                panel interface including buttons, display, and overlay.
+============================================================================= */
+
+/* ========================
+   PAGE RESET AND LAYOUT
+======================== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* ==============================
+   FLOOR DISPLAY BOX STYLING
+============================== */
+.floor-display {
+  margin-bottom: 20px;
+}
+
+#current-floor {
+  width: 60px;
+  padding: 8px;
+  font-size: 1.5rem;
+  text-align: center;
+  border: 2px solid #4CAF50;
+  border-radius: 8px;
+  background-color: #eaffea;
+}
+
+/* ==========================
+   CONTAINER STYLING BLOCK
+========================== */
+.elevator-container {
+  text-align: center;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ========================================================
+   FLOOR BUTTON STYLING - UNIFORMLY WIDE AND CENTERED
+======================================================== */
+.floor-button {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto 10px;
+}
+
+/* ===========================================
+   CONTROL BUTTON STYLING (OPEN, CLOSE, ETC)
+=========================================== */
+.control-button {
+  min-width: 120px;
+  height: 40px;
+  font-size: 16px;
+}
+
+/* ==============================================
+   ICON-STYLE BUTTONS (MAINTENANCE, LOG, MIC, ETC)
+================================================ */
+.icon-button {
+  min-width: 120px;
+  height: 40px;
+  font-size: 20px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin: 5px;
+}
+
+/* =============================================
+   FLEX ROW LAYOUT FOR GROUPED BUTTON ROWS
+============================================= */
+.button-row {
+  display: flex;
+  margin: 5px 0;
+}
+
+.button-row.spaced {
+  gap: 20px;
+}
+
+.button-row.center {
+  justify-content: center;
+}
+
+/* ==========================
+   YOUTUBE SECTION (OPTIONAL)
+========================== */
+.youtube-section {
+  margin-top: 2rem;
+}
+
+.youtube-section h2 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* =======================================
+   VOICE OVERLAY STYLING FOR EMERGENCIES
+======================================= */
+#voice-overlay {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 30px 60px;
+  font-size: 2rem;
+  border-radius: 12px;
+  z-index: 1000;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ========================
+   END OF STYLESHEET
+======================== */

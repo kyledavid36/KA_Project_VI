@@ -1,0 +1,145 @@
+<!--
+╔════════════════════════════════════════════════════════════════════════════╗
+║ FILE: changelog.html                                                      ║
+║ AUTHORS: Alan Hosseinpour, Kyle Dick                                      ║
+║ LAST UPDATED: July 24, 2025                                               ║
+║                                                                          ║
+║ PURPOSE:                                                                  ║
+║ - Display elevator system logs from MySQL database                        ║
+║ - Two sections:                                                           ║
+║     1. elevatorNetwork (floor requests)                                   ║
+║     2. CAN_subnetwork (CAN TX/RX messages)                                ║
+║                                                                          ║
+║ DEPENDENCIES:                                                             ║
+║ - fetchlog.php returns: { elevatorLogs: [...], canLogs: [...] }          ║
+║ - MySQL DB: elevator                                                      ║
+╚════════════════════════════════════════════════════════════════════════════╝
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+  ╔════════════════════════════════════════════════════╗
+  ║ SECTION: META & STYLING                           ║
+  ║ Sets up fonts, layout, and dark theme appearance  ║
+  ╚════════════════════════════════════════════════════╝
+  -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Elevator and CAN Activity Logs</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #f0e6d2;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #elevator-log, #can-log {
+      background: #222;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 40px;
+      max-height: 40vh;
+      overflow-y: auto;
+      font-size: 16px;
+      border: 1px solid #555;
+    }
+    .entry {
+      padding: 8px;
+      border-bottom: 1px solid #444;
+    }
+  </style>
+</head>
+
+<body>
+  <!--
+  ╔════════════════════════════════════════════╗
+  ║ SECTION: PAGE HEADER                       ║
+  ║ Title and section headings                 ║
+  ╚════════════════════════════════════════════╝
+  -->
+  <h1>🛗 Elevator System Logs</h1>
+
+  <h2>📜 Elevator Network Log</h2>
+  <div id="elevator-log">Loading elevator log...</div>
+
+  <h2>🛰️ CAN Bus Log</h2>
+  <div id="can-log">Loading CAN log...</div>
+
+  <!--
+  ╔════════════════════════════════════════════════════════╗
+  ║ SCRIPT: FETCH & RENDER LOGS                            ║
+  ║ Requests JSON from PHP backend and builds visual logs  ║
+  ╚════════════════════════════════════════════════════════╝
+  -->
+  <script>
+    fetch('php/fetchlog.php')
+      .then(response => response.json())
+      .then(data => {
+        const elevatorContainer = document.getElementById('elevator-log');
+        const canContainer = document.getElementById('can-log');
+
+        // ╔═══════════════════════════════════════════════╗
+        // ║ FUNCTION: Render Elevator Network Logs        ║
+        // ║ Shows last 10 floor requests from DB          ║
+        // ╚═══════════════════════════════════════════════╝
+        if (!data.elevatorLogs || data.elevatorLogs.length === 0) {
+          elevatorContainer.innerHTML = '<p>No elevator log entries found.</p>';
+        } else {
+          elevatorContainer.innerHTML = '';
+          data.elevatorLogs.forEach(entry => {
+            const div = document.createElement('div');
+            const timestamp = new Date(`${entry.date}T${entry.time}`);
+            div.className = 'entry';
+            div.innerHTML = `
+              🕒 <b>${timestamp.toLocaleString()}</b><br>
+              🧠 Node ID: ${entry.nodeID}<br>
+              🧭 Floor Request: ${entry.requestedFloor}, Current: ${entry.currentFloor}<br>
+              🔖 Event: ${entry.eventType}<br>
+              🗒️ ${entry.otherInfo || '(no details)'}
+            `;
+            elevatorContainer.appendChild(div);
+          });
+        }
+
+        // ╔══════════════════════════════════════════════╗
+        // ║ FUNCTION: Render CAN Bus Logs               ║
+        // ║ Shows last 10 CAN TX/RX entries             ║
+        // ╚══════════════════════════════════════════════╝
+        if (!data.canLogs || data.canLogs.length === 0) {
+          canContainer.innerHTML = '<p>No CAN log entries found.</p>';
+        } else {
+          canContainer.innerHTML = '';
+          data.canLogs.forEach(entry => {
+            const div = document.createElement('div');
+            const timestamp = new Date(entry.timestamp);
+            div.className = 'entry';
+            div.innerHTML = `
+              🕒 <b>${timestamp.toLocaleString()}</b><br>
+              🔌 Node ID: ${entry.nodeID}<br>
+              ↔️ Direction: ${entry.direction}<br>
+              💬 Message: ${entry.message}
+            `;
+            canContainer.appendChild(div);
+          });
+        }
+      })
+
+      // ╔════════════════════════════════════════════════════════╗
+      // ║ ERROR HANDLING                                        ║
+      // ║ Shows fallback message if fetch fails                 ║
+      // ╚════════════════════════════════════════════════════════╝
+      .catch(error => {
+        document.getElementById('elevator-log').innerHTML = '❌ Failed to load elevator log.';
+        document.getElementById('can-log').innerHTML = '❌ Failed to load CAN log.';
+        console.error('Fetch error:', error);
+      });
+  </script>
+</body>
+</html>
